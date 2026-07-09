@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://c8tgtaf44igvf"]
+
+[ext_resource type="Script" uid="uid://bqoncd8qtlqt2" path="res://UI/interaction_prompt_ui.gd" id="1_36717"]
+
+[node name="HUD" type="CanvasLayer" unique_id=1552023239]
+
+[node name="PromptLabel" type="Label" parent="." unique_id=1203779450]
+anchors_preset = -1
+anchor_left = 0.397
+anchor_top = 0.48200002
+anchor_right = 0.60300004
+anchor_bottom = 0.518
+offset_left = -0.34402466
+offset_top = 0.16397095
+offset_right = 0.3439331
+offset_bottom = -0.16400146
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("1_36717")

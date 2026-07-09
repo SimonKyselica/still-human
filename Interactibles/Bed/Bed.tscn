@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://qgdt0i15jqci"]
+
+[ext_resource type="PackedScene" uid="uid://clxbdd7sr2eol" path="res://Assets/bed.glb" id="1_k4tn8"]
+[ext_resource type="Script" uid="uid://c7xwh0xo67eum" path="res://Interactibles/Bed/bed.gd" id="2_1hf8k"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_u8lrn"]
+size = Vector3(1, 1, 2.5584717)
+
+[node name="bed" unique_id=678918744 instance=ExtResource("1_k4tn8")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1" unique_id=1631838488]
+script = ExtResource("2_1hf8k")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=1017455544]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.035095215)
+shape = SubResource("BoxShape3D_u8lrn")

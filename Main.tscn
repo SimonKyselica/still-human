@@ -1,13 +1,70 @@
 [gd_scene format=3 uid="uid://b8dgp3diks1tw"]
 
+[ext_resource type="Script" uid="uid://bw3yxqwyfj1e2" path="res://game_man.gd" id="1_cm0pq"]
 [ext_resource type="PackedScene" uid="uid://8ltr7e0apt5i" path="res://Player/Player.tscn" id="1_glv2v"]
+[ext_resource type="PackedScene" uid="uid://qgdt0i15jqci" path="res://Interactibles/Bed/Bed.tscn" id="4_cm0pq"]
+[ext_resource type="PackedScene" uid="uid://c8tgtaf44igvf" path="res://UI/Hud.tscn" id="4_fos0i"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r0du0"]
+albedo_color = Color(0.8352941, 1, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uu6xs"]
+albedo_color = Color(1, 0.7921569, 1, 1)
+
+[sub_resource type="Environment" id="Environment_u8lrn"]
+background_energy_multiplier = 7.8
+ambient_light_color = Color(0.7647146, 0.8002287, 0.5293078, 1)
+ambient_light_energy = 6.3
+fog_enabled = true
 
 [node name="Main" type="Node3D" unique_id=1657249273]
+script = ExtResource("1_cm0pq")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1590479289]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, -5)
 use_collision = true
 size = Vector3(35, 1, 29)
+material = SubResource("StandardMaterial3D_r0du0")
 
 [node name="Player" parent="." unique_id=2097612105 instance=ExtResource("1_glv2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+
+[node name="Room" type="Node" parent="." unique_id=788417326]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Room" unique_id=1381097828]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 3, 3)
+size = Vector3(13, 5, 1)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Room" unique_id=1581061549]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 3, -8)
+size = Vector3(13, 5, 1)
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="Room" unique_id=1553640788]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -9, 3, -3)
+size = Vector3(13, 5, 1)
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="Room" unique_id=1392032855]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2, 3, -3)
+size = Vector3(13, 5, 1)
+material = SubResource("StandardMaterial3D_uu6xs")
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="Room" unique_id=813115197]
+transform = Transform3D(1.9106855e-15, -1, -4.371139e-08, -4.371139e-08, -4.371139e-08, 1, -1, 0, -4.371139e-08, -3.5, 6, -3)
+size = Vector3(13, 14, 1)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Room" unique_id=1905033424]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -3, 5, -2)
+light_color = Color(1, 1, 0.52156866, 1)
+light_energy = 14.465
+light_indirect_energy = 7.653
+light_size = 0.574
+shadow_enabled = true
+spot_range = 5.627
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=191382895]
+environment = SubResource("Environment_u8lrn")
+
+[node name="HUD" parent="." unique_id=1552023239 instance=ExtResource("4_fos0i")]
+
+[node name="bed" parent="." unique_id=678918744 instance=ExtResource("4_cm0pq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1011376, 0.8012897, -0.6814828)
