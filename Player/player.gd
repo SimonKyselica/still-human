@@ -8,6 +8,7 @@ const MOUSE_SENSITIVITY = 0.003
 # --- Node References ---
 @onready var head: Node3D = $Head
 @onready var camera: Camera3D = $Head/Camera3D
+@onready var interaction_component: InteractionComponent = $Head/Camera3D/InteractionComponent
 
 # Get the gravity from the project settings to sync with physics
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
@@ -19,6 +20,10 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	# --- THE ESCAPE HATCH ---
 	# "ui_cancel" is Godot's default action for the Escape key
+	
+	if event.is_action_pressed("interact"):
+		interaction_component.try_interact(self)
+	
 	if event.is_action_pressed("ui_cancel"):
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -35,6 +40,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		
 		# Clamp the head rotation so you can't flip your neck upside down
 		head.rotation.x = clamp(head.rotation.x, deg_to_rad(-89), deg_to_rad(89))
+		
+	
 
 func _physics_process(delta: float) -> void:
 	# 1. Add Gravity
