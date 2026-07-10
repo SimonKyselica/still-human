@@ -1,0 +1,373 @@
+[gd_scene format=3 uid="uid://caf6ruadrky8k"]
+
+[ext_resource type="Theme" uid="uid://c6c1hg0c663nt" path="res://Audit/audit_terminal_theme.tres" id="1_theme"]
+[ext_resource type="Script" uid="uid://cake1dxqbao6j" path="res://Audit/audit_terminal.gd" id="2_ctrl"]
+[ext_resource type="PackedScene" uid="uid://xbr10rb6ex5o" path="res://Audit/data_row.tscn" id="3_row"]
+[ext_resource type="Resource" uid="uid://cwjdyuira7x8v" path="res://Audit/cases/day1_108vn.tres" id="4_case"]
+[ext_resource type="Script" uid="uid://cxtfk0ds5pue3" path="res://Global Scripts/mouse.gd" id="5_aqk3x"]
+
+[sub_resource type="StyleBoxFlat" id="sb_tab_active"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.878, 0.639, 0.224, 1)
+
+[sub_resource type="StyleBoxFlat" id="sb_tab_inactive"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.878, 0.639, 0.224, 1)
+
+[sub_resource type="StyleBoxFlat" id="sb_approve"]
+content_margin_left = 22.0
+content_margin_top = 12.0
+content_margin_right = 22.0
+content_margin_bottom = 12.0
+bg_color = Color(0.878, 0.639, 0.224, 0.05)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.878, 0.639, 0.224, 1)
+
+[sub_resource type="StyleBoxFlat" id="sb_hold"]
+content_margin_left = 22.0
+content_margin_top = 12.0
+content_margin_right = 22.0
+content_margin_bottom = 12.0
+bg_color = Color(0.357, 0.565, 0.769, 0.05)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.357, 0.565, 0.769, 1)
+
+[sub_resource type="StyleBoxFlat" id="sb_incinerate"]
+content_margin_left = 22.0
+content_margin_top = 12.0
+content_margin_right = 22.0
+content_margin_bottom = 12.0
+bg_color = Color(0.851, 0.314, 0.227, 0.05)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.851, 0.314, 0.227, 1)
+
+[sub_resource type="StyleBoxFlat" id="sb_flag"]
+content_margin_left = 22.0
+content_margin_top = 12.0
+content_margin_right = 22.0
+content_margin_bottom = 12.0
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.435, 0.435, 0.388, 1)
+
+[node name="AuditTerminal" type="Control" unique_id=1344667270]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("2_ctrl")
+current_case = ExtResource("4_case")
+
+[node name="Background" type="ColorRect" parent="." unique_id=615165519]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.043, 0.055, 0.043, 1)
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=1783857406]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 2.0
+offset_right = 4.0
+offset_bottom = 182.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.9955026, 0.7770669)
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 20
+
+[node name="VBox" type="VBoxContainer" parent="Margin" unique_id=1256081963]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Header" type="VBoxContainer" parent="Margin/VBox" unique_id=338008405]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleRow" type="HBoxContainer" parent="Margin/VBox/Header" unique_id=667150066]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="StatusDot" type="Label" parent="Margin/VBox/Header/TitleRow" unique_id=926343700]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.29, 0.541, 0.427, 1)
+theme_override_font_sizes/font_size = 22
+text = "●"
+
+[node name="Title" type="Label" parent="Margin/VBox/Header/TitleRow" unique_id=1739978670]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
+theme_override_font_sizes/font_size = 32
+text = "AUDIT TERMINAL — UNIT REVIEW v2.3"
+
+[node name="ControlsRow" type="HBoxContainer" parent="Margin/VBox/Header" unique_id=284057223]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Day1Btn" type="Button" parent="Margin/VBox/Header/ControlsRow" unique_id=1202357774]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.043, 0.055, 0.043, 1)
+theme_override_colors/font_pressed_color = Color(0.043, 0.055, 0.043, 1)
+theme_override_colors/font_hover_color = Color(0.043, 0.055, 0.043, 1)
+theme_override_font_sizes/font_size = 26
+theme_override_styles/normal = SubResource("sb_tab_active")
+theme_override_styles/pressed = SubResource("sb_tab_active")
+theme_override_styles/hover = SubResource("sb_tab_active")
+text = "DAY 1"
+
+[node name="Day2Btn" type="Button" parent="Margin/VBox/Header/ControlsRow" unique_id=234906986]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
+theme_override_font_sizes/font_size = 26
+theme_override_styles/normal = SubResource("sb_tab_inactive")
+theme_override_styles/pressed = SubResource("sb_tab_inactive")
+theme_override_styles/hover = SubResource("sb_tab_inactive")
+text = "DAY 2"
+
+[node name="DesignNotesCheck" type="CheckBox" parent="Margin/VBox/Header/ControlsRow" unique_id=1121524614]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.435, 0.435, 0.388, 1)
+theme_override_font_sizes/font_size = 24
+text = "SHOW DESIGN NOTES"
+
+[node name="Spacer" type="Control" parent="Margin/VBox/Header/ControlsRow" unique_id=806788523]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="KnobIcon" type="Label" parent="Margin/VBox/Header/ControlsRow" unique_id=1264673379]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.435, 0.435, 0.388, 1)
+text = "◉"
+
+[node name="SignalLabel" type="Label" parent="Margin/VBox/Header/ControlsRow" unique_id=858838671]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.29, 0.541, 0.427, 1)
+theme_override_font_sizes/font_size = 24
+text = "SIGNAL: STABLE"
+
+[node name="Sep1" type="HSeparator" parent="Margin/VBox" unique_id=1399606418]
+layout_mode = 2
+
+[node name="Directive" type="VBoxContainer" parent="Margin/VBox" unique_id=1840454675]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="DirectiveHeader" type="Label" parent="Margin/VBox/Directive" unique_id=266967209]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.322, 0.788, 0.659, 1)
+theme_override_font_sizes/font_size = 26
+text = "◆ TODAY'S DIRECTIVE"
+
+[node name="Rule1" type="Label" parent="Margin/VBox/Directive" unique_id=2109034352]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
+theme_override_font_sizes/font_size = 24
+text = "▸ Units below 40% degradation → APPROVE."
+
+[node name="Rule2" type="Label" parent="Margin/VBox/Directive" unique_id=347294124]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
+theme_override_font_sizes/font_size = 24
+text = "▸ Units at or above 40% degradation → HOLD for review."
+
+[node name="Sep2" type="HSeparator" parent="Margin/VBox" unique_id=228064630]
+layout_mode = 2
+
+[node name="CaseFile" type="VBoxContainer" parent="Margin/VBox" unique_id=1982251562]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CaseHeader" type="Label" parent="Margin/VBox/CaseFile" unique_id=1496078430]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.357, 0.565, 0.769, 1)
+theme_override_font_sizes/font_size = 26
+text = "▪ CASE FILE — DATA"
+
+[node name="DataRows" type="VBoxContainer" parent="Margin/VBox/CaseFile" unique_id=723399678]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="RowUnitId" parent="Margin/VBox/CaseFile/DataRows" unique_id=1289714713 instance=ExtResource("3_row")]
+layout_mode = 2
+key = "UNIT ID"
+value_text = "108-VN"
+
+[node name="RowSector" parent="Margin/VBox/CaseFile/DataRows" unique_id=1982932093 instance=ExtResource("3_row")]
+layout_mode = 2
+key = "SECTOR OF ORIGIN"
+value_text = "Sector 4"
+
+[node name="RowModel" parent="Margin/VBox/CaseFile/DataRows" unique_id=1988028294 instance=ExtResource("3_row")]
+layout_mode = 2
+key = "MODEL NUMBER"
+value_text = "VN-1"
+
+[node name="RowDegradation" parent="Margin/VBox/CaseFile/DataRows" unique_id=1859665390 instance=ExtResource("3_row")]
+layout_mode = 2
+key = "DEGRADATION"
+value_text = "8%"
+
+[node name="Sep3" type="HSeparator" parent="Margin/VBox" unique_id=1868978219]
+layout_mode = 2
+
+[node name="Transcript" type="VBoxContainer" parent="Margin/VBox" unique_id=1948649409]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TranscriptHeader" type="Label" parent="Margin/VBox/Transcript" unique_id=207766693]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
+theme_override_font_sizes/font_size = 26
+text = "▮ INTERVIEW TRANSCRIPT"
+
+[node name="TranscriptText" type="RichTextLabel" parent="Margin/VBox/Transcript" unique_id=1621366778]
+custom_minimum_size = Vector2(0, 110)
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 24
+bbcode_enabled = true
+text = "[color=#6f6f63]AGENT[/color]  [color=#e0a339]What's the last thing you remember before the transfer?[/color]
+
+[color=#6f6f63]UNIT[/color]  [color=#e0a339]Standard onboarding. [url=Sector 4 processing center][u]Sector 4 processing center[/u][/url].[/color]"
+fit_content = true
+scroll_active = false
+
+[node name="Spacer2" type="Control" parent="Margin/VBox" unique_id=873787929]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SelectedBar" type="Label" parent="Margin/VBox" unique_id=1475555625]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.435, 0.435, 0.388, 1)
+theme_override_font_sizes/font_size = 24
+text = "SELECTED: click one detail on each side to compare them"
+
+[node name="Sep4" type="HSeparator" parent="Margin/VBox" unique_id=32843638]
+layout_mode = 2
+
+[node name="StatusBar" type="HBoxContainer" parent="Margin/VBox" unique_id=1181507069]
+layout_mode = 2
+theme_override_constants/separation = 40
+
+[node name="ShiftCol" type="VBoxContainer" parent="Margin/VBox/StatusBar" unique_id=1316308733]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="ShiftCaption" type="Label" parent="Margin/VBox/StatusBar/ShiftCol" unique_id=107759622]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.435, 0.435, 0.388, 1)
+theme_override_font_sizes/font_size = 22
+text = "SHIFT TIME"
+
+[node name="ShiftValue" type="Label" parent="Margin/VBox/StatusBar/ShiftCol" unique_id=750252584]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
+theme_override_font_sizes/font_size = 22
+text = "01:22"
+
+[node name="FileCol" type="VBoxContainer" parent="Margin/VBox/StatusBar" unique_id=1341472504]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="FileCaption" type="Label" parent="Margin/VBox/StatusBar/FileCol" unique_id=1896231660]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.435, 0.435, 0.388, 1)
+theme_override_font_sizes/font_size = 22
+text = "FILE"
+
+[node name="FileValue" type="Label" parent="Margin/VBox/StatusBar/FileCol" unique_id=124950440]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
+theme_override_font_sizes/font_size = 22
+text = "1 / 3"
+
+[node name="Actions" type="HBoxContainer" parent="Margin/VBox" unique_id=2044893931]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ApproveBtn" type="Button" parent="Margin/VBox/Actions" unique_id=369935568]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
+theme_override_colors/font_hover_color = Color(0.941, 0.722, 0.29, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("sb_approve")
+theme_override_styles/pressed = SubResource("sb_approve")
+theme_override_styles/hover = SubResource("sb_approve")
+text = "APPROVE"
+
+[node name="HoldBtn" type="Button" parent="Margin/VBox/Actions" unique_id=1554702339]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.357, 0.565, 0.769, 1)
+theme_override_colors/font_hover_color = Color(0.478, 0.671, 0.859, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("sb_hold")
+theme_override_styles/pressed = SubResource("sb_hold")
+theme_override_styles/hover = SubResource("sb_hold")
+text = "HOLD"
+
+[node name="Spacer3" type="Control" parent="Margin/VBox/Actions" unique_id=1296070817]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="IncinerateBtn" type="Button" parent="Margin/VBox/Actions" unique_id=97572928]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.851, 0.314, 0.227, 1)
+theme_override_colors/font_hover_color = Color(0.925, 0.42, 0.333, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("sb_incinerate")
+theme_override_styles/pressed = SubResource("sb_incinerate")
+theme_override_styles/hover = SubResource("sb_incinerate")
+text = "INCINERATE"
+
+[node name="FlagBtn" type="Button" parent="Margin/VBox/Actions" unique_id=1039590849]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.435, 0.435, 0.388, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("sb_flag")
+theme_override_styles/pressed = SubResource("sb_flag")
+theme_override_styles/hover = SubResource("sb_flag")
+text = "FLAG"
+
+[node name="Node" type="Node" parent="." unique_id=175768788]
+script = ExtResource("5_aqk3x")
+
+[connection signal="pressed" from="Margin/VBox/Header/ControlsRow/Day1Btn" to="." method="_on_day1_pressed"]
+[connection signal="pressed" from="Margin/VBox/Header/ControlsRow/Day2Btn" to="." method="_on_day2_pressed"]
+[connection signal="meta_clicked" from="Margin/VBox/Transcript/TranscriptText" to="." method="_on_transcript_meta_clicked"]
+[connection signal="pressed" from="Margin/VBox/Actions/ApproveBtn" to="." method="_on_approve"]
+[connection signal="pressed" from="Margin/VBox/Actions/HoldBtn" to="." method="_on_hold"]
+[connection signal="pressed" from="Margin/VBox/Actions/IncinerateBtn" to="." method="_on_incinerate"]
+[connection signal="pressed" from="Margin/VBox/Actions/FlagBtn" to="." method="_on_flag"]

@@ -1,0 +1,11 @@
+[gd_resource type="Theme" format=3 uid="uid://c6c1hg0c663nt"]
+
+[ext_resource type="FontFile" uid="uid://bphx81psjpqkx" path="res://Assets/fonts/DepartureMono-Regular.otf" id="1_font"]
+
+[sub_resource type="StyleBoxLine" id="sb_sep"]
+color = Color(0.165, 0.18, 0.157, 1)
+
+[resource]
+default_font = ExtResource("1_font")
+default_font_size = 18
+HSeparator/styles/separator = SubResource("sb_sep")
