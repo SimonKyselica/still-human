@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://vygtai0p15om"]
+
+[ext_resource type="PackedScene" uid="uid://dhr7cco4fsfby" path="res://Assets/nightStand.glb" id="1_44mts"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_u8lrn"]
+size = Vector3(0.64819336, 0.4953308, 0.41625977)
+
+[node name="nightStand2" unique_id=174490276 instance=ExtResource("1_44mts")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1" unique_id=755196182]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=1350246599]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.03845215, 0.3332672, 0.0052490234)
+shape = SubResource("BoxShape3D_u8lrn")

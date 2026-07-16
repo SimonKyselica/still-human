@@ -9,6 +9,8 @@
 [ext_resource type="Texture2D" uid="uid://cyexdhyqhtas0" path="res://Assets/textures/Strop/ceiling_texture_adjsuted.png" id="5_03owx"]
 [ext_resource type="PackedScene" uid="uid://de08tsvquut60" path="res://Assets/Full Setup/full_setup.tscn" id="5_fos0i"]
 [ext_resource type="PackedScene" uid="uid://dfpb3htjv5rbl" path="res://Assets/Chair.tscn" id="8_trn2v"]
+[ext_resource type="PackedScene" uid="uid://dqce2l0shv6ib" path="res://Assets/Telephone/telephone.tscn" id="10_wkp8b"]
+[ext_resource type="PackedScene" uid="uid://vygtai0p15om" path="res://Assets/Full Setup/night_stand_2.tscn" id="11_20pc6"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r0du0"]
 albedo_color = Color(0.8352941, 1, 1, 1)
@@ -41,8 +43,8 @@ uv1_triplanar = true
 texture_filter = 0
 
 [sub_resource type="Environment" id="Environment_u8lrn"]
-background_energy_multiplier = 7.8
-ambient_light_color = Color(0.7647146, 0.8002287, 0.5293078, 1)
+background_energy_multiplier = 1.7
+ambient_light_color = Color(0.8906341, 0.6841144, 0.94464123, 1)
 ambient_light_energy = 6.3
 fog_enabled = true
 
@@ -61,19 +63,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 [node name="Room" type="Node" parent="." unique_id=788417326]
 
 [node name="CSGBox3D" type="CSGBox3D" parent="Room" unique_id=1381097828]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 3, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 3, 2)
 use_collision = true
 size = Vector3(13, 5, 1)
 material = SubResource("StandardMaterial3D_avxm0")
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="Room" unique_id=1581061549]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 3, -8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 3, -7)
 use_collision = true
 size = Vector3(13, 5, 1)
 material = SubResource("StandardMaterial3D_wkp8b")
 
 [node name="CSGBox3D3" type="CSGBox3D" parent="Room" unique_id=1553640788]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -9, 3, -3)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -7, 3, -3)
 use_collision = true
 size = Vector3(13, 5, 1)
 material = SubResource("StandardMaterial3D_avxm0")
@@ -90,7 +92,7 @@ size = Vector3(13, 14, 1)
 material = SubResource("StandardMaterial3D_03owx")
 
 [node name="SpotLight3D" type="SpotLight3D" parent="Room" unique_id=1905033424]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -3, 5, -2)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -3, 4.6423664, -2)
 light_color = Color(1, 1, 0.52156866, 1)
 light_energy = 14.465
 light_indirect_energy = 7.653
@@ -98,16 +100,35 @@ light_size = 0.574
 shadow_enabled = true
 spot_range = 5.627
 
+[node name="OmniLight3D" type="OmniLight3D" parent="Room" unique_id=2067359882]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0416281, -4.648209)
+light_color = Color(1, 1, 0.34117648, 1)
+shadow_enabled = true
+
+[node name="AreaLight3D" type="AreaLight3D" parent="Room" unique_id=1466076596]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.068561, 2.6029558, 1.2828405)
+visible = false
+light_color = Color(1, 1, 0.54509807, 1)
+light_energy = 3.64
+shadow_enabled = true
+area_range = 64.226
+
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=191382895]
 environment = SubResource("Environment_u8lrn")
 
 [node name="HUD" parent="." unique_id=1552023239 instance=ExtResource("4_fos0i")]
 
 [node name="bed" parent="." unique_id=678918744 instance=ExtResource("4_cm0pq")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1011376, 0.8012897, -0.6814828)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.3337035, 0.8012897, -3.6814828)
 
 [node name="full_setup" parent="." unique_id=717901305 instance=ExtResource("5_fos0i")]
-transform = Transform3D(1.8, 0, 0, 0, 1.8, 0, 0, 0, 1.8, -3, 1, -3)
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, -2.206875, 1.2654994, -3)
 
 [node name="chair" parent="." unique_id=155543302 instance=ExtResource("8_trn2v")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.16882205, 0.94507974, -3.1801388)
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -2.0636146, 0.94507974, -2.2815714)
+
+[node name="telephone" parent="." unique_id=575691054 instance=ExtResource("10_wkp8b")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.343555, 1.0849955, -4.4523396)
+
+[node name="nightStand2" parent="." unique_id=174490276 instance=ExtResource("11_20pc6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.373188, 0.5, -4.4524994)
