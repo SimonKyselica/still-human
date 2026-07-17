@@ -11,7 +11,8 @@ var is_ringing: bool = true
 
 const lines1: Array[String] = [
 	"Welcome to your new job!",
-	"We only expect the best of you!"
+	"We only expect the best of you!",
+	"See you soon, Happy to have you onboard!"
 ]
 
 func _ready() -> void:
