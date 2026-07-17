@@ -38,4 +38,6 @@ vertical_alignment = 1
 [node name="LetterDisplayTimer" type="Timer" parent="." unique_id=31564128]
 one_shot = true
 
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1177435833]
+
 [connection signal="timeout" from="LetterDisplayTimer" to="." method="_on_letter_display_timer_timeout"]
