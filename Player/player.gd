@@ -21,7 +21,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	# --- THE ESCAPE HATCH ---
 	# "ui_cancel" is Godot's default action for the Escape key
 	
-	if event.is_action_pressed("interact"):
+	if event.is_action_pressed("interact") and not DialogueManager.is_dialogue_active:
 		interaction_component.try_interact(self)
 	
 	if event.is_action_pressed("ui_cancel"):
