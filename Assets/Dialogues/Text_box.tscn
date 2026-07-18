@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://cwjw3fo8ftaw0"]
+
+[ext_resource type="Texture2D" uid="uid://c2kfb70rtag4u" path="res://Assets/Dialogues/Dialogue_box-export.png" id="1_2mm2p"]
+[ext_resource type="Script" uid="uid://b3y1pdow6t63w" path="res://Assets/Dialogues/text_box.gd" id="1_vb4xf"]
+[ext_resource type="FontFile" uid="uid://bphx81psjpqkx" path="res://Assets/fonts/DepartureMono-Regular.otf" id="2_tfewa"]
+
+[node name="TextBox" type="MarginContainer" unique_id=1589731827]
+anchors_preset = -1
+anchor_right = 0.033
+anchor_bottom = 0.059000004
+offset_right = 0.6399994
+offset_bottom = 0.27999496
+script = ExtResource("1_vb4xf")
+
+[node name="NinePatchRect" type="NinePatchRect" parent="." unique_id=974642568]
+layout_mode = 2
+texture = ExtResource("1_2mm2p")
+region_rect = Rect2(0, 0, 48, 48)
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1834006164]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="Label" type="Label" parent="MarginContainer" unique_id=1563302307]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_tfewa")
+theme_override_font_sizes/font_size = 40
+vertical_alignment = 1
+
+[node name="LetterDisplayTimer" type="Timer" parent="." unique_id=31564128]
+one_shot = true
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1177435833]
+
+[connection signal="timeout" from="LetterDisplayTimer" to="." method="_on_letter_display_timer_timeout"]
