@@ -2,15 +2,13 @@
 
 [ext_resource type="Script" uid="uid://bw3yxqwyfj1e2" path="res://game_man.gd" id="1_cm0pq"]
 [ext_resource type="PackedScene" uid="uid://8ltr7e0apt5i" path="res://Player/Player.tscn" id="1_glv2v"]
+[ext_resource type="Material" uid="uid://didf3htgk6c6d" path="res://Assets/textures/PLANKS036B/Planks036B_1K-JPG.tres" id="2_lgr22"]
 [ext_resource type="PackedScene" uid="uid://qgdt0i15jqci" path="res://Interactibles/Bed/Bed.tscn" id="4_cm0pq"]
 [ext_resource type="PackedScene" uid="uid://c8tgtaf44igvf" path="res://UI/Hud.tscn" id="4_fos0i"]
+[ext_resource type="Material" uid="uid://ckwc5f8e4ulru" path="res://Assets/textures/pantedPlaster/PaintedPlaster004_1K-JPG.tres" id="4_lgr22"]
+[ext_resource type="Material" path="res://Assets/textures/PLASTER018/PaintedPlaster018_1K-JPG.tres" id="4_trn2v"]
 [ext_resource type="PackedScene" uid="uid://de08tsvquut60" path="res://Assets/Full Setup/full_setup.tscn" id="5_fos0i"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r0du0"]
-albedo_color = Color(0.8352941, 1, 1, 1)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uu6xs"]
-albedo_color = Color(1, 0.7921569, 1, 1)
+[ext_resource type="Material" uid="uid://d1c443hmtvwdy" path="res://Assets/textures/PLASTER006/Plaster006_1K-JPG.tres" id="6_03owx"]
 
 [sub_resource type="Environment" id="Environment_u8lrn"]
 background_energy_multiplier = 7.8
@@ -22,10 +20,10 @@ fog_enabled = true
 script = ExtResource("1_cm0pq")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1590479289]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, -5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.9097605, 0.26559496, -8.813041)
 use_collision = true
 size = Vector3(35, 1, 29)
-material = SubResource("StandardMaterial3D_r0du0")
+material = ExtResource("2_lgr22")
 
 [node name="Player" parent="." unique_id=2097612105 instance=ExtResource("1_glv2v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
@@ -35,19 +33,22 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 [node name="CSGBox3D" type="CSGBox3D" parent="Room" unique_id=1381097828]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 3, 3)
 size = Vector3(13, 5, 1)
+material = ExtResource("4_trn2v")
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="Room" unique_id=1581061549]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 3, -8)
 size = Vector3(13, 5, 1)
+material = ExtResource("4_lgr22")
 
 [node name="CSGBox3D3" type="CSGBox3D" parent="Room" unique_id=1553640788]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -9, 3, -3)
 size = Vector3(13, 5, 1)
+material = ExtResource("4_trn2v")
 
 [node name="CSGBox3D4" type="CSGBox3D" parent="Room" unique_id=1392032855]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2, 3, -3)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.8733072, 2.9931667, -3.499506)
 size = Vector3(13, 5, 1)
-material = SubResource("StandardMaterial3D_uu6xs")
+material = ExtResource("6_03owx")
 
 [node name="CSGBox3D5" type="CSGBox3D" parent="Room" unique_id=813115197]
 transform = Transform3D(1.9106855e-15, -1, -4.371139e-08, -4.371139e-08, -4.371139e-08, 1, -1, 0, -4.371139e-08, -3.5, 6, -3)
@@ -68,7 +69,7 @@ environment = SubResource("Environment_u8lrn")
 [node name="HUD" parent="." unique_id=1552023239 instance=ExtResource("4_fos0i")]
 
 [node name="bed" parent="." unique_id=678918744 instance=ExtResource("4_cm0pq")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1011376, 0.8012897, -0.6814828)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.6895027, 0.8012897, -5.0568824)
 
 [node name="full_setup" parent="." unique_id=717901305 instance=ExtResource("5_fos0i")]
-transform = Transform3D(1.8, 0, 0, 0, 1.8, 0, 0, 0, 1.8, -3, 1, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1.2296809, -5.3110704)
