@@ -1,4 +1,3 @@
-
 class_name PC
 extends Interactable
 
@@ -6,10 +5,13 @@ extends Interactable
 
 func _ready() -> void:
 	prompt_text = "Start Work"
-	enabled = true
+	task_id = "terminal"
+	add_to_group("tasks_objects")
+	enabled = false
 
 func interact(player: Node) -> void:
 	super.interact(player)
-	print("Started Working")
-	if target_scene != "":
-		get_tree().change_scene_to_file(target_scene)
+	GameState.last_player_pos = "PC"
+	GameState.complete_task("terminal")
+	#if target_scene != "":
+		#get_tree().change_scene_to_file(target_scene)

@@ -1,13 +1,12 @@
-## Example: the door from the end of Path A ("Prebudenie"). Starts disabled
-## since the door doesn't exist in the room until Day 3.
 class_name Telephone
 extends Interactable
 
-@export var target_scene: String = ""
+
 @export var conver_pos: Vector2 = Vector2(980, 920)
 var is_ringing: bool = true
 
 @onready var speech_sound = preload("res://Assets/Sounds/Phone.wav")
+# @onready var ring_player: AudioStreamPlayer3D = $RingSound 
 
 const lines1: Array[String] = [
 	"Welcome to your new job!",
@@ -17,15 +16,24 @@ const lines1: Array[String] = [
 
 func _ready() -> void:
 	prompt_text = "Pick up Telephone"
-	enabled = true
+	task_id = "phone"
+	add_to_group("task_objects")
+	is_ringing = true
 	
-func _process(delta: float) -> void:
-	if is_ringing == true:
-		enabled = true
+func on_became_active() -> void:
+	start_ringing()
+	
+func start_ringing() -> void:
+	is_ringing = true
+	enabled = true
+	print("Yo Phone Lingin")
+	#ring_player.play()
+
+func stop_ringing() -> void:
+	is_ringing = false
 
 func interact(player: Node) -> void:
 	super.interact(player)
-	print("Interacted with Telephone")
+	stop_ringing()
 	DialogueManager.start_dialog(conver_pos, lines1, speech_sound)
-	if target_scene != "":
-		get_tree().change_scene_to_file(target_scene)
+	GameState.complete_task("phone")   # zdvihnutie = dokončenie úlohy

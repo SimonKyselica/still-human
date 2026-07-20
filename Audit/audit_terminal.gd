@@ -1,17 +1,16 @@
 class_name AuditTerminal
 extends Control
 
-## Controller for the "Audit Terminal — Unit Review" screen.
-## For now it populates the layout from a UnitCase resource and exposes clearly
-## named hooks; the day tabs, file navigation, compare mechanic and verdict
-## consequences are stubbed and meant to be filled in next.
-
 ## Emitted when the auditor issues a verdict on the current unit.
 signal verdict_submitted(verdict: String)
 
 const SELECT_HINT := "SELECTED: click one detail on each side to compare them"
+const MAIN_SCENE := "res://Main.tscn"
 
 @export var current_case: UnitCase
+@export var total_cases: int = 1
+
+var _cases_done: int = 0
 
 # --- Node references (paths mirror AuditTerminal.tscn) ---
 @onready var _row_unit_id: DataRow = $Margin/VBox/CaseFile/DataRows/RowUnitId
@@ -65,7 +64,14 @@ func _submit(verdict: String) -> void:
 	var who := current_case.unit_id if current_case else "?"
 	print("[AuditTerminal] verdict=%s unit=%s" % [verdict, who])
 	verdict_submitted.emit(verdict)
+	_cases_done +=1
+	if _cases_done >= total_cases:
+		_finish_shift()
+	# else: načítaj ďalší prípad (TODO – caseload logika)
 
+func _finish_shift() -> void:
+	GameState.complete_task("terminal")
+	get_tree().change_scene_to_file(MAIN_SCENE)
 
 # --- Hooks to implement next ---
 func _on_day1_pressed() -> void:

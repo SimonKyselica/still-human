@@ -28,7 +28,7 @@ func _find_spawn(anchor: String) -> Node3D:
 	
 func _sync_to_current_task() -> void:
 	var active := GameState.current_task_id()
-	for obj in get_tree().get_node_in_group("task_objects"):
+	for obj in get_tree().get_nodes_in_group("tasks_objects"):
 		if obj is Interactable:
 			var it: Interactable = obj
 			var is_active := it.task_id == active

@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://b2s5vsuiytsaa" path="res://Assets/window.glb" id="12_c6i3y"]
 [ext_resource type="PackedScene" uid="uid://c68sg42tmn533" path="res://Assets/Door/door.tscn" id="13_c2ibq"]
 [ext_resource type="PackedScene" uid="uid://styyshsjyvrd" path="res://Assets/camera.glb" id="14_c2ibq"]
+[ext_resource type="Script" uid="uid://dqcn2khdyfblg" path="res://Global Scripts/DayManager.gd" id="15_j4qnp"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r0du0"]
 albedo_color = Color(0.8352941, 1, 1, 1)
@@ -150,7 +151,20 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.7458107, 1.4751179, 0.9603
 [node name="camera" parent="." unique_id=1833133659 instance=ExtResource("14_c2ibq")]
 transform = Transform3D(-1, -1.7484555e-07, 8.742278e-08, -1.7484555e-07, 1, 7.642742e-15, -8.742278e-08, -7.642742e-15, -1, 0.29993248, 4.348644, 2.3893325)
 
-[node name="Node" type="Node" parent="." unique_id=146810270]
+[node name="Spawners" type="Node" parent="." unique_id=146810270]
 
-[node name="Spawn_BED" type="Marker3D" parent="Node" unique_id=956392825]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5376186, 0, -3.3224945)
+[node name="Spawn_BED" type="Marker3D" parent="Spawners" unique_id=956392825]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5376186, 1.0635151, -3.3224945)
+
+[node name="Spawn_PC" type="Marker3D" parent="Spawners" unique_id=2137357286]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.189698, 0.21576166, -2.1357412)
+
+[node name="Spawn_PHONE" type="Marker3D" parent="Spawners" unique_id=646796774]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.326084, 0, -4.841834)
+
+[node name="Spawn_DOOR" type="Marker3D" parent="Spawners" unique_id=1992100686]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.416959, 0, 0.5786904)
+
+[node name="DayManager" type="Node" parent="." unique_id=1329718795]
+script = ExtResource("15_j4qnp")
+player_path = NodePath("../Player")

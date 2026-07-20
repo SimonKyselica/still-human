@@ -15,16 +15,17 @@ signal day_started(d: int)
 signal day_completed(d: int)
 
 func _ready() -> void:
-	pass
-	#start_day(day)
+	start_day(day)
 	
 func start_day(d: int) -> void:
 	current_task_index = 0
+	schedule = _build_schedule(d)
+	day_started.emit(d)
 	
 	
 func _build_schedule(d: int) -> Array[DayTask]:
 	var list: Array[DayTask] = []
-	list.append(_task("eat",      "Najedz sa",                  "CHORE"))
+	#list.append(_task("eat",      "Najedz sa",                  "CHORE"))
 	list.append(_task("terminal", "Dokonči zmenu na termináli", "TERMINAL"))
 	list.append(_task("phone",    "Zdvihni telefón",           "PHONE"))
 	list.append(_task("sleep",    "Choď spať",                 "SLEEP"))
@@ -55,7 +56,7 @@ func complete_task(task_id: String) -> void:
 		push_warning("complete_task(%s) ignorované — aktívna je %s" % [task_id, current_task_id()])
 		return
 	var prev_phase := t.phase
-	current_task_index +1
+	current_task_index +=1
 	var nxt := current_task()
 	task_advanced.emit(nxt)
 	if nxt == null:
@@ -68,6 +69,7 @@ func end_day() ->void:
 	advance_day()
 	start_day(day)
 	last_player_pos = "BED"
+	print("Day", day)
 
 func log_decision(candidate_id: String, decision: String, flagged_correctly: bool) -> void:
 	terminal_log.append({
