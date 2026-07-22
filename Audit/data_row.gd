@@ -6,6 +6,10 @@ extends HBoxContainer
 ## Left label is dim, right value is amber, and a dotted leader line is drawn
 ## along the bottom to match the terminal mockup.
 
+signal row_clicked(row: DataRow)
+
+const SELECT_COLOR := Color(0.878, 0.639, 0.224, 1.0)
+
 @export var key: String = "LABEL":
 	set(v):
 		key = v
@@ -18,6 +22,8 @@ extends HBoxContainer
 
 ## Colour of the dotted separator drawn under the row.
 @export var line_color: Color = Color(0.29, 0.29, 0.251, 1.0)
+
+@export var selectable: bool  = false
 
 func _ready() -> void:
 	resized.connect(queue_redraw)

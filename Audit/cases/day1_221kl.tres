@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3 uid="uid://du38tbtignwmp"]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://cxc0baxamxgmo" path="res://Audit/dialogue_line.gd" id="2_line"]
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "221"

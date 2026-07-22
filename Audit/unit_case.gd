@@ -1,8 +1,6 @@
 class_name UnitCase
 extends Resource
 
-## A single unit under review — one "file" in the audit terminal caseload.
-## Each unit is authored as a .tres data file so new units/days are just data.
 
 @export var unit_id: String = ""
 @export var sector_of_origin: String = ""
@@ -11,13 +9,15 @@ extends Resource
 ## Physical/cognitive degradation, 0–100 percent. Compared against the day's
 ## directive threshold to decide the expected verdict.
 @export_range(0, 100) var degradation: int = 0
-
-## Which shift/day this unit belongs to.
 @export var day: int = 1
-
-## The interview transcript, top to bottom.
 @export var transcript: Array[DialogueLine] = []
-
-## The verdict the current directive expects for this unit. Used later for
-## scoring the player's decision.
 @export_enum("APPROVE", "HOLD", "INCINERATE", "FLAG") var correct_verdict: String = "APPROVE"
+## Ktorý riadok ZLOŽKY protirečí ktorému nároku v PREPISE.
+## Musí sedieť na kľúč DataRow: "UNIT ID", "SECTOR OF ORIGIN",
+## "MODEL NUMBER", "DEGRADATION".
+@export var contradiction_field: String = ""
+@export var contradiction_detail: String = ""
+
+# True, keď zložka a prepis naozaj nesedia. Keď false, flagnutie je vždy chybné.
+func has_contradiction() -> bool:
+	return contradiction_field != "" and contradiction_detail != ""

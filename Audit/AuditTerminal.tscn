@@ -225,21 +225,25 @@ theme_override_constants/separation = 10
 layout_mode = 2
 key = "UNIT ID"
 value_text = "108-VN"
+selectable = null
 
 [node name="RowSector" parent="Margin/VBox/CaseFile/DataRows" unique_id=1982932093 instance=ExtResource("3_row")]
 layout_mode = 2
 key = "SECTOR OF ORIGIN"
 value_text = "Sector 4"
+selectable = null
 
 [node name="RowModel" parent="Margin/VBox/CaseFile/DataRows" unique_id=1988028294 instance=ExtResource("3_row")]
 layout_mode = 2
 key = "MODEL NUMBER"
 value_text = "VN-1"
+selectable = null
 
 [node name="RowDegradation" parent="Margin/VBox/CaseFile/DataRows" unique_id=1859665390 instance=ExtResource("3_row")]
 layout_mode = 2
 key = "DEGRADATION"
 value_text = "8%"
+selectable = null
 
 [node name="Sep3" type="HSeparator" parent="Margin/VBox" unique_id=1868978219]
 layout_mode = 2
