@@ -23,11 +23,30 @@ const SELECT_COLOR := Color(0.878, 0.639, 0.224, 1.0)
 ## Colour of the dotted separator drawn under the row.
 @export var line_color: Color = Color(0.29, 0.29, 0.251, 1.0)
 
-@export var selectable: bool  = false
+@export var selectable: bool  = false:
+	set(v):
+		selectable = v
+		_apply_mouse()
+		
+var selected: bool = false:
+	set(v):
+		selected = v
+		queue_redraw()
 
 func _ready() -> void:
 	resized.connect(queue_redraw)
+	_apply_mouse()
 	_apply()
+	
+func _apply_mouse() -> void:
+	if not is_node_ready():
+		return
+	if selectable:
+		mouse_filter = Control.MOUSE_FILTER_STOP
+		mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	else:
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		mouse_default_cursor_shape = Control.CURSOR_ARROW
 
 func _apply() -> void:
 	# Setters can fire during load, before children exist — guard for that.
