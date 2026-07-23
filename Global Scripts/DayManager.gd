@@ -59,11 +59,14 @@ func _rebuild_ui() -> void:
 		var row := Label.new()
 		if i < GameState.current_task_index:
 			row.text = "✔ " + t.title
-			row.modulate = Color(0.44, 0.44, 0.39)   # hotové – tlmené
+			row.modulate = Color(0.44, 0.44, 0.39)
+			row.add_theme_font_size_override("font_size", 32)  # hotové – tlmené
 		elif i == GameState.current_task_index:
 			row.text = "▸ " + t.title
-			row.modulate = Color(0.88, 0.64, 0.22)   # aktívne – jantár
+			row.modulate = Color(0.88, 0.64, 0.22)  # aktívne – jantár
+			row.add_theme_font_size_override("font_size", 32)
 		else:
 			row.text = "• " + t.title
 			row.modulate = Color(0.35, 0.35, 0.32)   # zamknuté – šedé
+			row.add_theme_font_size_override("font_size", 32)
 		_ui.add_child(row)

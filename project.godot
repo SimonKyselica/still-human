@@ -25,6 +25,10 @@ DialogueManager="*uid://dxfrrtj5iymcq"
 window/size/viewport_width=1920
 window/size/viewport_height=1080
 
+[editor]
+
+movie_writer/movie_file="/Users/simon/Developer/Godot/one-room(wip)/Recordings/promo.avi"
+
 [input]
 
 move_forward={
