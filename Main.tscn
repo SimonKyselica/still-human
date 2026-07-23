@@ -154,10 +154,10 @@ transform = Transform3D(-1, -1.7484555e-07, 8.742278e-08, -1.7484555e-07, 1, 7.6
 [node name="Spawners" type="Node" parent="." unique_id=146810270]
 
 [node name="Spawn_BED" type="Marker3D" parent="Spawners" unique_id=956392825]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5376186, 1.0635151, -3.3224945)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5376186, 0.7545761, -3.3224945)
 
 [node name="Spawn_PC" type="Marker3D" parent="Spawners" unique_id=2137357286]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.189698, 0.21576166, -2.1357412)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.189698, 1.1402874, -2.1357412)
 
 [node name="Spawn_PHONE" type="Marker3D" parent="Spawners" unique_id=646796774]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.326084, 0, -4.841834)

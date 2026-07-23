@@ -48,6 +48,15 @@ func _apply_mouse() -> void:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
 		mouse_default_cursor_shape = Control.CURSOR_ARROW
 
+func _gui_input(event: InputEvent) -> void:
+	if not selectable:
+		return
+	if event is InputEventMouseButton:
+		var mb := event as InputEventMouseButton
+		if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed:
+			row_clicked.emit(self)
+			accept_event()
+
 func _apply() -> void:
 	# Setters can fire during load, before children exist — guard for that.
 	if not is_node_ready():
@@ -59,11 +68,18 @@ func _apply() -> void:
 	queue_redraw()
 
 func _draw() -> void:
-	# Dashed line hugging the bottom edge of the row.
+	# Zvýrazňovací rámik, keď je riadok aktuálnym výberom.
+	if selected:
+		var fill := Color(SELECT_COLOR.r, SELECT_COLOR.g, SELECT_COLOR.b, 0.10)
+		draw_rect(Rect2(Vector2.ZERO, size), fill, true)
+		draw_rect(Rect2(Vector2.ZERO, size), SELECT_COLOR, false, 1.0)
+
+	# Čiarkovaná linka pri spodnej hrane riadku.
 	var y := size.y - 1.0
 	var x := 0.0
 	const DASH := 2.0
 	const STEP := 6.0
+	var col := SELECT_COLOR if selected else line_color
 	while x < size.x:
-		draw_line(Vector2(x, y), Vector2(minf(x + DASH, size.x), y), line_color, 1.0)
+		draw_line(Vector2(x, y), Vector2(minf(x + DASH, size.x), y), col, 1.0)
 		x += STEP

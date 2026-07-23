@@ -1,18 +1,26 @@
 class_name AuditTerminal
 extends Control
 
-## Emitted when the auditor issues a verdict on the current unit.
+## Controller for the "Audit Terminal — Unit Review" screen (GDD Fáza B).
+##
+## Tok jednej jednotky:
+##   prečítaj zložku + prepis
+##   → voliteľne FLAG rozpor (jeden výber na KAŽDEJ strane)
+##   → uzavri prípad jedným z troch verdiktov
+## Po poslednej jednotke sa zmena končí, čím sa posunie denný task list.
+
 signal verdict_submitted(verdict: String)
 
 const SELECT_HINT := "SELECTED: click one detail on each side to compare them"
 const MAIN_SCENE := "res://Main.tscn"
+const CASELOAD_PATH := "res://Audit/cases/Day%d/day%d_caseload.tres"
 
-@export var current_case: UnitCase
-@export var total_cases: int = 1
+## GDD ich volá CLEAR / HOLD / ESCALATE. FLAG tu zámerne nie je.
+const VERDICTS := ["APPROVE", "HOLD", "INCINERATE"]
 
-var _cases_done: int = 0
+enum FlagState { NONE, CORRECT, WRONG }
 
-# --- Node references (paths mirror AuditTerminal.tscn) ---
+# --- Node references (cesty zodpovedajú AuditTerminal.tscn) ---
 @onready var _row_unit_id: DataRow = $Margin/VBox/CaseFile/DataRows/RowUnitId
 @onready var _row_sector: DataRow = $Margin/VBox/CaseFile/DataRows/RowSector
 @onready var _row_model: DataRow = $Margin/VBox/CaseFile/DataRows/RowModel
@@ -20,67 +28,235 @@ var _cases_done: int = 0
 @onready var _transcript: RichTextLabel = $Margin/VBox/Transcript/TranscriptText
 @onready var _selected_bar: Label = $Margin/VBox/SelectedBar
 @onready var _file_value: Label = $Margin/VBox/StatusBar/FileCol/FileValue
+@onready var _directive: VBoxContainer = $Margin/VBox/Directive
+@onready var _signal_label: Label = $Margin/VBox/Header/ControlsRow/SignalLabel
+@onready var _design_notes: CheckBox = $Margin/VBox/Header/ControlsRow/DesignNotesCheck
+
+# --- Stav zmeny ---
+var _caseload: DayCaseload
+var _case_index: int = 0
+var _selected_field: String = ""
+var _selected_detail: String = ""
+var _flag_state: FlagState = FlagState.NONE
 
 
 func _ready() -> void:
-	if current_case:
-		_display_case(current_case)
-	else:
-		push_warning("AuditTerminal: no current_case assigned.")
+	for row in _selectable_rows():
+		row.selectable = true
+		row.row_clicked.connect(_on_row_clicked)
+	_load_caseload(GameState.day)
 
+
+func _selectable_rows() -> Array[DataRow]:
+	var list: Array[DataRow] = []
+	list.append(_row_unit_id)
+	list.append(_row_sector)
+	list.append(_row_model)
+	list.append(_row_degradation)
+	return list
+
+
+func _current_case() -> UnitCase:
+	if _caseload == null:
+		return null
+	return _caseload.get_case(_case_index)
+
+
+# --- Caseload ---------------------------------------------------------------
+
+func _caseload_path(d: int) -> String:
+	return CASELOAD_PATH % [d, d]
+
+func _load_caseload(d: int) -> void:
+	var path := _caseload_path(d)
+	if not ResourceLoader.exists(path):
+		push_warning("AuditTerminal: no caseload at %s — falling back to day 1." % path)
+		path = _caseload_path(1)
+	_caseload = load(path) as DayCaseload
+	if _caseload == null or _caseload.size() == 0:
+		push_error("AuditTerminal: caseload missing or empty (%s)." % path)
+		return
+	_case_index = 0
+	_show_directive()
+	_display_case(_current_case())
+
+
+func _show_directive() -> void:
+	for c in _directive.get_children():
+		if c.name != "DirectiveHeader":
+			c.queue_free()
+	for line in _caseload.directive_lines:
+		var l := Label.new()
+		l.text = "▸ " + line
+		l.add_theme_color_override("font_color", Color(0.878, 0.639, 0.224))
+		l.add_theme_font_size_override("font_size", 24)
+		_directive.add_child(l)
+
+
+# --- Zobrazenie prípadu -----------------------------------------------------
 
 func _display_case(c: UnitCase) -> void:
+	if c == null:
+		return
 	_row_unit_id.value_text = c.unit_id
 	_row_sector.value_text = c.sector_of_origin
 	_row_model.value_text = c.model_number
 	_row_degradation.value_text = "%d%%" % c.degradation
+	_file_value.text = "%d / %d" % [_case_index + 1, _caseload.size()]
+	_reset_selection()
 	_transcript.text = _build_transcript_bbcode(c)
-	_file_value.text = "1 / 3"
+	_update_design_notes()
+
+
+func _reset_selection() -> void:
+	_selected_field = ""
+	_selected_detail = ""
+	_flag_state = FlagState.NONE
+	for row in _selectable_rows():
+		row.selected = false
 	_selected_bar.text = SELECT_HINT
+	_selected_bar.add_theme_color_override("font_color", Color(0.435, 0.435, 0.388))
+	_signal_label.text = "SIGNAL: STABLE"
 
 
-## Renders the transcript as BBCode. Speaker labels are dim; any line with a
-## `detail` becomes a clickable [url] so the compare mechanic can hook it later.
 func _build_transcript_bbcode(c: UnitCase) -> String:
 	var lines: PackedStringArray = []
 	for line in c.transcript:
 		var body := line.text
 		if line.detail != "":
-			body = body.replace(
-				line.detail,
-				"[url=%s][u]%s[/u][/url]" % [line.detail, line.detail]
-			)
+			var shown := "[u]%s[/u]" % line.detail
+			if line.detail == _selected_detail:
+				shown = "[bgcolor=#4a3a18][u]%s[/u][/bgcolor]" % line.detail
+			body = body.replace(line.detail, "[url=%s]%s[/url]" % [line.detail, shown])
 		lines.append("[color=#6f6f63]%s[/color]  [color=#e0a339]%s[/color]" % [line.speaker, body])
 	return "\n\n".join(lines)
 
 
-# --- Verdict buttons (functional stubs, wired for later) ---
+# --- Compare / FLAG ---------------------------------------------------------
+
+func _on_row_clicked(row: DataRow) -> void:
+	_selected_field = row.key.to_upper()
+	for r in _selectable_rows():
+		r.selected = (r == row)
+	_update_selected_bar()
+
+
+func _on_transcript_meta_clicked(meta: Variant) -> void:
+	_selected_detail = str(meta)
+	_transcript.text = _build_transcript_bbcode(_current_case())
+	_update_selected_bar()
+
+
+func _update_selected_bar() -> void:
+	_selected_bar.add_theme_color_override("font_color", Color(0.435, 0.435, 0.388))
+	if _selected_field == "" and _selected_detail == "":
+		_selected_bar.text = SELECT_HINT
+	elif _selected_field == "":
+		_selected_bar.text = "SELECTED: \"%s\" — now pick a row in the CASE FILE" % _selected_detail
+	elif _selected_detail == "":
+		_selected_bar.text = "SELECTED: %s — now pick a claim in the TRANSCRIPT" % _selected_field
+	else:
+		_selected_bar.text = "SELECTED: %s  vs  \"%s\"   — press FLAG" % [_selected_field, _selected_detail]
+
+
+func _on_flag() -> void:
+	var c := _current_case()
+	if c == null:
+		return
+	if _selected_field == "" or _selected_detail == "":
+		_selected_bar.text = "FLAG NEEDS TWO PICKS — one in the case file, one in the transcript"
+		return
+
+	var correct := false
+	if c.has_contradiction():
+		correct = (_selected_field == c.contradiction_field.to_upper()
+			and _selected_detail == c.contradiction_detail)
+
+	if correct:
+		_flag_state = FlagState.CORRECT
+		_selected_bar.text = "CONTRADICTION LOGGED — %s vs \"%s\"" % [_selected_field, _selected_detail]
+		_selected_bar.add_theme_color_override("font_color", Color(0.322, 0.788, 0.659))
+		_signal_label.text = "SIGNAL: STABLE"
+	else:
+		_flag_state = FlagState.WRONG
+		_selected_bar.text = "NO DISCREPANCY FOUND — flag dismissed"
+		_selected_bar.add_theme_color_override("font_color", Color(0.851, 0.314, 0.227))
+		_signal_label.text = "SIGNAL: DEGRADED"
+
+
+# --- Verdikty ---------------------------------------------------------------
+
 func _on_approve() -> void: _submit("APPROVE")
 func _on_hold() -> void: _submit("HOLD")
 func _on_incinerate() -> void: _submit("INCINERATE")
-func _on_flag() -> void: _submit("FLAG")
+
 
 func _submit(verdict: String) -> void:
-	var who := current_case.unit_id if current_case else "?"
-	print("[AuditTerminal] verdict=%s unit=%s" % [verdict, who])
+	var c := _current_case()
+	if c == null:
+		return
+	GameState.log_decision(c.unit_id, verdict, _flag_state == FlagState.CORRECT)
+	print("[AuditTerminal] unit=%s verdict=%s (expected %s) flag=%s" % [
+		c.unit_id, verdict, c.correct_verdict, _flag_text()
+	])
 	verdict_submitted.emit(verdict)
-	_cases_done +=1
-	if _cases_done >= total_cases:
+	_next_case()
+
+
+func _flag_text() -> String:
+	match _flag_state:
+		FlagState.CORRECT:
+			return "CORRECT"
+		FlagState.WRONG:
+			return "WRONG"
+		_:
+			return "NONE"
+
+
+func _next_case() -> void:
+	_case_index += 1
+	if _case_index >= _caseload.size():
 		_finish_shift()
-	# else: načítaj ďalší prípad (TODO – caseload logika)
+		return
+	_display_case(_current_case())
+
 
 func _finish_shift() -> void:
+	print("[AuditTerminal] shift complete — %d units processed" % _caseload.size())
+	# Na poradí záleží: označ úlohu PRED zmenou scény, aby DayManager
+	# v izbe videl aktívnu úlohu "phone" a rozozvučal telefón.
 	GameState.complete_task("terminal")
+	GameState.last_player_pos = "PC"
 	get_tree().change_scene_to_file(MAIN_SCENE)
 
-# --- Hooks to implement next ---
+
+# --- Dev pomôcky ------------------------------------------------------------
+
 func _on_day1_pressed() -> void:
-	print("[AuditTerminal] day 1 selected")  # TODO: load day 1 caseload
+	_load_caseload(1)
+
 
 func _on_day2_pressed() -> void:
-	print("[AuditTerminal] day 2 selected")  # TODO: load day 2 caseload
+	_load_caseload(2)
 
-## Fires when a clickable transcript detail is clicked (compare mechanic).
-func _on_transcript_meta_clicked(meta: Variant) -> void:
-	_selected_bar.text = "SELECTED: %s" % str(meta)
-	print("[AuditTerminal] detail clicked: ", meta)  # TODO: compare two picks
+
+func _on_design_notes_toggled(_pressed: bool) -> void:
+	_update_design_notes()
+
+
+func _update_design_notes() -> void:
+	if _design_notes == null or not _design_notes.button_pressed:
+		return
+	var c := _current_case()
+	if c == null:
+		return
+	var hint := "expected: %s" % c.correct_verdict
+	if c.has_contradiction():
+		hint += "   |   contradiction: %s vs \"%s\"" % [c.contradiction_field, c.contradiction_detail]
+	else:
+		hint += "   |   no contradiction (flagging is wrong)"
+	_selected_bar.text = "[DESIGN] " + hint
+
+
+func _on_design_notes_check_toggled(toggled_on: bool) -> void:
+	pass # Replace with function body.

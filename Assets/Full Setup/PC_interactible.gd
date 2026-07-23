@@ -12,6 +12,6 @@ func _ready() -> void:
 func interact(player: Node) -> void:
 	super.interact(player)
 	GameState.last_player_pos = "PC"
-	GameState.complete_task("terminal")
-	#if target_scene != "":
-		#get_tree().change_scene_to_file(target_scene)
+	
+	if target_scene != "":
+		get_tree().change_scene_to_file(target_scene)

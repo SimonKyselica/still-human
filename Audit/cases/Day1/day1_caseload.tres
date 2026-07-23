@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="DayCaseload" format=3 uid="uid://d2xxeqncr4oe1"]
 
 [ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_1oh1l"]
-[ext_resource type="Resource" uid="uid://cwjdyuira7x8v" path="res://Audit/cases/day1_108vn.tres" id="2_e684h"]
+[ext_resource type="Resource" uid="uid://cwjdyuira7x8v" path="res://Audit/cases/Day1/day1_108vn.tres" id="2_e684h"]
 [ext_resource type="Script" uid="uid://d2gckur0kghbi" path="res://Audit/day_caseload.gd" id="2_gysfg"]
-[ext_resource type="Resource" uid="uid://du38tbtignwmp" path="res://Audit/cases/day1_221kl.tres" id="3_wd8yk"]
+[ext_resource type="Resource" uid="uid://du38tbtignwmp" path="res://Audit/cases/Day1/day1_221kl.tres" id="3_wd8yk"]
 
 [resource]
 script = ExtResource("2_gysfg")

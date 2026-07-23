@@ -1,22 +1,22 @@
 [gd_resource type="Resource" script_class="UnitCase" format=3 uid="uid://cwjdyuira7x8v"]
 
-[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
-[ext_resource type="Script" uid="uid://cxc0baxamxgmo" path="res://Audit/dialogue_line.gd" id="2_line"]
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_m5qe2"]
+[ext_resource type="Script" uid="uid://cxc0baxamxgmo" path="res://Audit/dialogue_line.gd" id="2_58ttw"]
 
 [sub_resource type="Resource" id="line_1"]
-script = ExtResource("2_line")
+script = ExtResource("2_58ttw")
 text = "What's the last thing you remember before the transfer?"
 
 [sub_resource type="Resource" id="line_2"]
-script = ExtResource("2_line")
+script = ExtResource("2_58ttw")
 speaker = "UNIT"
 text = "Standard onboarding. Sector 4 processing center."
 detail = "Sector 4 processing center"
 
 [resource]
-script = ExtResource("1_case")
+script = ExtResource("1_m5qe2")
 unit_id = "108-VN"
 sector_of_origin = "Sector 4"
 model_number = "VN-1"
 degradation = 8
-transcript = Array[ExtResource("2_line")]([SubResource("line_1"), SubResource("line_2")])
+transcript = Array[ExtResource("2_58ttw")]([SubResource("line_1"), SubResource("line_2")])

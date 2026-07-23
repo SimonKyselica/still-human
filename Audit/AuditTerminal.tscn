@@ -3,7 +3,6 @@
 [ext_resource type="Theme" uid="uid://c6c1hg0c663nt" path="res://Audit/audit_terminal_theme.tres" id="1_theme"]
 [ext_resource type="Script" uid="uid://cake1dxqbao6j" path="res://Audit/audit_terminal.gd" id="2_ctrl"]
 [ext_resource type="PackedScene" uid="uid://xbr10rb6ex5o" path="res://Audit/data_row.tscn" id="3_row"]
-[ext_resource type="Resource" uid="uid://cwjdyuira7x8v" path="res://Audit/cases/day1_108vn.tres" id="4_case"]
 [ext_resource type="Script" uid="uid://cxtfk0ds5pue3" path="res://Global Scripts/mouse.gd" id="5_aqk3x"]
 
 [sub_resource type="StyleBoxFlat" id="sb_tab_active"]
@@ -82,7 +81,6 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_theme")
 script = ExtResource("2_ctrl")
-current_case = ExtResource("4_case")
 
 [node name="Background" type="ColorRect" parent="." unique_id=615165519]
 layout_mode = 1
@@ -370,6 +368,7 @@ script = ExtResource("5_aqk3x")
 
 [connection signal="pressed" from="Margin/VBox/Header/ControlsRow/Day1Btn" to="." method="_on_day1_pressed"]
 [connection signal="pressed" from="Margin/VBox/Header/ControlsRow/Day2Btn" to="." method="_on_day2_pressed"]
+[connection signal="toggled" from="Margin/VBox/Header/ControlsRow/DesignNotesCheck" to="." method="_on_design_notes_check_toggled"]
 [connection signal="meta_clicked" from="Margin/VBox/Transcript/TranscriptText" to="." method="_on_transcript_meta_clicked"]
 [connection signal="pressed" from="Margin/VBox/Actions/ApproveBtn" to="." method="_on_approve"]
 [connection signal="pressed" from="Margin/VBox/Actions/HoldBtn" to="." method="_on_hold"]
