@@ -4,12 +4,13 @@
 
 [node name="DataRow" type="HBoxContainer" unique_id=599808632]
 custom_minimum_size = Vector2(0, 34)
+mouse_filter = 2
 script = ExtResource("1_row")
 
 [node name="KeyLabel" type="Label" parent="." unique_id=228810103]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.435, 0.435, 0.388, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 28
 text = "LABEL"
 
 [node name="Spacer" type="Control" parent="." unique_id=1585949021]
@@ -19,5 +20,5 @@ size_flags_horizontal = 3
 [node name="ValueLabel" type="Label" parent="." unique_id=1263162164]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 32
 text = "value"

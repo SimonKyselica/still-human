@@ -26,6 +26,7 @@ func start_day(d: int) -> void:
 func _build_schedule(d: int) -> Array[DayTask]:
 	var list: Array[DayTask] = []
 	#list.append(_task("eat",      "Najedz sa",                  "CHORE"))
+	list.append(_task("phone",    "Zdvihni telefón",           "PHONE"))
 	list.append(_task("terminal", "Dokonči zmenu na termináli", "TERMINAL"))
 	list.append(_task("phone",    "Zdvihni telefón",           "PHONE"))
 	list.append(_task("sleep",    "Choď spať",                 "SLEEP"))

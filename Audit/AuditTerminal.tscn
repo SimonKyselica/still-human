@@ -123,13 +123,13 @@ theme_override_constants/separation = 12
 [node name="StatusDot" type="Label" parent="Margin/VBox/Header/TitleRow" unique_id=926343700]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.29, 0.541, 0.427, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 30
 text = "●"
 
 [node name="Title" type="Label" parent="Margin/VBox/Header/TitleRow" unique_id=1739978670]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 44
 text = "AUDIT TERMINAL — UNIT REVIEW v2.3"
 
 [node name="ControlsRow" type="HBoxContainer" parent="Margin/VBox/Header" unique_id=284057223]
@@ -141,7 +141,7 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.043, 0.055, 0.043, 1)
 theme_override_colors/font_pressed_color = Color(0.043, 0.055, 0.043, 1)
 theme_override_colors/font_hover_color = Color(0.043, 0.055, 0.043, 1)
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 35
 theme_override_styles/normal = SubResource("sb_tab_active")
 theme_override_styles/pressed = SubResource("sb_tab_active")
 theme_override_styles/hover = SubResource("sb_tab_active")
@@ -150,7 +150,7 @@ text = "DAY 1"
 [node name="Day2Btn" type="Button" parent="Margin/VBox/Header/ControlsRow" unique_id=234906986]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 35
 theme_override_styles/normal = SubResource("sb_tab_inactive")
 theme_override_styles/pressed = SubResource("sb_tab_inactive")
 theme_override_styles/hover = SubResource("sb_tab_inactive")
@@ -159,7 +159,7 @@ text = "DAY 2"
 [node name="DesignNotesCheck" type="CheckBox" parent="Margin/VBox/Header/ControlsRow" unique_id=1121524614]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.435, 0.435, 0.388, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 28
 text = "SHOW DESIGN NOTES"
 
 [node name="Spacer" type="Control" parent="Margin/VBox/Header/ControlsRow" unique_id=806788523]
@@ -169,12 +169,13 @@ size_flags_horizontal = 3
 [node name="KnobIcon" type="Label" parent="Margin/VBox/Header/ControlsRow" unique_id=1264673379]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.435, 0.435, 0.388, 1)
+theme_override_font_sizes/font_size = 22
 text = "◉"
 
 [node name="SignalLabel" type="Label" parent="Margin/VBox/Header/ControlsRow" unique_id=858838671]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.29, 0.541, 0.427, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 28
 text = "SIGNAL: STABLE"
 
 [node name="Sep1" type="HSeparator" parent="Margin/VBox" unique_id=1399606418]
@@ -187,19 +188,19 @@ theme_override_constants/separation = 6
 [node name="DirectiveHeader" type="Label" parent="Margin/VBox/Directive" unique_id=266967209]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.322, 0.788, 0.659, 1)
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 36
 text = "◆ TODAY'S DIRECTIVE"
 
 [node name="Rule1" type="Label" parent="Margin/VBox/Directive" unique_id=2109034352]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 28
 text = "▸ Units below 40% degradation → APPROVE."
 
 [node name="Rule2" type="Label" parent="Margin/VBox/Directive" unique_id=347294124]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 28
 text = "▸ Units at or above 40% degradation → HOLD for review."
 
 [node name="Sep2" type="HSeparator" parent="Margin/VBox" unique_id=228064630]
@@ -212,7 +213,7 @@ theme_override_constants/separation = 10
 [node name="CaseHeader" type="Label" parent="Margin/VBox/CaseFile" unique_id=1496078430]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.357, 0.565, 0.769, 1)
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 34
 text = "▪ CASE FILE — DATA"
 
 [node name="DataRows" type="VBoxContainer" parent="Margin/VBox/CaseFile" unique_id=723399678]
@@ -223,25 +224,21 @@ theme_override_constants/separation = 10
 layout_mode = 2
 key = "UNIT ID"
 value_text = "108-VN"
-selectable = null
 
 [node name="RowSector" parent="Margin/VBox/CaseFile/DataRows" unique_id=1982932093 instance=ExtResource("3_row")]
 layout_mode = 2
 key = "SECTOR OF ORIGIN"
 value_text = "Sector 4"
-selectable = null
 
 [node name="RowModel" parent="Margin/VBox/CaseFile/DataRows" unique_id=1988028294 instance=ExtResource("3_row")]
 layout_mode = 2
 key = "MODEL NUMBER"
 value_text = "VN-1"
-selectable = null
 
 [node name="RowDegradation" parent="Margin/VBox/CaseFile/DataRows" unique_id=1859665390 instance=ExtResource("3_row")]
 layout_mode = 2
 key = "DEGRADATION"
 value_text = "8%"
-selectable = null
 
 [node name="Sep3" type="HSeparator" parent="Margin/VBox" unique_id=1868978219]
 layout_mode = 2
@@ -253,13 +250,13 @@ theme_override_constants/separation = 8
 [node name="TranscriptHeader" type="Label" parent="Margin/VBox/Transcript" unique_id=207766693]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 34
 text = "▮ INTERVIEW TRANSCRIPT"
 
 [node name="TranscriptText" type="RichTextLabel" parent="Margin/VBox/Transcript" unique_id=1621366778]
 custom_minimum_size = Vector2(0, 110)
 layout_mode = 2
-theme_override_font_sizes/normal_font_size = 24
+theme_override_font_sizes/normal_font_size = 32
 bbcode_enabled = true
 text = "[color=#6f6f63]AGENT[/color]  [color=#e0a339]What's the last thing you remember before the transfer?[/color]
 
@@ -274,7 +271,7 @@ size_flags_vertical = 3
 [node name="SelectedBar" type="Label" parent="Margin/VBox" unique_id=1475555625]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.435, 0.435, 0.388, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 30
 text = "SELECTED: click one detail on each side to compare them"
 
 [node name="Sep4" type="HSeparator" parent="Margin/VBox" unique_id=32843638]
@@ -291,13 +288,13 @@ theme_override_constants/separation = 2
 [node name="ShiftCaption" type="Label" parent="Margin/VBox/StatusBar/ShiftCol" unique_id=107759622]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.435, 0.435, 0.388, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 26
 text = "SHIFT TIME"
 
 [node name="ShiftValue" type="Label" parent="Margin/VBox/StatusBar/ShiftCol" unique_id=750252584]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 24
 text = "01:22"
 
 [node name="FileCol" type="VBoxContainer" parent="Margin/VBox/StatusBar" unique_id=1341472504]
@@ -307,13 +304,13 @@ theme_override_constants/separation = 2
 [node name="FileCaption" type="Label" parent="Margin/VBox/StatusBar/FileCol" unique_id=1896231660]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.435, 0.435, 0.388, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 26
 text = "FILE"
 
 [node name="FileValue" type="Label" parent="Margin/VBox/StatusBar/FileCol" unique_id=124950440]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 24
 text = "1 / 3"
 
 [node name="Actions" type="HBoxContainer" parent="Margin/VBox" unique_id=2044893931]
@@ -324,7 +321,7 @@ theme_override_constants/separation = 16
 layout_mode = 2
 theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
 theme_override_colors/font_hover_color = Color(0.941, 0.722, 0.29, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 30
 theme_override_styles/normal = SubResource("sb_approve")
 theme_override_styles/pressed = SubResource("sb_approve")
 theme_override_styles/hover = SubResource("sb_approve")
@@ -334,7 +331,7 @@ text = "APPROVE"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.357, 0.565, 0.769, 1)
 theme_override_colors/font_hover_color = Color(0.478, 0.671, 0.859, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 30
 theme_override_styles/normal = SubResource("sb_hold")
 theme_override_styles/pressed = SubResource("sb_hold")
 theme_override_styles/hover = SubResource("sb_hold")
@@ -348,7 +345,7 @@ size_flags_horizontal = 3
 layout_mode = 2
 theme_override_colors/font_color = Color(0.851, 0.314, 0.227, 1)
 theme_override_colors/font_hover_color = Color(0.925, 0.42, 0.333, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 30
 theme_override_styles/normal = SubResource("sb_incinerate")
 theme_override_styles/pressed = SubResource("sb_incinerate")
 theme_override_styles/hover = SubResource("sb_incinerate")
@@ -357,7 +354,7 @@ text = "INCINERATE"
 [node name="FlagBtn" type="Button" parent="Margin/VBox/Actions" unique_id=1039590849]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.435, 0.435, 0.388, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 30
 theme_override_styles/normal = SubResource("sb_flag")
 theme_override_styles/pressed = SubResource("sb_flag")
 theme_override_styles/hover = SubResource("sb_flag")

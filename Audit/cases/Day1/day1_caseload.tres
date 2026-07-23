@@ -1,12 +1,12 @@
 [gd_resource type="Resource" script_class="DayCaseload" format=3 uid="uid://d2xxeqncr4oe1"]
 
-[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_1oh1l"]
-[ext_resource type="Resource" uid="uid://cwjdyuira7x8v" path="res://Audit/cases/Day1/day1_108vn.tres" id="2_e684h"]
-[ext_resource type="Script" uid="uid://d2gckur0kghbi" path="res://Audit/day_caseload.gd" id="2_gysfg"]
-[ext_resource type="Resource" uid="uid://du38tbtignwmp" path="res://Audit/cases/Day1/day1_221kl.tres" id="3_wd8yk"]
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_iwgv1"]
+[ext_resource type="Resource" uid="uid://cwjdyuira7x8v" path="res://Audit/cases/Day1/day1_108vn.tres" id="2_5qqrp"]
+[ext_resource type="Resource" uid="uid://du38tbtignwmp" path="res://Audit/cases/Day1/day1_221kl.tres" id="3_pqoek"]
+[ext_resource type="Script" uid="uid://d2gckur0kghbi" path="res://Audit/day_caseload.gd" id="4_mndut"]
 
 [resource]
-script = ExtResource("2_gysfg")
+script = ExtResource("4_mndut")
 directive_lines = Array[String](["Units below 40% degradation → APPROVE.", "Units at or above 40% degradation → HOLD for review."])
-cases = Array[ExtResource("1_1oh1l")]([ExtResource("2_e684h"), ExtResource("3_wd8yk")])
+cases = Array[ExtResource("1_iwgv1")]([ExtResource("2_5qqrp"), ExtResource("3_pqoek")])
 metadata/_custom_type_script = "uid://d2gckur0kghbi"

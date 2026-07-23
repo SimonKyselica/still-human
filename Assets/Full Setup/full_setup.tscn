@@ -8,8 +8,9 @@ size = Vector3(1.9187012, 1.8560181, 2.40094)
 
 [node name="full_setup" unique_id=717901305 instance=ExtResource("1_60uo0")]
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Cube_005" parent_id_path=PackedInt32Array(1635934639) index="0" unique_id=720341118]
+[node name="StaticBody3D" type="StaticBody3D" parent="Cube_005" parent_id_path=PackedInt32Array(63714743) index="0" unique_id=720341118]
 script = ExtResource("2_0xixs")
+task_id = "terminal"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Cube_005/StaticBody3D" index="0" unique_id=590058264]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.028442502, 0.058441162, -0.019683838)

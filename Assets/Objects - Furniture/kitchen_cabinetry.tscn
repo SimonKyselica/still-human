@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://dny2j0q2frc7y"]
+
+[ext_resource type="PackedScene" uid="uid://cx2affgsx8qx3" path="res://Assets/kitchen_cabinetry.glb" id="1_i7vig"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_u8lrn"]
+size = Vector3(0.5587158, 2.164856, 2.6815186)
+
+[node name="kitchen_cabinetry" unique_id=469646082 instance=ExtResource("1_i7vig")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1" unique_id=2114790016]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=1365952101]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.60150146, 0.5392761, -0.43658447)
+shape = SubResource("BoxShape3D_u8lrn")

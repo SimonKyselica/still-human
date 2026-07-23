@@ -89,7 +89,7 @@ func _show_directive() -> void:
 		var l := Label.new()
 		l.text = "▸ " + line
 		l.add_theme_color_override("font_color", Color(0.878, 0.639, 0.224))
-		l.add_theme_font_size_override("font_size", 24)
+		l.add_theme_font_size_override("font_size", 32)
 		_directive.add_child(l)
 
 
