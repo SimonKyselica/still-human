@@ -114,7 +114,7 @@ light_color = Color(1, 1, 0.34117648, 1)
 shadow_enabled = true
 
 [node name="OmniLight3D3" type="OmniLight3D" parent="Room" unique_id=1039629813]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9612875, 2.7350688, -0.14574122)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9612875, 2.7350688, -0.2604465)
 light_color = Color(1, 1, 0.34117648, 1)
 shadow_enabled = true
 
