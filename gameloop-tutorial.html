@@ -1,0 +1,1596 @@
+<meta charset="utf-8">
+<title>Still Human — Denný gameloop + funkčný terminál</title>
+<style>
+  :root{
+    --bg:#0b0e0b; --panel:#11150f; --panel2:#0e120d; --ink:#d7d3c4; --dim:#6f6f63;
+    --amber:#e0a339; --green:#4a8a6d; --green2:#52c2a8; --blue:#5b90c4; --red:#d9503a;
+    --line:#242a20; --code-bg:#0a0d09;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+  .wrap{display:grid;grid-template-columns:270px minmax(0,1fr);gap:0;max-width:1260px;margin:0 auto}
+  /* TOC */
+  nav{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;
+    padding:26px 16px 40px;border-right:1px solid var(--line);background:var(--panel2)}
+  nav h2{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin:0 0 10px}
+  nav h3{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--green2);
+    margin:20px 0 7px;padding-top:12px;border-top:1px solid var(--line)}
+  nav a{display:block;color:var(--ink);text-decoration:none;font-size:13px;padding:4px 8px;
+    border-radius:5px;border-left:2px solid transparent;opacity:.82}
+  nav a:hover{background:#161b12;opacity:1;border-left-color:var(--amber)}
+  nav a.step{padding-left:14px;color:#b8b5a6}
+  nav .tag{color:var(--amber);font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:11.5px;margin-right:6px}
+  nav .tag.t{color:var(--green2)}
+  main{padding:38px 46px 120px;min-width:0}
+  header.hero{border:1px solid var(--line);border-radius:12px;padding:30px 32px;
+    background:linear-gradient(160deg,#12160f,#0c0f0a);margin-bottom:30px}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--green2);text-transform:uppercase}
+  h1{font-size:30px;margin:8px 0 6px;line-height:1.2}
+  .sub{color:var(--dim);font-size:15px;max-width:72ch}
+  .partbar{margin:56px 0 8px;padding:16px 22px;border:1px solid var(--line);border-radius:10px;
+    background:linear-gradient(90deg,#141a10,#0d110b)}
+  .partbar .pk{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--green2)}
+  .partbar h2{margin:4px 0 0;font-size:24px;border:0;padding:0}
+  .partbar p{margin:6px 0 0;color:var(--dim);font-size:14px}
+  h2.sec{font-size:21px;margin:46px 0 6px;padding-top:14px;border-top:1px solid var(--line)}
+  h2.sec .n{font-family:var(--mono);color:var(--amber);font-size:15px;margin-right:10px}
+  h2.sec .n.t{color:var(--green2)}
+  h3{font-size:17px;margin:26px 0 6px;color:#efe9d8}
+  p{margin:10px 0}
+  code{font-family:var(--mono);font-size:.9em;background:#171d13;color:#e7c98a;padding:1px 6px;border-radius:4px}
+  a.ln{color:var(--blue);text-decoration:none;border-bottom:1px dotted #35506e}
+  a.ln:hover{border-bottom-style:solid}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  /* code blocks */
+  .code{position:relative;margin:16px 0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--code-bg)}
+  .code .bar{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:7px 12px;background:#0f130d;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--dim)}
+  .code .bar .file{color:var(--amber);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .code .bar .badge{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:20px;border:1px solid var(--line);white-space:nowrap}
+  .badge.new{color:var(--green2);border-color:#274b40}
+  .badge.mod{color:var(--amber);border-color:#4a3a18}
+  .badge.info{color:var(--blue);border-color:#2b3f57}
+  .badge.data{color:#c98adf;border-color:#4a2f57}
+  pre{margin:0;padding:16px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.6;color:#cfd8c6}
+  pre .c{color:#5f6b57;font-style:italic}
+  pre .k{color:#c98adf}
+  pre .f{color:#6fb0e6}
+  pre .s{color:#8fc98a}
+  pre .t{color:#e0a339}
+  pre .n{color:#d98a5b}
+  button.copy{cursor:pointer;background:#1a2015;color:var(--dim);border:1px solid var(--line);
+    border-radius:6px;padding:3px 10px;font-family:var(--mono);font-size:11px}
+  button.copy:hover{color:var(--ink);border-color:var(--amber)}
+  .note{border-left:3px solid var(--blue);background:#0d1420;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0}
+  .warn{border-left:3px solid var(--amber);background:#1a140a;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0}
+  .danger{border-left:3px solid var(--red);background:#1c0f0c;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0}
+  .good{border-left:3px solid var(--green2);background:#0b1a16;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0}
+  .note b,.warn b,.danger b,.good b{color:#fff}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:#0f130d;color:var(--amber);font-weight:600;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase}
+  td code{background:#12170f}
+  .diagram{background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:18px;overflow-x:auto}
+  .diagram pre{font-size:12.5px;color:#b7c4ab;line-height:1.45;padding:0}
+  .pill{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 9px;border-radius:20px;border:1px solid var(--line);color:var(--dim);margin:2px 4px 2px 0}
+  .pill.a{color:var(--blue);border-color:#2b3f57}
+  .pill.b{color:var(--amber);border-color:#4a3a18}
+  .pill.c{color:var(--green2);border-color:#274b40}
+  hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+  .foot{color:var(--dim);font-size:13px;margin-top:40px}
+  @media(max-width:900px){.wrap{grid-template-columns:1fr}nav{display:none}main{padding:26px 18px 90px}}
+</style>
+
+<div class="wrap">
+<nav>
+  <h2>Obsah</h2>
+  <a href="#cil">Cieľ &amp; výsledný loop</a>
+
+  <h3>Časť 1 — Denný gameloop</h3>
+  <a href="#teraz">Ako to funguje teraz</a>
+  <a href="#insight">Kľúčový problém</a>
+  <a href="#arch">Architektúra riešenia</a>
+  <a href="#diagram">Diagram loopu</a>
+  <a class="step" href="#s1"><span class="tag">1</span>Dátový model dňa</a>
+  <a class="step" href="#s2"><span class="tag">2</span>GameState + fázy</a>
+  <a class="step" href="#s3"><span class="tag">3</span>Zamykanie objektov</a>
+  <a class="step" href="#s4"><span class="tag">4</span>DayManager</a>
+  <a class="step" href="#s5"><span class="tag">5</span>Štart pri posteli</a>
+  <a class="step" href="#s6"><span class="tag">6</span>Telefón: signál</a>
+  <a class="step" href="#s7"><span class="tag">7</span>Odchod k terminálu</a>
+  <a class="step" href="#s8"><span class="tag">8</span>Jednoduché tasky</a>
+  <a class="step" href="#s9"><span class="tag">9</span>UI zoznam úloh</a>
+  <a class="step" href="#s10"><span class="tag">10</span>Spánok → nový deň</a>
+
+  <h3>Časť 2 — Funkčný terminál</h3>
+  <a href="#t0">Stav terminálu dnes</a>
+  <a class="step" href="#t1"><span class="tag t">1</span>GDD ↔ UI, sémantika FLAG</a>
+  <a class="step" href="#t2"><span class="tag t">2</span>Dáta: UnitCase + Caseload</a>
+  <a class="step" href="#t3"><span class="tag t">3</span>Klikateľná zložka</a>
+  <a class="step" href="#t4"><span class="tag t">4</span>Compare / FLAG</a>
+  <a class="step" href="#t5"><span class="tag t">5</span>Verdikty a logovanie</a>
+  <a class="step" href="#t6"><span class="tag t">6</span>Direktíva, FILE i/N, dev</a>
+  <a class="step" href="#t7"><span class="tag t">7</span>Koniec zmeny</a>
+  <a class="step" href="#t8"><span class="tag t">8</span>Zvuky</a>
+  <a href="#full">Celý audit_terminal.gd</a>
+
+  <h3>Záver</h3>
+  <a href="#wiring">Wiring v editore</a>
+  <a href="#verify">Ako to overiť</a>
+  <a href="#save">Budúcnosť: ukladanie</a>
+</nav>
+
+<main>
+<header class="hero">
+  <div class="kicker">Still Human · Godot 4.7 · implementačný návod</div>
+  <h1>Denný gameloop + funkčný Audit terminál</h1>
+  <p class="sub">Kompletný cyklus jedného dňa (štart pri posteli → poradie úloh → spánok → ďalší deň)
+  a k nemu funkčná Fáza B: terminál s tromi verdiktmi, FLAG compare mechanikou, viacerými prípadmi
+  na zmenu a korektným návratom do izby. Tento dokument je <b>len návod</b> — žiadny súbor v projekte
+  nebol zmenený, kód si vkladáš sám podľa krokov.</p>
+</header>
+
+<h2 class="sec" id="cil"><span class="n">§</span>Cieľ &amp; výsledný loop</h2>
+<p>Fázy z GDD a úlohy okolo nich:</p>
+<p>
+  <span class="pill a">Fáza A · Telefón</span>
+  <span class="pill b">Fáza B · Terminál</span>
+  <span class="pill c">Fáza C · Spánok</span>
+  <span class="pill">+ chores (najedenie, …)</span>
+</p>
+<ol>
+  <li><b>Štart pri posteli</b> — pri každom spustení hry hráč stojí pri posteli.</li>
+  <li><b>Najedz sa</b> — chore, interakcia s objektom jedla.</li>
+  <li><b>Terminál</b> (Fáza B) — odídeš k PC, <b>odbavíš všetky prípady zmeny</b>, vrátiš sa.</li>
+  <li><b>Telefón zazvoní</b> (Fáza A) — po dokončení terminálu signál rozozvučí telefón; zdvihneš ho.</li>
+  <li><b>Spánok</b> (Fáza C) — ľahneš si → deň +1 → reset úloh → opäť pri posteli.</li>
+</ol>
+<div class="note"><b>Poznámka k poradiu telefónu.</b> GDD opisuje telefón ako <i>ranný rituál</i> (Fáza A na
+začiatku). Tu zvoní <i>po</i> termináli (koncová zmena). Keďže poradie je len pole v
+<a class="ln" href="#s2">GameState</a>, presunúť telefón na začiatok dňa je otázka prehodenia jedného riadku.</div>
+
+<!-- ══════════════════════════ ČASŤ 1 ══════════════════════════ -->
+<div class="partbar">
+  <div class="pk">Časť 1</div>
+  <h2>Denný gameloop</h2>
+  <p>Kostra dňa: poradie úloh, prepínanie fáz, spawn hráča, UI. Fáza B je tu len „odíď k PC" —
+  jej vnútro rieši Časť 2.</p>
+</div>
+
+<h2 class="sec" id="teraz"><span class="n">§</span>Ako to funguje teraz</h2>
+<table>
+  <tr><th>Súbor</th><th>Čo robí dnes</th></tr>
+  <tr><td><code>Global Scripts/GameState.gd</code> (autoload)</td><td>Drží <code>day</code>, <code>path</code>, <code>vent_blocked</code>, <code>terminal_log</code>, <code>last_player_pos</code>. Prežije zmenu scény.</td></tr>
+  <tr><td><code>Interactibles/interactible.gd</code></td><td>Bázová <code>Interactable</code> (StaticBody3D, vrstva 1). Má <code>enabled</code>, <code>can_interact()</code>, <code>interact()</code>.</td></tr>
+  <tr><td><code>Player/interaction_component.gd</code></td><td>Raycast z kamery (mask 1). <b>Ak <code>can_interact()==false</code>, objekt ani neukáže prompt.</b></td></tr>
+  <tr><td><code>Assets/Full Setup/PC_interactible.gd</code></td><td><code>PC</code> → pri interakcii <code>change_scene_to_file("…/AuditTerminal.tscn")</code>.</td></tr>
+  <tr><td><code>Assets/Telephone/Phone.gd</code></td><td><code>Telephone</code>: <code>is_ringing=true</code> napevno, vždy <code>enabled</code>, spustí dialóg.</td></tr>
+  <tr><td><code>Interactibles/Bed/bed.gd</code></td><td><code>Bed</code> → voliteľná zmena scény.</td></tr>
+  <tr><td><code>Main.tscn</code> + <code>game_man.gd</code></td><td>Hlavná scéna (izba, hráč, HUD). <code>game_man</code> len prepája prompt UI.</td></tr>
+</table>
+
+<h2 class="sec" id="insight"><span class="n">!</span>Kľúčový problém, ktorý určuje celý dizajn</h2>
+<div class="danger"><b>Zmena scény zničí <code>Main</code>.</b> Keď PC spustí <code>change_scene_to_file(AuditTerminal)</code>,
+celá izba — hráč, telefón, posteľ, akýkoľvek nód, ktorý by držal stav dňa — sa <b>uvoľní z pamäte</b>.
+Signál vyslaný v termináli teda nemá kto v izbe zachytiť, lebo izba neexistuje.</div>
+<ul>
+  <li><b>Stav dňa musí žiť v autoloade</b> (<code>GameState</code>), ktorý prežije zmenu scény. On je „model".</li>
+  <li>V izbe je <b><code>DayManager</code></b> (radič), ktorý sa pri každom načítaní <code>Main</code>
+  <b>znovu zosynchronizuje</b> z <code>GameState</code> — nedrží nič vlastné.</li>
+  <li>Preto „telefón zazvoní po termináli" funguje takto: terminál zapíše dokončenie do
+  <code>GameState</code> → vráti sa do <code>Main</code> → <code>DayManager._ready()</code> uvidí, že
+  aktívna úloha je <code>phone</code> → rozozvučí telefón.</li>
+</ul>
+
+<h2 class="sec" id="arch"><span class="n">§</span>Architektúra riešenia</h2>
+<table>
+  <tr><th>Vrstva</th><th>Zodpovednosť</th><th>Kde</th></tr>
+  <tr><td><b>Model</b> — <code>GameState</code></td><td>Poradie úloh dňa, index aktívnej úlohy, fáza, signály. Prežíva zmenu scény.</td><td>autoload</td></tr>
+  <tr><td><b>Dáta</b> — <code>DayTask</code></td><td>Jedna úloha (id, titulok, fáza).</td><td>Resource</td></tr>
+  <tr><td><b>Radič/View</b> — <code>DayManager</code></td><td>Spawn hráča, zapnutie správneho objektu, rozozvučanie telefónu, UI.</td><td>nód v <code>Main</code></td></tr>
+  <tr><td><b>Objekty</b> — <code>Interactable</code> + <code>task_id</code></td><td>Zamknuté, kým nie sú aktívnou úlohou. Po dokončení volajú <code>GameState.complete_task()</code>.</td><td>scéna</td></tr>
+</table>
+
+<h3 id="diagram">Diagram denného loopu</h3>
+<div class="diagram"><pre>
+SPUSTENIE HRY
+   │
+   ▼
+GameState._ready()  ── start_day(1);  last_player_pos = "BED"
+   │
+   ▼
+Main.tscn sa načíta ──▶ DayManager._ready()
+   │                       ├─ spawn hráča na Spawn_BED
+   │                       ├─ zapni LEN objekt aktívnej úlohy
+   │                       └─ postav UI zoznam úloh
+   ▼
+[ ÚLOHA 1 · EAT ]     interakcia s jedlom ─▶ GameState.complete_task("eat")
+   ▼
+[ ÚLOHA 2 · TERMINAL ] interakcia s PC ─▶ last_player_pos = "PC"
+   │                                     └─▶ change_scene_to_file(AuditTerminal)
+   │
+   │   ◀── ČASŤ 2: odbavíš všetky prípady zmeny ──▶
+   │   posledný verdikt ─▶ complete_task("terminal") ─▶ change_scene_to_file(Main)
+   ▼
+Main sa NAČÍTA ZNOVA ─▶ DayManager._ready()
+   │                       ├─ spawn na Spawn_PC (lebo last_player_pos="PC")
+   │                       └─ aktívna úloha = "phone" ─▶ telephone.start_ringing()   ◀── SIGNÁL
+   ▼
+[ ÚLOHA 3 · PHONE ]   zdvihneš telefón ─▶ dialóg + GameState.complete_task("phone")
+   ▼
+[ ÚLOHA 4 · SLEEP ]   ľahneš si ─▶ GameState.end_day()
+   │                              └─ day+1;  reset úloh;  last_player_pos="BED"
+   │                              └─▶ change_scene_to_file(Main)
+   ▼
+ĎALŠÍ DEŇ (opäť pri posteli)
+</pre></div>
+
+<h2 class="sec" id="s1"><span class="n">1</span>Dátový model dňa — <code>DayTask</code></h2>
+<p>Jedna úloha = jeden malý <code>Resource</code>. Fáza mapuje na GDD.</p>
+<div class="code">
+  <div class="bar"><span class="file">Global Scripts/day_task.gd</span><span class="badge new">nový súbor</span></div>
+<pre><span class="k">class_name</span> DayTask
+<span class="k">extends</span> <span class="t">Resource</span>
+
+<span class="c">## Jeden krok dňa. Ako Resource, aby sa dal celý deň neskôr autorovať v .tres.</span>
+
+<span class="k">@export</span> <span class="k">var</span> id: <span class="t">String</span> = <span class="s">""</span>            <span class="c"># "eat", "terminal", "phone", "sleep"</span>
+<span class="k">@export</span> <span class="k">var</span> title: <span class="t">String</span> = <span class="s">""</span>         <span class="c"># text v UI zozname úloh</span>
+<span class="k">@export_enum</span>(<span class="s">"CHORE"</span>, <span class="s">"TERMINAL"</span>, <span class="s">"PHONE"</span>, <span class="s">"SLEEP"</span>) <span class="k">var</span> phase: <span class="t">String</span> = <span class="s">"CHORE"</span>
+</pre></div>
+<table>
+  <tr><th>Fáza (GDD)</th><th>Hodnota <code>phase</code></th></tr>
+  <tr><td>Fáza A — Telefón</td><td><code>"PHONE"</code></td></tr>
+  <tr><td>Fáza B — Terminál</td><td><code>"TERMINAL"</code></td></tr>
+  <tr><td>Fáza C — Spánok</td><td><code>"SLEEP"</code></td></tr>
+  <tr><td>vedľajšie úlohy</td><td><code>"CHORE"</code></td></tr>
+</table>
+
+<h2 class="sec" id="s2"><span class="n">2</span>GameState — poradie, index, fázy, signály</h2>
+<p>Poradie úloh je jediné miesto, kde definuješ gameloop. <code>complete_task()</code> ignoruje všetko
+okrem <b>aktívnej</b> úlohy — to je vynútenie poradia.</p>
+<div class="code">
+  <div class="bar"><span class="file">Global Scripts/GameState.gd</span><span class="badge mod">uprav (nahraď obsah)</span></div>
+<pre><span class="k">extends</span> <span class="t">Node</span>
+
+<span class="c"># ── Príbehový stav (pôvodné, nezmenené) ──</span>
+<span class="k">var</span> day: <span class="t">int</span> = <span class="n">1</span>
+<span class="k">var</span> path: <span class="t">String</span> = <span class="s">""</span>            <span class="c"># "A" / "B", nastaví sa v Deň 2</span>
+<span class="k">var</span> vent_blocked: <span class="t">bool</span> = <span class="k">false</span>
+<span class="k">var</span> terminal_log: <span class="t">Array</span> = []
+
+<span class="c"># ── Kotva spawnu hráča: "BED" / "PC" / "PHONE" / "DOOR" ──</span>
+<span class="c"># Default "BED" → každé čerstvé spustenie začne pri posteli.</span>
+<span class="k">var</span> last_player_pos: <span class="t">String</span> = <span class="s">"BED"</span>
+
+<span class="c"># ── Denný task systém (gameloop) ──</span>
+<span class="k">var</span> schedule: <span class="t">Array</span>[DayTask] = []
+<span class="k">var</span> current_task_index: <span class="t">int</span> = <span class="n">0</span>
+
+<span class="k">signal</span> task_advanced(new_task: DayTask)   <span class="c"># zmenila sa aktívna úloha</span>
+<span class="k">signal</span> phase_changed(new_phase: <span class="t">String</span>)   <span class="c"># zmenila sa fáza A/B/C</span>
+<span class="k">signal</span> day_started(d: <span class="t">int</span>)
+<span class="k">signal</span> day_completed(d: <span class="t">int</span>)
+
+<span class="k">func</span> <span class="f">_ready</span>() -> <span class="t">void</span>:
+	<span class="f">start_day</span>(day)
+
+<span class="k">func</span> <span class="f">start_day</span>(d: <span class="t">int</span>) -> <span class="t">void</span>:
+	current_task_index = <span class="n">0</span>
+	schedule = <span class="f">_build_schedule</span>(d)
+	day_started.<span class="f">emit</span>(d)
+
+<span class="c"># JEDINÉ miesto, kde žije gameloop dňa. Pridaj/prehoď riadok a máš iný deň.</span>
+<span class="k">func</span> <span class="f">_build_schedule</span>(d: <span class="t">int</span>) -> <span class="t">Array</span>[DayTask]:
+	<span class="k">var</span> list: <span class="t">Array</span>[DayTask] = []
+	list.<span class="f">append</span>(<span class="f">_task</span>(<span class="s">"eat"</span>,      <span class="s">"Najedz sa"</span>,                  <span class="s">"CHORE"</span>))
+	list.<span class="f">append</span>(<span class="f">_task</span>(<span class="s">"terminal"</span>, <span class="s">"Dokonči zmenu na termináli"</span>, <span class="s">"TERMINAL"</span>))
+	list.<span class="f">append</span>(<span class="f">_task</span>(<span class="s">"phone"</span>,    <span class="s">"Zdvihni telefón"</span>,           <span class="s">"PHONE"</span>))
+	list.<span class="f">append</span>(<span class="f">_task</span>(<span class="s">"sleep"</span>,    <span class="s">"Choď spať"</span>,                 <span class="s">"SLEEP"</span>))
+	<span class="k">return</span> list
+
+<span class="k">func</span> <span class="f">_task</span>(id: <span class="t">String</span>, title: <span class="t">String</span>, phase: <span class="t">String</span>) -> DayTask:
+	<span class="k">var</span> t := DayTask.<span class="f">new</span>()
+	t.id = id
+	t.title = title
+	t.phase = phase
+	<span class="k">return</span> t
+
+<span class="k">func</span> <span class="f">current_task</span>() -> DayTask:
+	<span class="k">if</span> current_task_index &lt; <span class="n">0</span> <span class="k">or</span> current_task_index >= schedule.<span class="f">size</span>():
+		<span class="k">return</span> <span class="k">null</span>
+	<span class="k">return</span> schedule[current_task_index]
+
+<span class="k">func</span> <span class="f">current_task_id</span>() -> <span class="t">String</span>:
+	<span class="k">var</span> t := <span class="f">current_task</span>()
+	<span class="k">return</span> t.id <span class="k">if</span> t <span class="k">else</span> <span class="s">""</span>
+
+<span class="k">func</span> <span class="f">current_phase</span>() -> <span class="t">String</span>:
+	<span class="k">var</span> t := <span class="f">current_task</span>()
+	<span class="k">return</span> t.phase <span class="k">if</span> t <span class="k">else</span> <span class="s">""</span>
+
+<span class="c"># Objekt zavolá, keď svoju úlohu dokončí. Ak to NIE je aktívna úloha, ignoruje sa</span>
+<span class="c"># → toto vynucuje presné poradie.</span>
+<span class="k">func</span> <span class="f">complete_task</span>(task_id: <span class="t">String</span>) -> <span class="t">void</span>:
+	<span class="k">var</span> t := <span class="f">current_task</span>()
+	<span class="k">if</span> t == <span class="k">null</span> <span class="k">or</span> t.id != task_id:
+		<span class="f">push_warning</span>(<span class="s">"complete_task(%s) ignorované — aktívna je %s"</span> % [task_id, <span class="f">current_task_id</span>()])
+		<span class="k">return</span>
+	<span class="k">var</span> prev_phase := t.phase
+	current_task_index += <span class="n">1</span>
+	<span class="k">var</span> nxt := <span class="f">current_task</span>()
+	task_advanced.<span class="f">emit</span>(nxt)
+	<span class="k">if</span> nxt == <span class="k">null</span>:
+		day_completed.<span class="f">emit</span>(day)
+	<span class="k">elif</span> nxt.phase != prev_phase:
+		phase_changed.<span class="f">emit</span>(nxt.phase)
+
+<span class="c"># Volá posteľ na konci dňa (úloha SLEEP).</span>
+<span class="k">func</span> <span class="f">end_day</span>() -> <span class="t">void</span>:
+	day_completed.<span class="f">emit</span>(day)
+	<span class="f">advance_day</span>()
+	<span class="f">start_day</span>(day)
+	last_player_pos = <span class="s">"BED"</span>
+
+<span class="c"># ── pôvodné metódy (nezmenené) — log_decision volá terminál v Časti 2 ──</span>
+<span class="k">func</span> <span class="f">log_decision</span>(candidate_id: <span class="t">String</span>, decision: <span class="t">String</span>, flagged_correctly: <span class="t">bool</span>) -> <span class="t">void</span>:
+	terminal_log.<span class="f">append</span>({
+		<span class="s">"candidate_id"</span>: candidate_id,
+		<span class="s">"decision"</span>: decision,
+		<span class="s">"flagged_correctly"</span>: flagged_correctly
+	})
+
+<span class="k">func</span> <span class="f">advance_day</span>() -> <span class="t">void</span>:
+	day += <span class="n">1</span>
+
+<span class="k">func</span> <span class="f">choose_path</span>(chosen: <span class="t">String</span>) -> <span class="t">void</span>:
+	path = chosen
+	vent_blocked = (chosen == <span class="s">"A"</span>)
+</pre></div>
+
+<h2 class="sec" id="s3"><span class="n">3</span>Zamykanie objektov podľa aktívnej úlohy</h2>
+<p>Keďže <code>interaction_component</code> ukáže prompt len ak <code>can_interact()==true</code>,
+zamknuté úlohy sa hráčovi ani nezobrazia.</p>
+<div class="code">
+  <div class="bar"><span class="file">Interactibles/interactible.gd</span><span class="badge mod">uprav (nahraď obsah)</span></div>
+<pre><span class="k">class_name</span> Interactable
+<span class="k">extends</span> <span class="t">StaticBody3D</span>
+
+<span class="k">@export</span> <span class="k">var</span> prompt_text: <span class="t">String</span> = <span class="s">"Interact"</span>
+<span class="k">@export</span> <span class="k">var</span> enabled: <span class="t">bool</span> = <span class="k">true</span>
+
+<span class="c">## Ak je vyplnené, objekt je interaktívny LEN keď je jeho úloha aktívna.</span>
+<span class="c">## Prázdne ("") = bežná rekvizita, vždy dostupná.</span>
+<span class="k">@export</span> <span class="k">var</span> task_id: <span class="t">String</span> = <span class="s">""</span>
+
+<span class="k">signal</span> interacted(player: <span class="t">Node</span>)
+
+<span class="k">func</span> <span class="f">can_interact</span>() -> <span class="t">bool</span>:
+	<span class="k">if</span> <span class="k">not</span> enabled:
+		<span class="k">return</span> <span class="k">false</span>
+	<span class="k">if</span> task_id != <span class="s">""</span> <span class="k">and</span> GameState.<span class="f">current_task_id</span>() != task_id:
+		<span class="k">return</span> <span class="k">false</span>
+	<span class="k">return</span> <span class="k">true</span>
+
+<span class="k">func</span> <span class="f">get_prompt_text</span>() -> <span class="t">String</span>:
+	<span class="k">return</span> prompt_text
+
+<span class="k">func</span> <span class="f">interact</span>(player: <span class="t">Node</span>) -> <span class="t">void</span>:
+	interacted.<span class="f">emit</span>(player)
+
+<span class="c">## Zavolá DayManager, keď sa úloha tohto objektu stane aktívnou.</span>
+<span class="c">## Prepíš v podtriede pre efekt (napr. telefón začne zvoniť).</span>
+<span class="k">func</span> <span class="f">on_became_active</span>() -> <span class="t">void</span>:
+	<span class="k">pass</span>
+</pre></div>
+
+<h2 class="sec" id="s4"><span class="n">4</span>DayManager — radič v izbe</h2>
+<p>Nový nód v <code>Main</code>. Nedrží žiadny vlastný stav — číta z <code>GameState</code>.
+Objekty úloh nájde cez skupinu <code>"task_objects"</code>.</p>
+<div class="code">
+  <div class="bar"><span class="file">Global Scripts/day_manager.gd</span><span class="badge new">nový súbor</span></div>
+<pre><span class="k">class_name</span> DayManager
+<span class="k">extends</span> <span class="t">Node</span>
+
+<span class="c">## Žije v Main.tscn. Pri každom načítaní Main sa znovu zosynchronizuje</span>
+<span class="c">## z GameState (perzistentný model), namiesto držania vlastného stavu.</span>
+
+<span class="k">@export</span> <span class="k">var</span> player_path: <span class="t">NodePath</span>
+<span class="k">var</span> _player: <span class="t">Node3D</span>
+<span class="k">var</span> _ui: <span class="t">VBoxContainer</span>
+
+<span class="k">func</span> <span class="f">_ready</span>() -> <span class="t">void</span>:
+	_player = <span class="f">get_node_or_null</span>(player_path)
+	<span class="k">if</span> _player == <span class="k">null</span>:
+		_player = <span class="f">get_tree</span>().current_scene.<span class="f">find_child</span>(<span class="s">"Player"</span>, <span class="k">true</span>, <span class="k">false</span>)
+	<span class="f">_spawn_player</span>()
+	GameState.task_advanced.<span class="f">connect</span>(_on_task_advanced)
+	GameState.phase_changed.<span class="f">connect</span>(_on_phase_changed)
+	<span class="f">_sync_to_current_task</span>()      <span class="c"># zapni správny objekt, rozozvuč telefón, postav UI</span>
+
+<span class="c"># ── Spawn hráča na pomenovanú kotvu ──</span>
+<span class="k">func</span> <span class="f">_spawn_player</span>() -> <span class="t">void</span>:
+	<span class="k">if</span> _player == <span class="k">null</span>:
+		<span class="k">return</span>
+	<span class="k">var</span> marker := <span class="f">_find_spawn</span>(GameState.last_player_pos)
+	<span class="k">if</span> marker:
+		_player.global_transform = marker.global_transform
+
+<span class="k">func</span> <span class="f">_find_spawn</span>(anchor: <span class="t">String</span>) -> <span class="t">Node3D</span>:
+	<span class="c"># Hľadá Marker3D s menom napr. "Spawn_BED".</span>
+	<span class="k">var</span> n := <span class="f">get_tree</span>().current_scene.<span class="f">find_child</span>(<span class="s">"Spawn_%s"</span> % anchor, <span class="k">true</span>, <span class="k">false</span>)
+	<span class="k">if</span> n == <span class="k">null</span>:
+		<span class="f">push_warning</span>(<span class="s">"DayManager: chýba Marker3D 'Spawn_%s'"</span> % anchor)
+	<span class="k">return</span> n <span class="k">as</span> <span class="t">Node3D</span>
+
+<span class="c"># ── Synchronizácia scény s modelom ──</span>
+<span class="k">func</span> <span class="f">_sync_to_current_task</span>() -> <span class="t">void</span>:
+	<span class="k">var</span> active := GameState.<span class="f">current_task_id</span>()
+	<span class="k">for</span> obj <span class="k">in</span> <span class="f">get_tree</span>().<span class="f">get_nodes_in_group</span>(<span class="s">"task_objects"</span>):
+		<span class="k">if</span> obj <span class="k">is</span> Interactable:
+			<span class="k">var</span> it: Interactable = obj
+			<span class="k">var</span> is_active := it.task_id == active
+			it.enabled = is_active
+			<span class="k">if</span> is_active:
+				it.<span class="f">on_became_active</span>()      <span class="c"># napr. telefón začne zvoniť</span>
+	<span class="f">_rebuild_ui</span>()
+	<span class="f">print</span>(<span class="s">"[DayManager] aktívna úloha = "</span>, active, <span class="s">"  fáza = "</span>, GameState.<span class="f">current_phase</span>())
+
+<span class="k">func</span> <span class="f">_on_task_advanced</span>(_new_task: DayTask) -> <span class="t">void</span>:
+	<span class="f">_sync_to_current_task</span>()
+
+<span class="k">func</span> <span class="f">_on_phase_changed</span>(new_phase: <span class="t">String</span>) -> <span class="t">void</span>:
+	<span class="f">print</span>(<span class="s">"[DayManager] FÁZA -> "</span>, new_phase)
+	<span class="c"># TODO: sem hoď vizuál/zvuk fázy (napr. zmena osvetlenia v Ceste A)</span>
+
+<span class="c"># ── Jednoduché UI: zoznam úloh (vytvorí sa v kóde, netreba editovať scénu) ──</span>
+<span class="k">func</span> <span class="f">_rebuild_ui</span>() -> <span class="t">void</span>:
+	<span class="k">if</span> _ui == <span class="k">null</span>:
+		<span class="k">var</span> layer := <span class="t">CanvasLayer</span>.<span class="f">new</span>()
+		<span class="f">add_child</span>(layer)
+		_ui = <span class="t">VBoxContainer</span>.<span class="f">new</span>()
+		_ui.position = <span class="t">Vector2</span>(<span class="n">40</span>, <span class="n">40</span>)
+		layer.<span class="f">add_child</span>(_ui)
+	<span class="k">for</span> c <span class="k">in</span> _ui.<span class="f">get_children</span>():
+		c.<span class="f">queue_free</span>()
+	<span class="k">for</span> i <span class="k">in</span> GameState.schedule.<span class="f">size</span>():
+		<span class="k">var</span> t: DayTask = GameState.schedule[i]
+		<span class="k">var</span> row := <span class="t">Label</span>.<span class="f">new</span>()
+		<span class="k">if</span> i &lt; GameState.current_task_index:
+			row.text = <span class="s">"✔ "</span> + t.title
+			row.modulate = <span class="t">Color</span>(<span class="n">0.44</span>, <span class="n">0.44</span>, <span class="n">0.39</span>)   <span class="c"># hotové – tlmené</span>
+		<span class="k">elif</span> i == GameState.current_task_index:
+			row.text = <span class="s">"▸ "</span> + t.title
+			row.modulate = <span class="t">Color</span>(<span class="n">0.88</span>, <span class="n">0.64</span>, <span class="n">0.22</span>)   <span class="c"># aktívne – jantár</span>
+		<span class="k">else</span>:
+			row.text = <span class="s">"• "</span> + t.title
+			row.modulate = <span class="t">Color</span>(<span class="n">0.35</span>, <span class="n">0.35</span>, <span class="n">0.32</span>)   <span class="c"># zamknuté – šedé</span>
+		_ui.<span class="f">add_child</span>(row)
+</pre></div>
+<div class="note">Pripojenie na <code>GameState</code> signály sa robí v <code>_ready</code>. Keď sa <code>Main</code>
+uvoľní, <code>DayManager</code> zanikne a Godot spojenie automaticky odpojí — žiadny leak.</div>
+
+<h2 class="sec" id="s5"><span class="n">5</span>Štart pri posteli — spawn kotvy</h2>
+<table>
+  <tr><th><code>last_player_pos</code></th><th>Marker3D v Main</th><th>Umiestni</th></tr>
+  <tr><td><code>"BED"</code> (default)</td><td><code>Spawn_BED</code></td><td>pri posteli, otočený do izby</td></tr>
+  <tr><td><code>"PC"</code></td><td><code>Spawn_PC</code></td><td>pri stoličke/stole</td></tr>
+  <tr><td><code>"PHONE"</code></td><td><code>Spawn_PHONE</code></td><td>(voliteľné) pri telefóne</td></tr>
+  <tr><td><code>"DOOR"</code></td><td><code>Spawn_DOOR</code></td><td>(voliteľné, koniec Cesty A)</td></tr>
+</table>
+<div class="warn"><b>Prečo to stačí.</b> <code>GameState</code> je autoload — pri každom spustení aplikácie sa
+vytvorí nanovo, takže <code>last_player_pos</code> je späť na <code>"BED"</code>. Počas hry sa mení
+(napr. na <code>"PC"</code> pri odchode k terminálu). Po spánku sa <code>end_day()</code> resetuje na <code>"BED"</code>.</div>
+
+<h2 class="sec" id="s6"><span class="n">6</span>Telefón — signál, ktorý ho po termináli rozozvučí</h2>
+<p>Telefón štartuje <b>vypnutý a tichý</b>. Rozozvučí sa cez <code>on_became_active()</code>, ktorý
+zavolá <code>DayManager</code> vo chvíli, keď sa <code>phone</code> stane aktívnou úlohou.</p>
+<div class="good"><b>Zvuk zvonenia už v projekte máš.</b> V priečinku <code>sfx/</code> je
+<code>phone_ringing.mp3</code> (a tiež <code>phone_pick_up.mp3</code>, <code>telephone_busy.mp3</code>).
+Nižšie je už zapojený — stačí do <code>telephone.tscn</code> pridať <code>AudioStreamPlayer3D</code>
+s menom <b><code>RingSound</code></b> ako dieťa <code>StaticBody3D</code>, nastaviť mu
+<code>stream = res://sfx/phone_ringing.mp3</code> a v importe zapnúť <b>Loop</b>.</div>
+<div class="code">
+  <div class="bar"><span class="file">Assets/Telephone/Phone.gd</span><span class="badge mod">uprav (nahraď obsah)</span></div>
+<pre><span class="k">class_name</span> Telephone
+<span class="k">extends</span> Interactable
+
+<span class="k">@export</span> <span class="k">var</span> conver_pos: <span class="t">Vector2</span> = <span class="t">Vector2</span>(<span class="n">980</span>, <span class="n">920</span>)
+<span class="k">var</span> is_ringing: <span class="t">bool</span> = <span class="k">false</span>
+
+<span class="k">@onready</span> <span class="k">var</span> speech_sound = <span class="f">preload</span>(<span class="s">"res://Assets/Sounds/Phone.wav"</span>)
+<span class="k">@onready</span> <span class="k">var</span> ring_player: <span class="t">AudioStreamPlayer3D</span> = $RingSound
+
+<span class="k">const</span> lines1: <span class="t">Array</span>[<span class="t">String</span>] = [
+	<span class="s">"Welcome to your new job!"</span>,
+	<span class="s">"We only expect the best of you!"</span>,
+	<span class="s">"See you soon, Happy to have you onboard!"</span>,
+]
+
+<span class="k">func</span> <span class="f">_ready</span>() -> <span class="t">void</span>:
+	prompt_text = <span class="s">"Pick up Telephone"</span>
+	task_id = <span class="s">"phone"</span>
+	<span class="f">add_to_group</span>(<span class="s">"task_objects"</span>)
+	<span class="c"># Štartuje tiché a zamknuté; DayManager ho rozozvučí, keď je úloha PHONE aktívna.</span>
+	enabled = <span class="k">false</span>
+	is_ringing = <span class="k">false</span>
+
+<span class="c">## SIGNÁL: zavolá DayManager, keď sa fáza PHONE stane aktívnou (po termináli).</span>
+<span class="k">func</span> <span class="f">on_became_active</span>() -> <span class="t">void</span>:
+	<span class="f">start_ringing</span>()
+
+<span class="k">func</span> <span class="f">start_ringing</span>() -> <span class="t">void</span>:
+	is_ringing = <span class="k">true</span>
+	enabled = <span class="k">true</span>
+	<span class="f">print</span>(<span class="s">"[Telephone] RING RING"</span>)
+	<span class="k">if</span> ring_player <span class="k">and</span> <span class="k">not</span> ring_player.playing:
+		ring_player.<span class="f">play</span>()
+
+<span class="k">func</span> <span class="f">stop_ringing</span>() -> <span class="t">void</span>:
+	is_ringing = <span class="k">false</span>
+	<span class="k">if</span> ring_player:
+		ring_player.<span class="f">stop</span>()
+
+<span class="k">func</span> <span class="f">interact</span>(player: <span class="t">Node</span>) -> <span class="t">void</span>:
+	<span class="k">super</span>.<span class="f">interact</span>(player)
+	<span class="f">stop_ringing</span>()
+	DialogueManager.<span class="f">start_dialog</span>(conver_pos, lines1, speech_sound)
+	GameState.<span class="f">complete_task</span>(<span class="s">"phone"</span>)   <span class="c"># zdvihnutie = dokončenie úlohy</span>
+</pre></div>
+<div class="note"><b>Chceš dokončiť úlohu až po zavesení?</b> <code>DialogueManager</code>
+zatiaľ nevysiela signál o konci. Pridaj doň <code>signal dialogue_finished</code> (emit tam, kde sa
+<code>is_dialogue_active = false</code>), pripoj sa naň a <code>complete_task("phone")</code> zavolaj tam.</div>
+
+<h2 class="sec" id="s7"><span class="n">7</span>Odchod k terminálu</h2>
+<p>PC pred odchodom zapamätá kotvu <code>"PC"</code> a prepne scénu. <b>Úlohu tu nedokončujeme</b> —
+to spraví terminál až po odbavení celej zmeny (<a class="ln" href="#t7">Časť 2, krok 7</a>).</p>
+<div class="code">
+  <div class="bar"><span class="file">Assets/Full Setup/PC_interactible.gd</span><span class="badge mod">uprav (nahraď obsah)</span></div>
+<pre><span class="k">class_name</span> PC
+<span class="k">extends</span> Interactable
+
+<span class="k">const</span> TERMINAL_SCENE := <span class="s">"res://Audit/AuditTerminal.tscn"</span>
+
+<span class="k">func</span> <span class="f">_ready</span>() -> <span class="t">void</span>:
+	prompt_text = <span class="s">"Start Work"</span>
+	task_id = <span class="s">"terminal"</span>
+	<span class="f">add_to_group</span>(<span class="s">"task_objects"</span>)
+
+<span class="k">func</span> <span class="f">interact</span>(player: <span class="t">Node</span>) -> <span class="t">void</span>:
+	<span class="k">super</span>.<span class="f">interact</span>(player)
+	GameState.last_player_pos = <span class="s">"PC"</span>              <span class="c"># po návrate stojíme pri stole</span>
+	<span class="f">get_tree</span>().<span class="f">change_scene_to_file</span>(TERMINAL_SCENE)
+	<span class="c"># complete_task("terminal") NIE tu — až po odpracovaní zmeny (Časť 2).</span>
+</pre></div>
+
+<h2 class="sec" id="s8"><span class="n">8</span>Jednoduché tasky — <code>SimpleTask</code></h2>
+<p>Generický objekt na chores. Pridať úlohu „umy si zuby" znamená položiť ďalší <code>SimpleTask</code>
+s iným <code>task_id</code> a pridať riadok do <code>_build_schedule</code>.</p>
+<div class="code">
+  <div class="bar"><span class="file">Interactibles/simple_task.gd</span><span class="badge new">nový súbor</span></div>
+<pre><span class="c">## Generický jednorazový task: interakcia dokončí jeho úlohu.</span>
+<span class="c">## Polož do izby, nastav task_id + prompt_text v Inšpektore.</span>
+<span class="k">class_name</span> SimpleTask
+<span class="k">extends</span> Interactable
+
+<span class="k">@export</span> <span class="k">var</span> say_lines: <span class="t">Array</span>[<span class="t">String</span>] = []     <span class="c"># voliteľný flavour dialóg</span>
+<span class="k">@export</span> <span class="k">var</span> say_sfx: <span class="t">AudioStream</span>                 <span class="c"># hlas pre say_lines</span>
+<span class="k">@export</span> <span class="k">var</span> say_pos: <span class="t">Vector2</span> = <span class="t">Vector2</span>(<span class="n">960</span>, <span class="n">900</span>)
+
+<span class="k">func</span> <span class="f">_ready</span>() -> <span class="t">void</span>:
+	<span class="f">add_to_group</span>(<span class="s">"task_objects"</span>)
+
+<span class="k">func</span> <span class="f">interact</span>(player: <span class="t">Node</span>) -> <span class="t">void</span>:
+	<span class="k">super</span>.<span class="f">interact</span>(player)
+	<span class="k">if</span> <span class="k">not</span> say_lines.<span class="f">is_empty</span>():
+		DialogueManager.<span class="f">start_dialog</span>(say_pos, say_lines, say_sfx)
+	GameState.<span class="f">complete_task</span>(task_id)
+</pre></div>
+<p>Pre „Najedz sa": <code>StaticBody3D</code> na <b>fyzickej vrstve 1</b> (napr. tanier na nočnom stolíku),
+priraď <code>simple_task.gd</code>, nastav <code>task_id = "eat"</code>, <code>prompt_text = "Eat breakfast"</code>.</p>
+
+<h2 class="sec" id="s9"><span class="n">9</span>UI — zoznam úloh</h2>
+<p>Hotové v <a class="ln" href="#s4">kroku 4</a> (<code>DayManager._rebuild_ui()</code>). Vytvorí si
+vlastný <code>CanvasLayer</code> + <code>VBoxContainer</code>, takže <b>netreba editovať žiadnu scénu</b>:
+<span style="color:#e0a339">▸ aktívna</span>, <span style="color:#70706a">✔ hotová</span>,
+<span style="color:#59594f">• zamknutá</span>.</p>
+
+<h2 class="sec" id="s10"><span class="n">10</span>Spánok → ďalší deň</h2>
+<p>Posteľ je poslednou úlohou (<code>sleep</code>), takže je odomknutá až keď je všetko ostatné hotové.</p>
+<div class="code">
+  <div class="bar"><span class="file">Interactibles/Bed/bed.gd</span><span class="badge mod">uprav (nahraď obsah)</span></div>
+<pre><span class="k">class_name</span> Bed
+<span class="k">extends</span> Interactable
+
+<span class="k">func</span> <span class="f">_ready</span>() -> <span class="t">void</span>:
+	prompt_text = <span class="s">"Go To Bed"</span>
+	task_id = <span class="s">"sleep"</span>
+	<span class="f">add_to_group</span>(<span class="s">"task_objects"</span>)
+
+<span class="k">func</span> <span class="f">interact</span>(player: <span class="t">Node</span>) -> <span class="t">void</span>:
+	<span class="k">super</span>.<span class="f">interact</span>(player)
+	<span class="f">print</span>(<span class="s">"Spím – koniec dňa"</span>)
+	GameState.<span class="f">end_day</span>()                              <span class="c"># deň+1, reset úloh, kotva=BED</span>
+	<span class="f">get_tree</span>().<span class="f">change_scene_to_file</span>(<span class="s">"res://Main.tscn"</span>)   <span class="c"># čerstvá izba na nový deň</span>
+</pre></div>
+
+<!-- ══════════════════════════ ČASŤ 2 ══════════════════════════ -->
+<div class="partbar">
+  <div class="pk">Časť 2</div>
+  <h2>Funkčný Audit terminál (Fáza B)</h2>
+  <p>Tri verdikty + FLAG ako compare mechanika, viac prípadov na zmenu, logovanie rozhodnutí
+  a koniec zmeny, ktorý uzavrie denný loop.</p>
+</div>
+
+<h2 class="sec" id="t0"><span class="n t">§</span>Stav terminálu dnes — čo chýba</h2>
+<p>Vizuálna vrstva je hotová a <b>všetky tlačidlá už sú v scéne nasignálované</b> na metódy v skripte.
+Chýba len obsah tých metód a dáta pod nimi.</p>
+<table>
+  <tr><th>Prvok</th><th>Stav dnes</th><th>Čo treba</th></tr>
+  <tr><td><code>current_case</code></td><td>jeden napevno exportovaný prípad</td><td>caseload s poradím prípadov</td></tr>
+  <tr><td>„FILE 1 / 3"</td><td>natvrdo napísaný text</td><td>živé počítadlo <code>i / N</code></td></tr>
+  <tr><td><code>Rule1</code>/<code>Rule2</code></td><td>natvrdo napísaná direktíva</td><td>z <code>DayCaseload.directive_lines</code></td></tr>
+  <tr><td>APPROVE / HOLD / INCINERATE</td><td><code>print()</code> + emit</td><td><code>log_decision()</code> + posun na ďalší prípad</td></tr>
+  <tr><td>FLAG</td><td><code>print()</code> + emit (ako 4. verdikt)</td><td>compare mechanika (2 výbery)</td></tr>
+  <tr><td><code>DataRow</code> v zložke</td><td>neklikateľný</td><td>klikateľný — ľavá strana compare</td></tr>
+  <tr><td>Klikateľné detaily v prepise</td><td><b>už fungujú</b> (<code>[url]</code> + <code>meta_clicked</code>)</td><td>zapamätať výber + zvýrazniť</td></tr>
+  <tr><td><code>SelectedBar</code></td><td>statický hint</td><td>stav výberu a výsledok flagu</td></tr>
+  <tr><td>SHIFT TIME</td><td>natvrdo „01:22"</td><td>ostáva dekorácia (bez časomiery)</td></tr>
+  <tr><td>DAY 1 / DAY 2 taby, DESIGN NOTES</td><td>nezapojené</td><td>dev nástroje</td></tr>
+  <tr><td>návrat do izby</td><td>neexistuje</td><td><code>_finish_shift()</code></td></tr>
+</table>
+<div class="good"><b>Čo sa dá znovupoužiť bez zmeny:</b> <code>UnitCase</code> a <code>DialogueLine</code>
+resources, <code>_build_transcript_bbcode()</code> (už robí z <code>detail</code> klikateľné odkazy),
+<code>SELECT_HINT</code>, celé prepojenie tlačidiel v <code>AuditTerminal.tscn</code> a hlavne
+<code>GameState.log_decision(candidate_id, decision, flagged_correctly)</code>, ktorý už má presne
+ten tvar, aký GDD vyžaduje.</div>
+
+<h2 class="sec" id="t1"><span class="n t">1</span>Mapovanie GDD ↔ UI a sémantika FLAG-u</h2>
+<table>
+  <tr><th>GDD</th><th>Tlačidlo v hre</th><th>Význam</th></tr>
+  <tr><td>CLEAR</td><td><code>APPROVE</code></td><td>prepustiť / schváliť</td></tr>
+  <tr><td>HOLD</td><td><code>HOLD</code></td><td>zadržať na ďalšie štúdium</td></tr>
+  <tr><td>ESCALATE</td><td><code>INCINERATE</code></td><td>posunúť vyššie („spracovať")</td></tr>
+  <tr><td>FLAG</td><td><code>FLAG</code></td><td><b>nie je verdikt</b> — označenie rozporu</td></tr>
+</table>
+<div class="warn"><b>FLAG je modifikátor, nie verdikt.</b> GDD hovorí doslova o <i>troch</i> tlačidlách
+„plus FLAG", kde označíš dve protirečiace si časti. Potvrdzuje to aj existujúca signatúra
+<code>log_decision(candidate_id, <b>decision</b>, <b>flagged_correctly</b>)</code> — rozhodnutie a flag
+sú dve oddelené polia. Preto z <code>correct_verdict</code> vypadne hodnota <code>"FLAG"</code>.</div>
+<h3>Tok jedného prípadu</h3>
+<div class="diagram"><pre>
+JEDEN PRÍPAD (unit)
+   │
+   ├─ čítaš ZLOŽKU (vľavo)  a  PREPIS (vpravo)
+   │
+   ├─ [voliteľné] COMPARE / FLAG
+   │     1. klik na riadok v ZLOŽKE     ─▶ _selected_field  = "SECTOR OF ORIGIN"
+   │     2. klik na podčiarknutý nárok  ─▶ _selected_detail = "Sector 9"
+   │     3. [FLAG] ─▶ sedí to na contradiction_field / contradiction_detail?
+   │                    ÁNO ─▶ _flag_state = CORRECT   "CONTRADICTION LOGGED"
+   │                    NIE ─▶ _flag_state = WRONG     "NO DISCREPANCY FOUND"
+   │         ⚠ prípad sa NEuzavrie — FLAG je len poznámka
+   │
+   └─ [APPROVE] │ [HOLD] │ [INCINERATE]        ◀── až toto prípad uzavrie
+         │
+         ├─ GameState.log_decision(unit_id, verdict, _flag_state == CORRECT)
+         ├─ _case_index += 1
+         │
+         ├─ ešte sú prípady? ─▶ zobraz ďalší  (FILE 2 / 3)
+         └─ bol posledný?    ─▶ _finish_shift()
+                                  ├─ GameState.complete_task("terminal")
+                                  └─ change_scene_to_file("res://Main.tscn")
+                                        ─▶ izba ─▶ DayManager ─▶ telefón zvoní
+</pre></div>
+
+<h2 class="sec" id="t2"><span class="n t">2</span>Dáta — <code>UnitCase</code> rozšírenie + <code>DayCaseload</code></h2>
+<p>Aby sa dal rozpor vyhodnotiť, prípad musí vedieť <b>ktorý riadok zložky</b> protirečí
+<b>ktorému nároku v prepise</b>. To je jediná chýbajúca informácia v dátach.</p>
+<div class="code">
+  <div class="bar"><span class="file">Audit/unit_case.gd</span><span class="badge mod">uprav (nahraď obsah)</span></div>
+<pre><span class="k">class_name</span> UnitCase
+<span class="k">extends</span> <span class="t">Resource</span>
+
+<span class="c">## A single unit under review — one "file" in the audit terminal caseload.</span>
+
+<span class="k">@export</span> <span class="k">var</span> unit_id: <span class="t">String</span> = <span class="s">""</span>
+<span class="k">@export</span> <span class="k">var</span> sector_of_origin: <span class="t">String</span> = <span class="s">""</span>
+<span class="k">@export</span> <span class="k">var</span> model_number: <span class="t">String</span> = <span class="s">""</span>
+
+<span class="k">@export_range</span>(<span class="n">0</span>, <span class="n">100</span>) <span class="k">var</span> degradation: <span class="t">int</span> = <span class="n">0</span>
+<span class="k">@export</span> <span class="k">var</span> day: <span class="t">int</span> = <span class="n">1</span>
+<span class="k">@export</span> <span class="k">var</span> transcript: <span class="t">Array</span>[DialogueLine] = []
+
+<span class="c">## Verdikt, ktorý direktíva pre túto jednotku očakáva.</span>
+<span class="c">## FLAG tu zámerne NIE JE — je to samostatná compare akcia, nie verdikt.</span>
+<span class="k">@export_enum</span>(<span class="s">"APPROVE"</span>, <span class="s">"HOLD"</span>, <span class="s">"INCINERATE"</span>) <span class="k">var</span> correct_verdict: <span class="t">String</span> = <span class="s">"APPROVE"</span>
+
+<span class="c"># --- FLAG / compare mechanika ---</span>
+
+<span class="c">## Ktorý riadok ZLOŽKY protirečí ktorému nároku v PREPISE.</span>
+<span class="c">## Musí sedieť na kľúč DataRow: "UNIT ID", "SECTOR OF ORIGIN",</span>
+<span class="c">## "MODEL NUMBER", "DEGRADATION".</span>
+<span class="k">@export</span> <span class="k">var</span> contradiction_field: <span class="t">String</span> = <span class="s">""</span>
+
+<span class="c">## Musí doslovne sedieť na DialogueLine.detail v tomto prípade.</span>
+<span class="k">@export</span> <span class="k">var</span> contradiction_detail: <span class="t">String</span> = <span class="s">""</span>
+
+
+<span class="c">## True, keď zložka a prepis naozaj nesedia. Keď false, flagnutie je vždy chybné.</span>
+<span class="k">func</span> <span class="f">has_contradiction</span>() -> <span class="t">bool</span>:
+	<span class="k">return</span> contradiction_field != <span class="s">""</span> <span class="k">and</span> contradiction_detail != <span class="s">""</span>
+</pre></div>
+
+<p>Zmena je zoskupená do <b>jedného resource na deň</b>, ktorý drží aj text direktívy:</p>
+<div class="code">
+  <div class="bar"><span class="file">Audit/day_caseload.gd</span><span class="badge new">nový súbor</span></div>
+<pre><span class="k">class_name</span> DayCaseload
+<span class="k">extends</span> <span class="t">Resource</span>
+
+<span class="c">## Jedna zmena: direktíva, ktorú musí hráč dodržať, plus usporiadaný zoznam</span>
+<span class="c">## jednotiek na posúdenie. Jeden .tres na deň → pridať deň je dáta, nie kód.</span>
+
+<span class="k">@export</span> <span class="k">var</span> day: <span class="t">int</span> = <span class="n">1</span>
+
+<span class="c">## Pravidlá zobrazené pod "TODAY'S DIRECTIVE", jeden label na položku.</span>
+<span class="k">@export</span> <span class="k">var</span> directive_lines: <span class="t">Array</span>[<span class="t">String</span>] = []
+
+<span class="c">## Jednotky v poradí prezentácie. Poradie v poli JE poradie zmeny.</span>
+<span class="k">@export</span> <span class="k">var</span> cases: <span class="t">Array</span>[UnitCase] = []
+
+
+<span class="k">func</span> <span class="f">size</span>() -> <span class="t">int</span>:
+	<span class="k">return</span> cases.<span class="f">size</span>()
+
+
+<span class="k">func</span> <span class="f">get_case</span>(i: <span class="t">int</span>) -> UnitCase:
+	<span class="k">if</span> i &lt; <span class="n">0</span> <span class="k">or</span> i >= cases.<span class="f">size</span>():
+		<span class="k">return</span> <span class="k">null</span>
+	<span class="k">return</span> cases[i]
+</pre></div>
+
+<h3>Ukážkový prípad s rozporom</h3>
+<p>Bez aspoň jedného takého prípadu sa compare mechanika nedá otestovať. Zložka tvrdí
+<b>Sector 4</b>, jednotka v pohovore povie <b>Sector 9</b>:</p>
+<div class="code">
+  <div class="bar"><span class="file">Audit/cases/Day1/day1_221kl.tres</span><span class="badge data">nový dátový súbor</span></div>
+<pre>[gd_resource type=<span class="s">"Resource"</span> script_class=<span class="s">"UnitCase"</span> format=3]
+
+[ext_resource type=<span class="s">"Script"</span> path=<span class="s">"res://Audit/unit_case.gd"</span> id=<span class="s">"1_case"</span>]
+[ext_resource type=<span class="s">"Script"</span> path=<span class="s">"res://Audit/dialogue_line.gd"</span> id=<span class="s">"2_line"</span>]
+
+[sub_resource type=<span class="s">"Resource"</span> id=<span class="s">"line_1"</span>]
+script = ExtResource(<span class="s">"2_line"</span>)
+speaker = <span class="s">"AGENT"</span>
+text = <span class="s">"State your sector of origin."</span>
+
+[sub_resource type=<span class="s">"Resource"</span> id=<span class="s">"line_2"</span>]
+script = ExtResource(<span class="s">"2_line"</span>)
+speaker = <span class="s">"UNIT"</span>
+text = <span class="s">"Sector 9. They moved me after the incident."</span>
+detail = <span class="s">"Sector 9"</span>          <span class="c"># ← klikateľný nárok</span>
+
+[resource]
+script = ExtResource(<span class="s">"1_case"</span>)
+unit_id = <span class="s">"221-KL"</span>
+sector_of_origin = <span class="s">"Sector 4"</span>   <span class="c"># ← zložka tvrdí Sector 4</span>
+model_number = <span class="s">"KL-3"</span>
+degradation = 47                <span class="c"># ≥ 40 → podľa direktívy HOLD</span>
+day = 1
+transcript = Array[ExtResource(<span class="s">"2_line"</span>)]([SubResource(<span class="s">"line_1"</span>), SubResource(<span class="s">"line_2"</span>)])
+correct_verdict = <span class="s">"HOLD"</span>
+contradiction_field = <span class="s">"SECTOR OF ORIGIN"</span>
+contradiction_detail = <span class="s">"Sector 9"</span>
+</pre></div>
+
+<h3>Caseload na deň 1</h3>
+<div class="code">
+  <div class="bar"><span class="file">Audit/cases/Day1/day1_caseload.tres</span><span class="badge data">nový dátový súbor</span></div>
+<pre>[gd_resource type=<span class="s">"Resource"</span> script_class=<span class="s">"DayCaseload"</span> format=3]
+
+[ext_resource type=<span class="s">"Script"</span> path=<span class="s">"res://Audit/day_caseload.gd"</span> id=<span class="s">"1_load"</span>]
+[ext_resource type=<span class="s">"Script"</span> path=<span class="s">"res://Audit/unit_case.gd"</span> id=<span class="s">"2_case"</span>]
+[ext_resource type=<span class="s">"Resource"</span> path=<span class="s">"res://Audit/cases/Day1/day1_108vn.tres"</span> id=<span class="s">"3_u1"</span>]
+[ext_resource type=<span class="s">"Resource"</span> path=<span class="s">"res://Audit/cases/Day1/day1_221kl.tres"</span> id=<span class="s">"4_u2"</span>]
+
+[resource]
+script = ExtResource(<span class="s">"1_load"</span>)
+day = 1
+directive_lines = Array[<span class="t">String</span>]([<span class="s">"Units below 40% degradation → APPROVE."</span>, <span class="s">"Units at or above 40% degradation → HOLD for review."</span>])
+cases = Array[ExtResource(<span class="s">"2_case"</span>)]([ExtResource(<span class="s">"3_u1"</span>), ExtResource(<span class="s">"4_u2"</span>)])
+</pre></div>
+<div class="warn"><b>Tieto dva <code>.tres</code> radšej neťukaj ručne.</b> Sú tu preto, aby si videl výslednú
+štruktúru. Typované polia (<code>Array[ExtResource("2_case")](…)</code>) sa ľahko pokazia.
+Vytvor ich v editore: <i>FileSystem → pravý klik na priečinok → New Resource… → DayCaseload</i>,
+potom v Inšpektore nastav <code>directive_lines</code> a do <code>cases</code> pretiahni jednotlivé
+<code>UnitCase</code> súbory. Godot zapíše presne toto.</div>
+<div class="note">Existujúci <code>day1_108vn.tres</code> nechaj tak — nemá rozpor, takže flagnutie
+tejto jednotky bude (správne) vyhodnotené ako chybné. Presne to chceš na testovanie oboch vetiev.</div>
+
+<h2 class="sec" id="t3"><span class="n t">3</span>Klikateľná zložka — <code>DataRow</code></h2>
+<p>Pravá polovica compare mechaniky (klikateľné nároky v prepise) už funguje. Ľavá chýba:
+<code>DataRow</code> je len <code>HBoxContainer</code> s dvoma <code>Label</code>mi. Doplníme
+klikanie, výberový stav a zvýraznenie — kreslenie čiarkovanej linky ostáva.</p>
+<div class="code">
+  <div class="bar"><span class="file">Audit/data_row.gd</span><span class="badge mod">uprav (nahraď obsah)</span></div>
+<pre><span class="k">@tool</span>
+<span class="k">class_name</span> DataRow
+<span class="k">extends</span> <span class="t">HBoxContainer</span>
+
+<span class="c">## Riadok "LABEL ........ value" v sekcii CASE FILE.</span>
+<span class="c">## Keď je `selectable`, dá sa kliknúť ako jedna polovica FLAG compare mechaniky.</span>
+
+<span class="c">## Vyšle sa, keď hráč klikne na tento riadok.</span>
+<span class="k">signal</span> row_clicked(row: DataRow)
+
+<span class="k">const</span> SELECT_COLOR := <span class="t">Color</span>(<span class="n">0.878</span>, <span class="n">0.639</span>, <span class="n">0.224</span>, <span class="n">1.0</span>)
+
+<span class="k">@export</span> <span class="k">var</span> key: <span class="t">String</span> = <span class="s">"LABEL"</span>:
+	<span class="k">set</span>(v):
+		key = v
+		<span class="f">_apply</span>()
+
+<span class="k">@export</span> <span class="k">var</span> value_text: <span class="t">String</span> = <span class="s">"value"</span>:
+	<span class="k">set</span>(v):
+		value_text = v
+		<span class="f">_apply</span>()
+
+<span class="k">@export</span> <span class="k">var</span> line_color: <span class="t">Color</span> = <span class="t">Color</span>(<span class="n">0.29</span>, <span class="n">0.29</span>, <span class="n">0.251</span>, <span class="n">1.0</span>)
+
+<span class="c">## Zapni, aby bol riadok klikateľný pre compare/FLAG.</span>
+<span class="k">@export</span> <span class="k">var</span> selectable: <span class="t">bool</span> = <span class="k">false</span>:
+	<span class="k">set</span>(v):
+		selectable = v
+		<span class="f">_apply_mouse</span>()
+
+<span class="c">## Zvýraznený ako aktuálny výber hráča v zložke.</span>
+<span class="k">var</span> selected: <span class="t">bool</span> = <span class="k">false</span>:
+	<span class="k">set</span>(v):
+		selected = v
+		<span class="f">queue_redraw</span>()
+
+
+<span class="k">func</span> <span class="f">_ready</span>() -> <span class="t">void</span>:
+	resized.<span class="f">connect</span>(queue_redraw)
+	<span class="f">_apply_mouse</span>()
+	<span class="f">_apply</span>()
+
+
+<span class="k">func</span> <span class="f">_apply_mouse</span>() -> <span class="t">void</span>:
+	<span class="c"># Settery môžu bežať počas načítania, skôr než je nód ready — guard.</span>
+	<span class="k">if</span> <span class="k">not</span> <span class="f">is_node_ready</span>():
+		<span class="k">return</span>
+	<span class="k">if</span> selectable:
+		mouse_filter = <span class="t">Control</span>.MOUSE_FILTER_STOP
+		mouse_default_cursor_shape = <span class="t">Control</span>.CURSOR_POINTING_HAND
+	<span class="k">else</span>:
+		mouse_filter = <span class="t">Control</span>.MOUSE_FILTER_IGNORE
+		mouse_default_cursor_shape = <span class="t">Control</span>.CURSOR_ARROW
+
+
+<span class="k">func</span> <span class="f">_gui_input</span>(event: <span class="t">InputEvent</span>) -> <span class="t">void</span>:
+	<span class="k">if</span> <span class="k">not</span> selectable:
+		<span class="k">return</span>
+	<span class="k">if</span> event <span class="k">is</span> <span class="t">InputEventMouseButton</span>:
+		<span class="k">var</span> mb := event <span class="k">as</span> <span class="t">InputEventMouseButton</span>
+		<span class="k">if</span> mb.button_index == MOUSE_BUTTON_LEFT <span class="k">and</span> mb.pressed:
+			row_clicked.<span class="f">emit</span>(<span class="k">self</span>)
+			<span class="f">accept_event</span>()
+
+
+<span class="k">func</span> <span class="f">_apply</span>() -> <span class="t">void</span>:
+	<span class="k">if</span> <span class="k">not</span> <span class="f">is_node_ready</span>():
+		<span class="k">return</span>
+	<span class="k">if</span> <span class="f">has_node</span>(<span class="s">"KeyLabel"</span>):
+		($KeyLabel <span class="k">as</span> <span class="t">Label</span>).text = key.<span class="f">to_upper</span>()
+	<span class="k">if</span> <span class="f">has_node</span>(<span class="s">"ValueLabel"</span>):
+		($ValueLabel <span class="k">as</span> <span class="t">Label</span>).text = value_text
+	<span class="f">queue_redraw</span>()
+
+
+<span class="k">func</span> <span class="f">_draw</span>() -> <span class="t">void</span>:
+	<span class="c"># Zvýrazňovací rámik, keď je riadok aktuálnym výberom.</span>
+	<span class="k">if</span> selected:
+		<span class="k">var</span> fill := <span class="t">Color</span>(SELECT_COLOR.r, SELECT_COLOR.g, SELECT_COLOR.b, <span class="n">0.10</span>)
+		<span class="f">draw_rect</span>(<span class="t">Rect2</span>(<span class="t">Vector2</span>.ZERO, size), fill, <span class="k">true</span>)
+		<span class="f">draw_rect</span>(<span class="t">Rect2</span>(<span class="t">Vector2</span>.ZERO, size), SELECT_COLOR, <span class="k">false</span>, <span class="n">1.0</span>)
+
+	<span class="c"># Čiarkovaná linka pri spodnej hrane riadku.</span>
+	<span class="k">var</span> y := size.y - <span class="n">1.0</span>
+	<span class="k">var</span> x := <span class="n">0.0</span>
+	<span class="k">const</span> DASH := <span class="n">2.0</span>
+	<span class="k">const</span> STEP := <span class="n">6.0</span>
+	<span class="k">var</span> col := SELECT_COLOR <span class="k">if</span> selected <span class="k">else</span> line_color
+	<span class="k">while</span> x &lt; size.x:
+		<span class="f">draw_line</span>(<span class="t">Vector2</span>(x, y), <span class="t">Vector2</span>(<span class="f">minf</span>(x + DASH, size.x), y), col, <span class="n">1.0</span>)
+		x += STEP
+</pre></div>
+<div class="note"><code>Label</code> má defaultne <code>MOUSE_FILTER_IGNORE</code>, takže kliky prepadnú
+cez oba labely na <code>HBoxContainer</code> a <code>_gui_input</code> ich zachytí. Nič v
+<code>data_row.tscn</code> meniť netreba — <code>selectable</code> zapne terminál v kóde.</div>
+
+<h2 class="sec" id="t4"><span class="n t">4</span>Compare / FLAG mechanika</h2>
+<p>Terminál si drží dva výbery a stav flagu. FLAG ich porovná s autorovaným rozporom a
+<b>prípad neuzavrie</b> — len si poznačí, či hráč rozpor našiel.</p>
+<div class="code">
+  <div class="bar"><span class="file">Audit/audit_terminal.gd — compare časť</span><span class="badge mod">uprav</span></div>
+<pre><span class="k">enum</span> FlagState { NONE, CORRECT, WRONG }
+
+<span class="k">var</span> _selected_field: <span class="t">String</span> = <span class="s">""</span>    <span class="c"># kľúč DataRow vybraný v ZLOŽKE</span>
+<span class="k">var</span> _selected_detail: <span class="t">String</span> = <span class="s">""</span>   <span class="c"># nárok vybraný v PREPISE</span>
+<span class="k">var</span> _flag_state: FlagState = FlagState.NONE
+
+
+<span class="k">func</span> <span class="f">_on_row_clicked</span>(row: DataRow) -> <span class="t">void</span>:
+	_selected_field = row.key.<span class="f">to_upper</span>()
+	<span class="k">for</span> r <span class="k">in</span> <span class="f">_selectable_rows</span>():
+		r.selected = (r == row)
+	<span class="f">_update_selected_bar</span>()
+
+
+<span class="c">## Vyšle sa pri kliknutí na podčiarknutý nárok v prepise.</span>
+<span class="k">func</span> <span class="f">_on_transcript_meta_clicked</span>(meta: <span class="t">Variant</span>) -> <span class="t">void</span>:
+	_selected_detail = <span class="f">str</span>(meta)
+	_transcript.text = <span class="f">_build_transcript_bbcode</span>(<span class="f">_current_case</span>())   <span class="c"># prekresli so zvýraznením</span>
+	<span class="f">_update_selected_bar</span>()
+
+
+<span class="k">func</span> <span class="f">_update_selected_bar</span>() -> <span class="t">void</span>:
+	_selected_bar.<span class="f">add_theme_color_override</span>(<span class="s">"font_color"</span>, <span class="t">Color</span>(<span class="n">0.435</span>, <span class="n">0.435</span>, <span class="n">0.388</span>))
+	<span class="k">if</span> _selected_field == <span class="s">""</span> <span class="k">and</span> _selected_detail == <span class="s">""</span>:
+		_selected_bar.text = SELECT_HINT
+	<span class="k">elif</span> _selected_field == <span class="s">""</span>:
+		_selected_bar.text = <span class="s">"SELECTED: \"%s\" — now pick a row in the CASE FILE"</span> % _selected_detail
+	<span class="k">elif</span> _selected_detail == <span class="s">""</span>:
+		_selected_bar.text = <span class="s">"SELECTED: %s — now pick a claim in the TRANSCRIPT"</span> % _selected_field
+	<span class="k">else</span>:
+		_selected_bar.text = <span class="s">"SELECTED: %s  vs  \"%s\"   — press FLAG"</span> % [_selected_field, _selected_detail]
+
+
+<span class="c">## FLAG nikdy neuzavrie prípad. Len zaznamená, či hráč rozpor odhalil;</span>
+<span class="c">## o osude jednotky stále rozhodujú verdiktové tlačidlá.</span>
+<span class="k">func</span> <span class="f">_on_flag</span>() -> <span class="t">void</span>:
+	<span class="k">var</span> c := <span class="f">_current_case</span>()
+	<span class="k">if</span> c == <span class="k">null</span>:
+		<span class="k">return</span>
+	<span class="k">if</span> _selected_field == <span class="s">""</span> <span class="k">or</span> _selected_detail == <span class="s">""</span>:
+		_selected_bar.text = <span class="s">"FLAG NEEDS TWO PICKS — one in the case file, one in the transcript"</span>
+		<span class="k">return</span>
+
+	<span class="k">var</span> correct := <span class="k">false</span>
+	<span class="k">if</span> c.<span class="f">has_contradiction</span>():
+		correct = (_selected_field == c.contradiction_field.<span class="f">to_upper</span>()
+			<span class="k">and</span> _selected_detail == c.contradiction_detail)
+
+	<span class="k">if</span> correct:
+		_flag_state = FlagState.CORRECT
+		_selected_bar.text = <span class="s">"CONTRADICTION LOGGED — %s vs \"%s\""</span> % [_selected_field, _selected_detail]
+		_selected_bar.<span class="f">add_theme_color_override</span>(<span class="s">"font_color"</span>, <span class="t">Color</span>(<span class="n">0.322</span>, <span class="n">0.788</span>, <span class="n">0.659</span>))
+		_signal_label.text = <span class="s">"SIGNAL: STABLE"</span>
+	<span class="k">else</span>:
+		_flag_state = FlagState.WRONG
+		_selected_bar.text = <span class="s">"NO DISCREPANCY FOUND — flag dismissed"</span>
+		_selected_bar.<span class="f">add_theme_color_override</span>(<span class="s">"font_color"</span>, <span class="t">Color</span>(<span class="n">0.851</span>, <span class="n">0.314</span>, <span class="n">0.227</span>))
+		_signal_label.text = <span class="s">"SIGNAL: DEGRADED"</span>
+</pre></div>
+<p>Zvýraznenie vybraného nároku v prepise rieši drobná úprava už existujúcej metódy — pribudol
+len <code>[bgcolor]</code> okolo aktuálneho výberu:</p>
+<div class="code">
+  <div class="bar"><span class="file">Audit/audit_terminal.gd — _build_transcript_bbcode</span><span class="badge mod">uprav</span></div>
+<pre><span class="k">func</span> <span class="f">_build_transcript_bbcode</span>(c: UnitCase) -> <span class="t">String</span>:
+	<span class="k">var</span> lines: <span class="t">PackedStringArray</span> = []
+	<span class="k">for</span> line <span class="k">in</span> c.transcript:
+		<span class="k">var</span> body := line.text
+		<span class="k">if</span> line.detail != <span class="s">""</span>:
+			<span class="k">var</span> shown := <span class="s">"[u]%s[/u]"</span> % line.detail
+			<span class="k">if</span> line.detail == _selected_detail:
+				shown = <span class="s">"[bgcolor=#4a3a18][u]%s[/u][/bgcolor]"</span> % line.detail
+			body = body.<span class="f">replace</span>(line.detail, <span class="s">"[url=%s]%s[/url]"</span> % [line.detail, shown])
+		lines.<span class="f">append</span>(<span class="s">"[color=#6f6f63]%s[/color]  [color=#e0a339]%s[/color]"</span> % [line.speaker, body])
+	<span class="k">return</span> <span class="s">"\n\n"</span>.<span class="f">join</span>(lines)
+</pre></div>
+
+<h2 class="sec" id="t5"><span class="n t">5</span>Verdikty, logovanie a posun na ďalší prípad</h2>
+<p>Tri verdikty idú cez jedno <code>_submit()</code>. Tam sa rozhodnutie zapíše do
+<code>GameState.terminal_log</code> — vrátane toho, či bol flag správny.</p>
+<div class="code">
+  <div class="bar"><span class="file">Audit/audit_terminal.gd — verdikty</span><span class="badge mod">uprav</span></div>
+<pre><span class="k">func</span> <span class="f">_on_approve</span>() -> <span class="t">void</span>: <span class="f">_submit</span>(<span class="s">"APPROVE"</span>)
+<span class="k">func</span> <span class="f">_on_hold</span>() -> <span class="t">void</span>: <span class="f">_submit</span>(<span class="s">"HOLD"</span>)
+<span class="k">func</span> <span class="f">_on_incinerate</span>() -> <span class="t">void</span>: <span class="f">_submit</span>(<span class="s">"INCINERATE"</span>)
+
+
+<span class="k">func</span> <span class="f">_submit</span>(verdict: <span class="t">String</span>) -> <span class="t">void</span>:
+	<span class="k">var</span> c := <span class="f">_current_case</span>()
+	<span class="k">if</span> c == <span class="k">null</span>:
+		<span class="k">return</span>
+	GameState.<span class="f">log_decision</span>(c.unit_id, verdict, _flag_state == FlagState.CORRECT)
+	<span class="f">print</span>(<span class="s">"[AuditTerminal] unit=%s verdict=%s (expected %s) flag=%s"</span> % [
+		c.unit_id, verdict, c.correct_verdict, <span class="f">_flag_text</span>()
+	])
+	verdict_submitted.<span class="f">emit</span>(verdict)
+	<span class="f">_next_case</span>()
+
+
+<span class="k">func</span> <span class="f">_flag_text</span>() -> <span class="t">String</span>:
+	<span class="k">match</span> _flag_state:
+		FlagState.CORRECT:
+			<span class="k">return</span> <span class="s">"CORRECT"</span>
+		FlagState.WRONG:
+			<span class="k">return</span> <span class="s">"WRONG"</span>
+		_:
+			<span class="k">return</span> <span class="s">"NONE"</span>
+
+
+<span class="k">func</span> <span class="f">_next_case</span>() -> <span class="t">void</span>:
+	_case_index += <span class="n">1</span>
+	<span class="k">if</span> _case_index >= _caseload.<span class="f">size</span>():
+		<span class="f">_finish_shift</span>()
+		<span class="k">return</span>
+	<span class="f">_display_case</span>(<span class="f">_current_case</span>())
+</pre></div>
+<div class="note"><b>Prečo sa nesprávny verdikt netrestá.</b> GDD (sekcia 8 a 11.1) hovorí, že
+<code>terminalLog</code> nemá vetviť príbeh — slúži na flavour. Presnosť si teda len zapisuješ a
+Handler ju neskôr okomentuje; v Deň 3 (Cesta A) si vie vytiahnuť konkrétnu jednotku, ktorú si
+posúdil zle. Preto tu nie je žiadny fail state.</div>
+
+<h2 class="sec" id="t6"><span class="n t">6</span>Direktíva dňa, <code>FILE i / N</code> a dev nástroje</h2>
+<p>Direktíva sa prestane písať natvrdo do scény a vykreslí sa z <code>DayCaseload.directive_lines</code>.
+Počítadlo prípadov je konečne živé.</p>
+<div class="code">
+  <div class="bar"><span class="file">Audit/audit_terminal.gd — caseload, direktíva, zobrazenie</span><span class="badge mod">uprav</span></div>
+<pre><span class="c"># Priečinok na deň: Audit/cases/Day1/, Day2/ …  POZOR: dva %d → treba pole!</span>
+<span class="k">const</span> CASELOAD_PATH := <span class="s">"res://Audit/cases/Day%d/day%d_caseload.tres"</span>
+
+<span class="k">var</span> _caseload: DayCaseload
+<span class="k">var</span> _case_index: <span class="t">int</span> = <span class="n">0</span>
+
+
+<span class="c">## Dva %d v ceste ⇒ argumenty MUSIA ísť ako pole. Zabalené do metódy, aby sa</span>
+<span class="c">## nedalo zabudnúť na to aj vo fallback vetve nižšie.</span>
+<span class="k">func</span> <span class="f">_caseload_path</span>(d: <span class="t">int</span>) -> <span class="t">String</span>:
+	<span class="k">return</span> CASELOAD_PATH % [d, d]
+
+
+<span class="k">func</span> <span class="f">_load_caseload</span>(d: <span class="t">int</span>) -> <span class="t">void</span>:
+	<span class="k">var</span> path := <span class="f">_caseload_path</span>(d)
+	<span class="k">if</span> <span class="k">not</span> <span class="t">ResourceLoader</span>.<span class="f">exists</span>(path):
+		<span class="f">push_warning</span>(<span class="s">"AuditTerminal: no caseload at %s — falling back to day 1."</span> % path)
+		path = <span class="f">_caseload_path</span>(<span class="n">1</span>)
+	_caseload = <span class="f">load</span>(path) <span class="k">as</span> DayCaseload
+	<span class="k">if</span> _caseload == <span class="k">null</span> <span class="k">or</span> _caseload.<span class="f">size</span>() == <span class="n">0</span>:
+		<span class="f">push_error</span>(<span class="s">"AuditTerminal: caseload missing or empty (%s)."</span> % path)
+		<span class="k">return</span>
+	_case_index = <span class="n">0</span>
+	<span class="f">_show_directive</span>()
+	<span class="f">_display_case</span>(<span class="f">_current_case</span>())
+
+
+<span class="c">## Prestaví blok direktívy z dát. Rule1/Rule2 v scéne sú len mockup a nahradia sa.</span>
+<span class="k">func</span> <span class="f">_show_directive</span>() -> <span class="t">void</span>:
+	<span class="k">for</span> c <span class="k">in</span> _directive.<span class="f">get_children</span>():
+		<span class="k">if</span> c.name != <span class="s">"DirectiveHeader"</span>:
+			c.<span class="f">queue_free</span>()
+	<span class="k">for</span> line <span class="k">in</span> _caseload.directive_lines:
+		<span class="k">var</span> l := <span class="t">Label</span>.<span class="f">new</span>()
+		l.text = <span class="s">"▸ "</span> + line
+		l.<span class="f">add_theme_color_override</span>(<span class="s">"font_color"</span>, <span class="t">Color</span>(<span class="n">0.878</span>, <span class="n">0.639</span>, <span class="n">0.224</span>))
+		l.<span class="f">add_theme_font_size_override</span>(<span class="s">"font_size"</span>, <span class="n">24</span>)
+		_directive.<span class="f">add_child</span>(l)
+
+
+<span class="k">func</span> <span class="f">_display_case</span>(c: UnitCase) -> <span class="t">void</span>:
+	<span class="k">if</span> c == <span class="k">null</span>:
+		<span class="k">return</span>
+	_row_unit_id.value_text = c.unit_id
+	_row_sector.value_text = c.sector_of_origin
+	_row_model.value_text = c.model_number
+	_row_degradation.value_text = <span class="f">str</span>(c.degradation) + <span class="s">"%"</span>
+	_file_value.text = <span class="s">"%d / %d"</span> % [_case_index + <span class="n">1</span>, _caseload.<span class="f">size</span>()]
+	<span class="f">_reset_selection</span>()
+	_transcript.text = <span class="f">_build_transcript_bbcode</span>(c)
+	<span class="f">_update_design_notes</span>()
+
+
+<span class="k">func</span> <span class="f">_reset_selection</span>() -> <span class="t">void</span>:
+	_selected_field = <span class="s">""</span>
+	_selected_detail = <span class="s">""</span>
+	_flag_state = FlagState.NONE
+	<span class="k">for</span> row <span class="k">in</span> <span class="f">_selectable_rows</span>():
+		row.selected = <span class="k">false</span>
+	_selected_bar.text = SELECT_HINT
+	_selected_bar.<span class="f">add_theme_color_override</span>(<span class="s">"font_color"</span>, <span class="t">Color</span>(<span class="n">0.435</span>, <span class="n">0.435</span>, <span class="n">0.388</span>))
+	_signal_label.text = <span class="s">"SIGNAL: STABLE"</span>
+</pre></div>
+<p>Dva prvky v hlavičke boli doteraz mŕtve — spravíme z nich dev nástroje:</p>
+<div class="code">
+  <div class="bar"><span class="file">Audit/audit_terminal.gd — dev pomôcky</span><span class="badge mod">uprav</span></div>
+<pre><span class="k">func</span> <span class="f">_on_day1_pressed</span>() -> <span class="t">void</span>:
+	<span class="f">_load_caseload</span>(<span class="n">1</span>)
+
+
+<span class="k">func</span> <span class="f">_on_day2_pressed</span>() -> <span class="t">void</span>:
+	<span class="f">_load_caseload</span>(<span class="n">2</span>)
+
+
+<span class="c">## SHOW DESIGN NOTES — odhalí očakávaný verdikt a rozpor. Iba na ladenie.</span>
+<span class="k">func</span> <span class="f">_on_design_notes_toggled</span>(_pressed: <span class="t">bool</span>) -> <span class="t">void</span>:
+	<span class="f">_update_design_notes</span>()
+
+
+<span class="k">func</span> <span class="f">_update_design_notes</span>() -> <span class="t">void</span>:
+	<span class="k">if</span> _design_notes == <span class="k">null</span> <span class="k">or</span> <span class="k">not</span> _design_notes.button_pressed:
+		<span class="k">return</span>
+	<span class="k">var</span> c := <span class="f">_current_case</span>()
+	<span class="k">if</span> c == <span class="k">null</span>:
+		<span class="k">return</span>
+	<span class="k">var</span> hint := <span class="s">"expected: %s"</span> % c.correct_verdict
+	<span class="k">if</span> c.<span class="f">has_contradiction</span>():
+		hint += <span class="s">"   |   contradiction: %s vs \"%s\""</span> % [c.contradiction_field, c.contradiction_detail]
+	<span class="k">else</span>:
+		hint += <span class="s">"   |   no contradiction (flagging is wrong)"</span>
+	_selected_bar.text = <span class="s">"[DESIGN] "</span> + hint
+</pre></div>
+<div class="warn"><code>DesignNotesCheck</code> nemá v scéne pripojený signál. V editore klikni na
+<code>DesignNotesCheck</code> → záložka <b>Node</b> → <code>toggled</code> → pripoj na
+<code>_on_design_notes_toggled</code>. Ostatné tlačidlá už pripojené sú.</div>
+
+<h2 class="sec" id="t7"><span class="n t">7</span>Koniec zmeny — návrat do gameloopu</h2>
+<p>Po poslednom prípade sa zmena uzavrie. Toto je bod, kde sa Časť 2 zapojí späť do Časti 1.</p>
+<div class="code">
+  <div class="bar"><span class="file">Audit/audit_terminal.gd — koniec zmeny</span><span class="badge mod">uprav</span></div>
+<pre><span class="k">const</span> MAIN_SCENE := <span class="s">"res://Main.tscn"</span>
+
+<span class="k">func</span> <span class="f">_finish_shift</span>() -> <span class="t">void</span>:
+	<span class="f">print</span>(<span class="s">"[AuditTerminal] shift complete — %d units processed"</span> % _caseload.<span class="f">size</span>())
+	<span class="c"># Na poradí záleží: úlohu označ za hotovú EŠTE PRED zmenou scény, aby</span>
+	<span class="c"># DayManager v izbe videl aktívnu úlohu "phone" a rozozvučal telefón.</span>
+	GameState.<span class="f">complete_task</span>(<span class="s">"terminal"</span>)
+	<span class="f">get_tree</span>().<span class="f">change_scene_to_file</span>(MAIN_SCENE)
+</pre></div>
+<div class="danger"><b>Najčastejšia chyba tu.</b> Ak prehodíš tie dva riadky, <code>change_scene_to_file</code>
+zničí scénu skôr, než sa úloha stihne označiť — deň ostane visieť na úlohe <code>terminal</code>,
+telefón nikdy nezazvoní a hráč sa zasekne v izbe bez aktívnej úlohy.</div>
+<div class="note">Myš sa nemusí riešiť ručne: terminál má <code>Node</code> s <code>mouse.gd</code>
+(kurzor viditeľný) a po návrate do izby <code>player.gd._ready()</code> myš zase zachytí.</div>
+
+<h2 class="sec" id="t8"><span class="n t">8</span>Zvuky — čo už v projekte máš</h2>
+<p>V priečinku <code>sfx/</code> sú použiteľné nahrávky, ktoré zatiaľ nič nevolá:</p>
+<table>
+  <tr><th>Súbor</th><th>Kam sedí</th></tr>
+  <tr><td><code>sfx/phone_ringing.mp3</code></td><td>zvonenie telefónu — <a class="ln" href="#s6">Časť 1, krok 6</a></td></tr>
+  <tr><td><code>sfx/mouse_click.mp3</code></td><td>klik na verdikt / FLAG / riadok zložky</td></tr>
+  <tr><td><code>sfx/keyboard_writing.mp3</code></td><td>ambient počas zmeny na termináli</td></tr>
+  <tr><td><code>sfx/starting_pc.mp3</code></td><td>pri vstupe do terminálu (<code>PC.interact</code>)</td></tr>
+  <tr><td><code>sfx/standing_up_from_chair.mp3</code></td><td>pri konci zmeny</td></tr>
+</table>
+<p>Najjednoduchšie napojenie klikov: do <code>AuditTerminal.tscn</code> pridaj
+<code>AudioStreamPlayer</code> s menom <code>Click</code> a v skripte:</p>
+<div class="code">
+  <div class="bar"><span class="file">Audit/audit_terminal.gd — voliteľné</span><span class="badge info">bonus</span></div>
+<pre><span class="k">@onready</span> <span class="k">var</span> _click: <span class="t">AudioStreamPlayer</span> = $Click
+
+<span class="k">func</span> <span class="f">_click_sfx</span>() -> <span class="t">void</span>:
+	<span class="k">if</span> _click:
+		_click.<span class="f">play</span>()
+
+<span class="c"># zavolaj _click_sfx() na začiatku _submit(), _on_flag() a _on_row_clicked()</span>
+</pre></div>
+
+<h2 class="sec" id="full"><span class="n t">§</span>Celý <code>audit_terminal.gd</code> pokope</h2>
+<p>Kompletná verzia so všetkými časťami z krokov 4–7 — toto môžeš vložiť ako celý súbor.</p>
+<div class="code">
+  <div class="bar"><span class="file">Audit/audit_terminal.gd</span><span class="badge mod">kompletný súbor</span></div>
+<pre><span class="k">class_name</span> AuditTerminal
+<span class="k">extends</span> <span class="t">Control</span>
+
+<span class="c">## Controller for the "Audit Terminal — Unit Review" screen (GDD Fáza B).</span>
+<span class="c">##</span>
+<span class="c">## Tok jednej jednotky:</span>
+<span class="c">##   prečítaj zložku + prepis</span>
+<span class="c">##   → voliteľne FLAG rozpor (jeden výber na KAŽDEJ strane)</span>
+<span class="c">##   → uzavri prípad jedným z troch verdiktov</span>
+<span class="c">## Po poslednej jednotke sa zmena končí, čím sa posunie denný task list.</span>
+
+<span class="k">signal</span> verdict_submitted(verdict: <span class="t">String</span>)
+
+<span class="k">const</span> SELECT_HINT := <span class="s">"SELECTED: click one detail on each side to compare them"</span>
+<span class="k">const</span> MAIN_SCENE := <span class="s">"res://Main.tscn"</span>
+<span class="c"># Priečinok na deň: Audit/cases/Day1/, Day2/ …  POZOR: dva %d → treba pole!</span>
+<span class="k">const</span> CASELOAD_PATH := <span class="s">"res://Audit/cases/Day%d/day%d_caseload.tres"</span>
+
+<span class="c">## GDD ich volá CLEAR / HOLD / ESCALATE. FLAG tu zámerne nie je.</span>
+<span class="k">const</span> VERDICTS := [<span class="s">"APPROVE"</span>, <span class="s">"HOLD"</span>, <span class="s">"INCINERATE"</span>]
+
+<span class="k">enum</span> FlagState { NONE, CORRECT, WRONG }
+
+<span class="c"># --- Node references (cesty zodpovedajú AuditTerminal.tscn) ---</span>
+<span class="k">@onready</span> <span class="k">var</span> _row_unit_id: DataRow = $Margin/VBox/CaseFile/DataRows/RowUnitId
+<span class="k">@onready</span> <span class="k">var</span> _row_sector: DataRow = $Margin/VBox/CaseFile/DataRows/RowSector
+<span class="k">@onready</span> <span class="k">var</span> _row_model: DataRow = $Margin/VBox/CaseFile/DataRows/RowModel
+<span class="k">@onready</span> <span class="k">var</span> _row_degradation: DataRow = $Margin/VBox/CaseFile/DataRows/RowDegradation
+<span class="k">@onready</span> <span class="k">var</span> _transcript: <span class="t">RichTextLabel</span> = $Margin/VBox/Transcript/TranscriptText
+<span class="k">@onready</span> <span class="k">var</span> _selected_bar: <span class="t">Label</span> = $Margin/VBox/SelectedBar
+<span class="k">@onready</span> <span class="k">var</span> _file_value: <span class="t">Label</span> = $Margin/VBox/StatusBar/FileCol/FileValue
+<span class="k">@onready</span> <span class="k">var</span> _directive: <span class="t">VBoxContainer</span> = $Margin/VBox/Directive
+<span class="k">@onready</span> <span class="k">var</span> _signal_label: <span class="t">Label</span> = $Margin/VBox/Header/ControlsRow/SignalLabel
+<span class="k">@onready</span> <span class="k">var</span> _design_notes: <span class="t">CheckBox</span> = $Margin/VBox/Header/ControlsRow/DesignNotesCheck
+
+<span class="c"># --- Stav zmeny ---</span>
+<span class="k">var</span> _caseload: DayCaseload
+<span class="k">var</span> _case_index: <span class="t">int</span> = <span class="n">0</span>
+<span class="k">var</span> _selected_field: <span class="t">String</span> = <span class="s">""</span>
+<span class="k">var</span> _selected_detail: <span class="t">String</span> = <span class="s">""</span>
+<span class="k">var</span> _flag_state: FlagState = FlagState.NONE
+
+
+<span class="k">func</span> <span class="f">_ready</span>() -> <span class="t">void</span>:
+	<span class="k">for</span> row <span class="k">in</span> <span class="f">_selectable_rows</span>():
+		row.selectable = <span class="k">true</span>
+		row.row_clicked.<span class="f">connect</span>(_on_row_clicked)
+	<span class="f">_load_caseload</span>(GameState.day)
+
+
+<span class="k">func</span> <span class="f">_selectable_rows</span>() -> <span class="t">Array</span>[DataRow]:
+	<span class="k">var</span> list: <span class="t">Array</span>[DataRow] = []
+	list.<span class="f">append</span>(_row_unit_id)
+	list.<span class="f">append</span>(_row_sector)
+	list.<span class="f">append</span>(_row_model)
+	list.<span class="f">append</span>(_row_degradation)
+	<span class="k">return</span> list
+
+
+<span class="k">func</span> <span class="f">_current_case</span>() -> UnitCase:
+	<span class="k">if</span> _caseload == <span class="k">null</span>:
+		<span class="k">return</span> <span class="k">null</span>
+	<span class="k">return</span> _caseload.<span class="f">get_case</span>(_case_index)
+
+
+<span class="c"># --- Caseload ---------------------------------------------------------------</span>
+
+<span class="c">## Dva %d v ceste ⇒ argumenty MUSIA ísť ako pole. Zabalené do metódy, aby sa</span>
+<span class="c">## nedalo zabudnúť na to aj vo fallback vetve nižšie.</span>
+<span class="k">func</span> <span class="f">_caseload_path</span>(d: <span class="t">int</span>) -> <span class="t">String</span>:
+	<span class="k">return</span> CASELOAD_PATH % [d, d]
+
+
+<span class="k">func</span> <span class="f">_load_caseload</span>(d: <span class="t">int</span>) -> <span class="t">void</span>:
+	<span class="k">var</span> path := <span class="f">_caseload_path</span>(d)
+	<span class="k">if</span> <span class="k">not</span> <span class="t">ResourceLoader</span>.<span class="f">exists</span>(path):
+		<span class="f">push_warning</span>(<span class="s">"AuditTerminal: no caseload at %s — falling back to day 1."</span> % path)
+		path = <span class="f">_caseload_path</span>(<span class="n">1</span>)
+	_caseload = <span class="f">load</span>(path) <span class="k">as</span> DayCaseload
+	<span class="k">if</span> _caseload == <span class="k">null</span> <span class="k">or</span> _caseload.<span class="f">size</span>() == <span class="n">0</span>:
+		<span class="f">push_error</span>(<span class="s">"AuditTerminal: caseload missing or empty (%s)."</span> % path)
+		<span class="k">return</span>
+	_case_index = <span class="n">0</span>
+	<span class="f">_show_directive</span>()
+	<span class="f">_display_case</span>(<span class="f">_current_case</span>())
+
+
+<span class="k">func</span> <span class="f">_show_directive</span>() -> <span class="t">void</span>:
+	<span class="k">for</span> c <span class="k">in</span> _directive.<span class="f">get_children</span>():
+		<span class="k">if</span> c.name != <span class="s">"DirectiveHeader"</span>:
+			c.<span class="f">queue_free</span>()
+	<span class="k">for</span> line <span class="k">in</span> _caseload.directive_lines:
+		<span class="k">var</span> l := <span class="t">Label</span>.<span class="f">new</span>()
+		l.text = <span class="s">"▸ "</span> + line
+		l.<span class="f">add_theme_color_override</span>(<span class="s">"font_color"</span>, <span class="t">Color</span>(<span class="n">0.878</span>, <span class="n">0.639</span>, <span class="n">0.224</span>))
+		l.<span class="f">add_theme_font_size_override</span>(<span class="s">"font_size"</span>, <span class="n">24</span>)
+		_directive.<span class="f">add_child</span>(l)
+
+
+<span class="c"># --- Zobrazenie prípadu -----------------------------------------------------</span>
+
+<span class="k">func</span> <span class="f">_display_case</span>(c: UnitCase) -> <span class="t">void</span>:
+	<span class="k">if</span> c == <span class="k">null</span>:
+		<span class="k">return</span>
+	_row_unit_id.value_text = c.unit_id
+	_row_sector.value_text = c.sector_of_origin
+	_row_model.value_text = c.model_number
+	_row_degradation.value_text = <span class="f">str</span>(c.degradation) + <span class="s">"%"</span>
+	_file_value.text = <span class="s">"%d / %d"</span> % [_case_index + <span class="n">1</span>, _caseload.<span class="f">size</span>()]
+	<span class="f">_reset_selection</span>()
+	_transcript.text = <span class="f">_build_transcript_bbcode</span>(c)
+	<span class="f">_update_design_notes</span>()
+
+
+<span class="k">func</span> <span class="f">_reset_selection</span>() -> <span class="t">void</span>:
+	_selected_field = <span class="s">""</span>
+	_selected_detail = <span class="s">""</span>
+	_flag_state = FlagState.NONE
+	<span class="k">for</span> row <span class="k">in</span> <span class="f">_selectable_rows</span>():
+		row.selected = <span class="k">false</span>
+	_selected_bar.text = SELECT_HINT
+	_selected_bar.<span class="f">add_theme_color_override</span>(<span class="s">"font_color"</span>, <span class="t">Color</span>(<span class="n">0.435</span>, <span class="n">0.435</span>, <span class="n">0.388</span>))
+	_signal_label.text = <span class="s">"SIGNAL: STABLE"</span>
+
+
+<span class="k">func</span> <span class="f">_build_transcript_bbcode</span>(c: UnitCase) -> <span class="t">String</span>:
+	<span class="k">var</span> lines: <span class="t">PackedStringArray</span> = []
+	<span class="k">for</span> line <span class="k">in</span> c.transcript:
+		<span class="k">var</span> body := line.text
+		<span class="k">if</span> line.detail != <span class="s">""</span>:
+			<span class="k">var</span> shown := <span class="s">"[u]%s[/u]"</span> % line.detail
+			<span class="k">if</span> line.detail == _selected_detail:
+				shown = <span class="s">"[bgcolor=#4a3a18][u]%s[/u][/bgcolor]"</span> % line.detail
+			body = body.<span class="f">replace</span>(line.detail, <span class="s">"[url=%s]%s[/url]"</span> % [line.detail, shown])
+		lines.<span class="f">append</span>(<span class="s">"[color=#6f6f63]%s[/color]  [color=#e0a339]%s[/color]"</span> % [line.speaker, body])
+	<span class="k">return</span> <span class="s">"\n\n"</span>.<span class="f">join</span>(lines)
+
+
+<span class="c"># --- Compare / FLAG ---------------------------------------------------------</span>
+
+<span class="k">func</span> <span class="f">_on_row_clicked</span>(row: DataRow) -> <span class="t">void</span>:
+	_selected_field = row.key.<span class="f">to_upper</span>()
+	<span class="k">for</span> r <span class="k">in</span> <span class="f">_selectable_rows</span>():
+		r.selected = (r == row)
+	<span class="f">_update_selected_bar</span>()
+
+
+<span class="k">func</span> <span class="f">_on_transcript_meta_clicked</span>(meta: <span class="t">Variant</span>) -> <span class="t">void</span>:
+	_selected_detail = <span class="f">str</span>(meta)
+	_transcript.text = <span class="f">_build_transcript_bbcode</span>(<span class="f">_current_case</span>())
+	<span class="f">_update_selected_bar</span>()
+
+
+<span class="k">func</span> <span class="f">_update_selected_bar</span>() -> <span class="t">void</span>:
+	_selected_bar.<span class="f">add_theme_color_override</span>(<span class="s">"font_color"</span>, <span class="t">Color</span>(<span class="n">0.435</span>, <span class="n">0.435</span>, <span class="n">0.388</span>))
+	<span class="k">if</span> _selected_field == <span class="s">""</span> <span class="k">and</span> _selected_detail == <span class="s">""</span>:
+		_selected_bar.text = SELECT_HINT
+	<span class="k">elif</span> _selected_field == <span class="s">""</span>:
+		_selected_bar.text = <span class="s">"SELECTED: \"%s\" — now pick a row in the CASE FILE"</span> % _selected_detail
+	<span class="k">elif</span> _selected_detail == <span class="s">""</span>:
+		_selected_bar.text = <span class="s">"SELECTED: %s — now pick a claim in the TRANSCRIPT"</span> % _selected_field
+	<span class="k">else</span>:
+		_selected_bar.text = <span class="s">"SELECTED: %s  vs  \"%s\"   — press FLAG"</span> % [_selected_field, _selected_detail]
+
+
+<span class="k">func</span> <span class="f">_on_flag</span>() -> <span class="t">void</span>:
+	<span class="k">var</span> c := <span class="f">_current_case</span>()
+	<span class="k">if</span> c == <span class="k">null</span>:
+		<span class="k">return</span>
+	<span class="k">if</span> _selected_field == <span class="s">""</span> <span class="k">or</span> _selected_detail == <span class="s">""</span>:
+		_selected_bar.text = <span class="s">"FLAG NEEDS TWO PICKS — one in the case file, one in the transcript"</span>
+		<span class="k">return</span>
+
+	<span class="k">var</span> correct := <span class="k">false</span>
+	<span class="k">if</span> c.<span class="f">has_contradiction</span>():
+		correct = (_selected_field == c.contradiction_field.<span class="f">to_upper</span>()
+			<span class="k">and</span> _selected_detail == c.contradiction_detail)
+
+	<span class="k">if</span> correct:
+		_flag_state = FlagState.CORRECT
+		_selected_bar.text = <span class="s">"CONTRADICTION LOGGED — %s vs \"%s\""</span> % [_selected_field, _selected_detail]
+		_selected_bar.<span class="f">add_theme_color_override</span>(<span class="s">"font_color"</span>, <span class="t">Color</span>(<span class="n">0.322</span>, <span class="n">0.788</span>, <span class="n">0.659</span>))
+		_signal_label.text = <span class="s">"SIGNAL: STABLE"</span>
+	<span class="k">else</span>:
+		_flag_state = FlagState.WRONG
+		_selected_bar.text = <span class="s">"NO DISCREPANCY FOUND — flag dismissed"</span>
+		_selected_bar.<span class="f">add_theme_color_override</span>(<span class="s">"font_color"</span>, <span class="t">Color</span>(<span class="n">0.851</span>, <span class="n">0.314</span>, <span class="n">0.227</span>))
+		_signal_label.text = <span class="s">"SIGNAL: DEGRADED"</span>
+
+
+<span class="c"># --- Verdikty ---------------------------------------------------------------</span>
+
+<span class="k">func</span> <span class="f">_on_approve</span>() -> <span class="t">void</span>: <span class="f">_submit</span>(<span class="s">"APPROVE"</span>)
+<span class="k">func</span> <span class="f">_on_hold</span>() -> <span class="t">void</span>: <span class="f">_submit</span>(<span class="s">"HOLD"</span>)
+<span class="k">func</span> <span class="f">_on_incinerate</span>() -> <span class="t">void</span>: <span class="f">_submit</span>(<span class="s">"INCINERATE"</span>)
+
+
+<span class="k">func</span> <span class="f">_submit</span>(verdict: <span class="t">String</span>) -> <span class="t">void</span>:
+	<span class="k">var</span> c := <span class="f">_current_case</span>()
+	<span class="k">if</span> c == <span class="k">null</span>:
+		<span class="k">return</span>
+	GameState.<span class="f">log_decision</span>(c.unit_id, verdict, _flag_state == FlagState.CORRECT)
+	<span class="f">print</span>(<span class="s">"[AuditTerminal] unit=%s verdict=%s (expected %s) flag=%s"</span> % [
+		c.unit_id, verdict, c.correct_verdict, <span class="f">_flag_text</span>()
+	])
+	verdict_submitted.<span class="f">emit</span>(verdict)
+	<span class="f">_next_case</span>()
+
+
+<span class="k">func</span> <span class="f">_flag_text</span>() -> <span class="t">String</span>:
+	<span class="k">match</span> _flag_state:
+		FlagState.CORRECT:
+			<span class="k">return</span> <span class="s">"CORRECT"</span>
+		FlagState.WRONG:
+			<span class="k">return</span> <span class="s">"WRONG"</span>
+		_:
+			<span class="k">return</span> <span class="s">"NONE"</span>
+
+
+<span class="k">func</span> <span class="f">_next_case</span>() -> <span class="t">void</span>:
+	_case_index += <span class="n">1</span>
+	<span class="k">if</span> _case_index >= _caseload.<span class="f">size</span>():
+		<span class="f">_finish_shift</span>()
+		<span class="k">return</span>
+	<span class="f">_display_case</span>(<span class="f">_current_case</span>())
+
+
+<span class="k">func</span> <span class="f">_finish_shift</span>() -> <span class="t">void</span>:
+	<span class="f">print</span>(<span class="s">"[AuditTerminal] shift complete — %d units processed"</span> % _caseload.<span class="f">size</span>())
+	<span class="c"># Na poradí záleží: označ úlohu PRED zmenou scény, aby DayManager</span>
+	<span class="c"># v izbe videl aktívnu úlohu "phone" a rozozvučal telefón.</span>
+	GameState.<span class="f">complete_task</span>(<span class="s">"terminal"</span>)
+	<span class="f">get_tree</span>().<span class="f">change_scene_to_file</span>(MAIN_SCENE)
+
+
+<span class="c"># --- Dev pomôcky ------------------------------------------------------------</span>
+
+<span class="k">func</span> <span class="f">_on_day1_pressed</span>() -> <span class="t">void</span>:
+	<span class="f">_load_caseload</span>(<span class="n">1</span>)
+
+
+<span class="k">func</span> <span class="f">_on_day2_pressed</span>() -> <span class="t">void</span>:
+	<span class="f">_load_caseload</span>(<span class="n">2</span>)
+
+
+<span class="k">func</span> <span class="f">_on_design_notes_toggled</span>(_pressed: <span class="t">bool</span>) -> <span class="t">void</span>:
+	<span class="f">_update_design_notes</span>()
+
+
+<span class="k">func</span> <span class="f">_update_design_notes</span>() -> <span class="t">void</span>:
+	<span class="k">if</span> _design_notes == <span class="k">null</span> <span class="k">or</span> <span class="k">not</span> _design_notes.button_pressed:
+		<span class="k">return</span>
+	<span class="k">var</span> c := <span class="f">_current_case</span>()
+	<span class="k">if</span> c == <span class="k">null</span>:
+		<span class="k">return</span>
+	<span class="k">var</span> hint := <span class="s">"expected: %s"</span> % c.correct_verdict
+	<span class="k">if</span> c.<span class="f">has_contradiction</span>():
+		hint += <span class="s">"   |   contradiction: %s vs \"%s\""</span> % [c.contradiction_field, c.contradiction_detail]
+	<span class="k">else</span>:
+		hint += <span class="s">"   |   no contradiction (flagging is wrong)"</span>
+	_selected_bar.text = <span class="s">"[DESIGN] "</span> + hint
+</pre></div>
+
+<!-- ══════════════════════════ ZÁVER ══════════════════════════ -->
+<h2 class="sec" id="wiring"><span class="n">✓</span>Wiring v editore — checklist</h2>
+<h3>Časť 1 — gameloop</h3>
+<ol>
+  <li><b>Nové súbory:</b> <code>Global Scripts/day_task.gd</code>, <code>Global Scripts/day_manager.gd</code>,
+      <code>Interactibles/simple_task.gd</code>.</li>
+  <li><b>Upravené:</b> <code>GameState.gd</code>, <code>interactible.gd</code>, <code>Phone.gd</code>,
+      <code>PC_interactible.gd</code>, <code>bed.gd</code>.</li>
+  <li><b>Do <code>Main.tscn</code></b> pridaj <code>Node</code> s menom <code>DayManager</code> + skript;
+      <code>player_path</code> môžeš nechať prázdne.</li>
+  <li><b><code>Marker3D</code></b> v <code>Main</code>: <code>Spawn_BED</code> (povinné), <code>Spawn_PC</code>.</li>
+  <li><b>Objekt jedla:</b> <code>StaticBody3D</code> na <b>collision layer 1</b> so
+      <code>simple_task.gd</code>, <code>task_id = "eat"</code>.</li>
+  <li><b>Do <code>telephone.tscn</code></b> pridaj <code>AudioStreamPlayer3D</code> s menom
+      <code>RingSound</code>, stream <code>res://sfx/phone_ringing.mp3</code>, zapni <b>Loop</b> v importe.</li>
+</ol>
+<h3>Časť 2 — terminál</h3>
+<ol>
+  <li><b>Nový súbor:</b> <code>Audit/day_caseload.gd</code>.</li>
+  <li><b>Upravené:</b> <code>Audit/unit_case.gd</code>, <code>Audit/data_row.gd</code>,
+      <code>Audit/audit_terminal.gd</code>.</li>
+  <li><b>V <code>AuditTerminal.tscn</code> vymaž staré priradenie <code>current_case</code></b>
+      (Inšpektor → vlastnosť <code>Current Case</code> → Clear). Skript ju už nemá a Godot by
+      pri načítaní scény hlásil neznámu vlastnosť.</li>
+  <li><b>Pripoj signál</b> <code>DesignNotesCheck.toggled</code> → <code>_on_design_notes_toggled</code>.
+      Ostatné tlačidlá už pripojené sú.</li>
+  <li><b>Vytvor <code>Audit/cases/Day1/day1_caseload.tres</code></b> (New Resource → DayCaseload),
+      vyplň <code>directive_lines</code> a do <code>cases</code> pretiahni prípady v poradí.</li>
+  <li><b>Vytvor aspoň jeden prípad s rozporom</b> (napr. <code>day1_221kl.tres</code>) —
+      inak sa nedá otestovať správny flag.</li>
+  <li><i>Voliteľné:</i> <code>AudioStreamPlayer</code> s menom <code>Click</code> pre zvuk tlačidiel.</li>
+</ol>
+<div class="warn"><b>Fyzická vrstva.</b> Interakčný ray má <code>collision_mask = 1</code>. Každý nový objekt
+úlohy v izbe musí byť <code>StaticBody3D</code> na <b>vrstve 1</b>, inak ho hráč „neuvidí".</div>
+
+<h2 class="sec" id="verify"><span class="n">§</span>Ako to overiť</h2>
+<p>Na tomto stroji nie je Godot editor/binárka, takže syntax sa overuje cez <code>gdparse</code>
+(gdtoolkit). <b>Vizuálne/runtime potvrdenie (F6) je na tebe.</b></p>
+<p>Pri korektne zapojenom loope musí konzola vypísať tento sled:</p>
+<div class="code">
+  <div class="bar"><span class="file">Godot konzola — očakávaný sled celého dňa</span><span class="badge info">runtime</span></div>
+<pre>[DayManager] aktívna úloha = eat  fáza = CHORE
+<span class="c"># (interakcia s jedlom)</span>
+[DayManager] aktívna úloha = terminal  fáza = TERMINAL
+<span class="c"># (interakcia s PC → terminál)</span>
+
+<span class="c"># --- prípad 1/2: 108-VN, bez rozporu ---</span>
+<span class="c"># klik na riadok SECTOR OF ORIGIN, klik na "Sector 4 processing center", FLAG</span>
+<span class="c">#   → SelectedBar: "NO DISCREPANCY FOUND — flag dismissed"   (správne, nemá rozpor)</span>
+[AuditTerminal] unit=108-VN verdict=APPROVE (expected APPROVE) flag=WRONG
+
+<span class="c"># --- prípad 2/2: 221-KL, rozpor Sector 4 vs Sector 9 ---</span>
+<span class="c"># klik na SECTOR OF ORIGIN, klik na "Sector 9", FLAG</span>
+<span class="c">#   → SelectedBar: "CONTRADICTION LOGGED — SECTOR OF ORIGIN vs "Sector 9""</span>
+[AuditTerminal] unit=221-KL verdict=HOLD (expected HOLD) flag=CORRECT
+
+[AuditTerminal] shift complete — 2 units processed
+[DayManager] FÁZA -> PHONE
+[DayManager] aktívna úloha = phone  fáza = PHONE
+[Telephone] RING RING            <span class="c"># ← signál po termináli</span>
+<span class="c"># (zdvihnutie telefónu)</span>
+[DayManager] aktívna úloha = sleep  fáza = SLEEP
+<span class="c"># (posteľ)</span>
+Spím – koniec dňa
+[DayManager] aktívna úloha = eat  fáza = CHORE   <span class="c"># ← nový deň, opäť pri posteli</span></pre></div>
+<h3>Čo cielene skúsiť pokaziť</h3>
+<ul>
+  <li><b>Poradie úloh:</b> kým je aktívna <code>eat</code>, na PC/telefóne/posteli sa nesmie zobraziť
+      prompt. Dokončenie mimo poradia vypíše <code>complete_task(...) ignorované</code>.</li>
+  <li><b>FLAG bez dvoch výberov:</b> musí sa objaviť „FLAG NEEDS TWO PICKS", nie pád.</li>
+  <li><b>FLAG neuzatvára prípad:</b> po stlačení FLAG musí <code>FILE</code> ostať na tom istom čísle.</li>
+  <li><b>Chýbajúci caseload:</b> premenuj <code>day1_caseload.tres</code> — musí prísť
+      <code>push_warning</code> o fallbacku, nie tichý pád.</li>
+  <li><b>Kontrola terminal_logu:</b> po zmene si vypíš <code>GameState.terminal_log</code> — musí
+      obsahovať po jednom zázname na jednotku s poľami <code>decision</code> a <code>flagged_correctly</code>.</li>
+</ul>
+
+<h2 class="sec" id="save"><span class="n">§</span>Budúcnosť: ukladanie hry po dňoch</h2>
+<p>Celý stav dňa je už v <code>GameState</code>, takže ukladanie je priamočiare:</p>
+<div class="code">
+  <div class="bar"><span class="file">Global Scripts/GameState.gd (náčrt)</span><span class="badge info">nice-to-have</span></div>
+<pre><span class="k">const</span> SAVE_PATH := <span class="s">"user://save.cfg"</span>
+
+<span class="k">func</span> <span class="f">save_game</span>() -> <span class="t">void</span>:
+	<span class="k">var</span> cfg := <span class="t">ConfigFile</span>.<span class="f">new</span>()
+	cfg.<span class="f">set_value</span>(<span class="s">"day"</span>, <span class="s">"day"</span>, day)
+	cfg.<span class="f">set_value</span>(<span class="s">"day"</span>, <span class="s">"task_index"</span>, current_task_index)
+	cfg.<span class="f">set_value</span>(<span class="s">"day"</span>, <span class="s">"last_player_pos"</span>, last_player_pos)
+	cfg.<span class="f">set_value</span>(<span class="s">"story"</span>, <span class="s">"path"</span>, path)
+	cfg.<span class="f">set_value</span>(<span class="s">"story"</span>, <span class="s">"vent_blocked"</span>, vent_blocked)
+	cfg.<span class="f">set_value</span>(<span class="s">"story"</span>, <span class="s">"terminal_log"</span>, terminal_log)
+	cfg.<span class="f">save</span>(SAVE_PATH)
+
+<span class="k">func</span> <span class="f">load_game</span>() -> <span class="t">bool</span>:
+	<span class="k">var</span> cfg := <span class="t">ConfigFile</span>.<span class="f">new</span>()
+	<span class="k">if</span> cfg.<span class="f">load</span>(SAVE_PATH) != OK:
+		<span class="k">return</span> <span class="k">false</span>
+	day = cfg.<span class="f">get_value</span>(<span class="s">"day"</span>, <span class="s">"day"</span>, <span class="n">1</span>)
+	<span class="f">start_day</span>(day)
+	current_task_index = cfg.<span class="f">get_value</span>(<span class="s">"day"</span>, <span class="s">"task_index"</span>, <span class="n">0</span>)
+	last_player_pos = cfg.<span class="f">get_value</span>(<span class="s">"day"</span>, <span class="s">"last_player_pos"</span>, <span class="s">"BED"</span>)
+	path = cfg.<span class="f">get_value</span>(<span class="s">"story"</span>, <span class="s">"path"</span>, <span class="s">""</span>)
+	vent_blocked = cfg.<span class="f">get_value</span>(<span class="s">"story"</span>, <span class="s">"vent_blocked"</span>, <span class="k">false</span>)
+	terminal_log = cfg.<span class="f">get_value</span>(<span class="s">"story"</span>, <span class="s">"terminal_log"</span>, [])
+	<span class="k">return</span> <span class="k">true</span>
+</pre></div>
+<p><code>save_game()</code> zavolaj v <code>end_day()</code> (keď si ľahneš spať) a
+<code>load_game()</code> skús v <code>_ready()</code> namiesto natvrdo <code>start_day(1)</code>.
+<code>terminal_log</code> ukladaj tiež — Handler z neho v Deň 3 (Cesta A) vytiahne konkrétnu
+jednotku, ktorú si posúdil zle.</p>
+
+<p class="foot">Still Human · denný gameloop + funkčný Audit terminál · návod vygenerovaný ako pomôcka
+k implementácii. Projekt zostal nezmenený — kód vkladáš podľa krokov vyššie.</p>
+</main>
+</div>
+
+<script>
+  document.querySelectorAll('.code').forEach(function(block){
+    var bar = block.querySelector('.bar');
+    var pre = block.querySelector('pre');
+    if(!bar || !pre) return;
+    var btn = document.createElement('button');
+    btn.className = 'copy'; btn.textContent = 'kopírovať';
+    btn.addEventListener('click', function(){
+      navigator.clipboard.writeText(pre.innerText).then(function(){
+        btn.textContent = 'skopírované ✓';
+        setTimeout(function(){ btn.textContent = 'kopírovať'; }, 1400);
+      });
+    });
+    bar.appendChild(btn);
+  });
+  var links = [].slice.call(document.querySelectorAll('nav a'));
+  var map = {};
+  links.forEach(function(a){ var id=a.getAttribute('href').slice(1); if(id) map[id]=a; });
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      var a = map[e.target.id];
+      if(a && e.isIntersecting){
+        links.forEach(function(x){ x.style.background=''; x.style.borderLeftColor='transparent'; });
+        a.style.background='#161b12'; a.style.borderLeftColor='#e0a339';
+      }
+    });
+  }, {rootMargin:'-10% 0px -80% 0px'});
+  document.querySelectorAll('h2[id]').forEach(function(h){ obs.observe(h); });
+</script>
