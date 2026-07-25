@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://cake1dxqbao6j" path="res://Audit/audit_terminal.gd" id="2_ctrl"]
 [ext_resource type="PackedScene" uid="uid://xbr10rb6ex5o" path="res://Audit/data_row.tscn" id="3_row"]
 [ext_resource type="Script" uid="uid://cxtfk0ds5pue3" path="res://Global Scripts/mouse.gd" id="5_aqk3x"]
+[ext_resource type="AudioStream" uid="uid://6ygass62x6tr" path="res://sfx/mouse_click.mp3" id="5_ocvml"]
 
 [sub_resource type="StyleBoxFlat" id="sb_tab_active"]
 content_margin_left = 16.0
@@ -81,6 +82,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_theme")
 script = ExtResource("2_ctrl")
+click_sfx = ExtResource("5_ocvml")
 
 [node name="Background" type="ColorRect" parent="." unique_id=615165519]
 layout_mode = 1

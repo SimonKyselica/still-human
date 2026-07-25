@@ -7,7 +7,6 @@ func _ready() -> void:
 	prompt_text = "Start Work"
 	task_id = "terminal"
 	add_to_group("tasks_objects")
-	enabled = false
 
 func interact(player: Node) -> void:
 	super.interact(player)

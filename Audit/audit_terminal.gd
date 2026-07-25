@@ -32,6 +32,8 @@ enum FlagState { NONE, CORRECT, WRONG }
 @onready var _signal_label: Label = $Margin/VBox/Header/ControlsRow/SignalLabel
 @onready var _design_notes: CheckBox = $Margin/VBox/Header/ControlsRow/DesignNotesCheck
 
+@export var click_sfx: AudioStream
+
 # --- Stav zmeny ---
 var _caseload: DayCaseload
 var _case_index: int = 0
@@ -135,6 +137,7 @@ func _build_transcript_bbcode(c: UnitCase) -> String:
 # --- Compare / FLAG ---------------------------------------------------------
 
 func _on_row_clicked(row: DataRow) -> void:
+	_click_sfx()
 	_selected_field = row.key.to_upper()
 	for r in _selectable_rows():
 		r.selected = (r == row)
@@ -160,6 +163,7 @@ func _update_selected_bar() -> void:
 
 
 func _on_flag() -> void:
+	_click_sfx()
 	var c := _current_case()
 	if c == null:
 		return
@@ -192,6 +196,7 @@ func _on_incinerate() -> void: _submit("INCINERATE")
 
 
 func _submit(verdict: String) -> void:
+	_click_sfx()
 	var c := _current_case()
 	if c == null:
 		return
@@ -260,3 +265,6 @@ func _update_design_notes() -> void:
 
 func _on_design_notes_check_toggled(toggled_on: bool) -> void:
 	pass # Replace with function body.
+
+func _click_sfx() -> void:
+	AudioManager.play_sound(click_sfx, AudioManager.BUS_SFX, 0.0, 1.0, 0.03)
