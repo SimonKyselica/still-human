@@ -13,6 +13,14 @@ const MOUSE_SENSITIVITY = 0.003
 # Get the gravity from the project settings to sync with physics
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
+const STEP_DISTANCE := 2.0   # metres between footsteps — tune to taste
+var _step_accum := 0.0
+var _footsteps: Array[AudioStream] = [
+	preload("res://sfx/walking_1.wav"),
+	preload("res://sfx/walking_2.wav"),
+	preload("res://sfx/walking_3.wav"),
+]
+
 func _ready() -> void:
 	# Capture the mouse cursor so it doesn't wander off the screen initially
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -68,3 +76,13 @@ func _physics_process(delta: float) -> void:
 
 	# 6. Execute Godot's built-in physics movement
 	move_and_slide()
+	
+	# Footsteps: accumulate horizontal ground distance, play a step each interval.
+	var horizontal_speed := Vector2(velocity.x, velocity.z).length()
+	if is_on_floor() and horizontal_speed > 0.1:
+		_step_accum += horizontal_speed * delta
+		if _step_accum >= STEP_DISTANCE:
+			_step_accum = 0.0
+			AudioManager.play_sound(_footsteps.pick_random(), AudioManager.BUS_SFX, -6.0)
+	else:
+		_step_accum = STEP_DISTANCE   # so the first step after stopping fires immediately
