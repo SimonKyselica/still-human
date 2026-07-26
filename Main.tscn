@@ -112,19 +112,16 @@ spot_range = 5.627
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Room" unique_id=2067359882]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9612875, 2.7350688, -4.648209)
-visible = false
 light_color = Color(1, 1, 0.34117648, 1)
 shadow_enabled = true
 
 [node name="OmniLight3D3" type="OmniLight3D" parent="Room" unique_id=1039629813]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9612875, 2.7350688, -0.2604465)
-visible = false
 light_color = Color(1, 1, 0.34117648, 1)
 shadow_enabled = true
 
 [node name="OmniLight3D2" type="OmniLight3D" parent="Room" unique_id=1312398241]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.011484, 2.4365792, -3.578754)
-visible = false
 light_color = Color(1, 1, 0.34117648, 1)
 shadow_enabled = true
 

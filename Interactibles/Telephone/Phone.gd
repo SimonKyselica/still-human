@@ -26,6 +26,7 @@ func on_became_active() -> void:
 	start_ringing()
 	
 func start_ringing() -> void:
+	await get_tree().create_timer(5).timeout
 	is_ringing = true
 	enabled = true
 	print("Yo Phone Lingin")
