@@ -31,6 +31,10 @@ window/stretch/mode="canvas_items"
 
 movie_writer/movie_file="/Users/simon/Developer/Godot/one-room(wip)/Recordings/promo.avi"
 
+[global_group]
+
+screen_fader=""
+
 [input]
 
 move_forward={

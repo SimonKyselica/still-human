@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://cysf003iup6mm"]
+
+[ext_resource type="PackedScene" uid="uid://n7bngm4dx2a" path="res://Assets/lamp.glb" id="1_y8o80"]
+[ext_resource type="Script" uid="uid://cybifqa7piolm" path="res://Interactibles/Lamp/lamp.gd" id="2_g322v"]
+[ext_resource type="AudioStream" uid="uid://dwh6slj0n0m7o" path="res://sfx/lamp_switch.mp3" id="3_h5dt3"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u8lrn"]
+radius = 0.29882813
+height = 0.59765625
+
+[node name="lamp2" unique_id=457198591 instance=ExtResource("1_y8o80")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1" unique_id=765153683 node_paths=PackedStringArray("light")]
+script = ExtResource("2_g322v")
+turn_light_audio = ExtResource("3_h5dt3")
+light = NodePath("../OmniLight3D")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=1478883976]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.21679688, 0)
+shape = SubResource("CapsuleShape3D_u8lrn")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." index="2" unique_id=488088800]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.30901033, 0)
+light_color = Color(0.68563503, 0.68291384, 3.85046e-07, 1)
+light_energy = 2.465
+light_size = 0.38

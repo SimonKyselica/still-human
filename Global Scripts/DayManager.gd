@@ -12,7 +12,12 @@ func _ready() -> void:
 	_spawn_player()
 	GameState.task_advanced.connect(_on_task_advanced)
 	GameState.phase_changed.connect(_on_phase_changed)
-	_sync_to_current_task()
+	# Defer: DayManager sits above the interactables in the scene tree, so its
+	# _ready() runs before theirs. Calling the sync directly would look up the
+	# "tasks_objects" group before the phone/bed/etc. have added themselves to
+	# it (they do so in their own _ready()), finding an empty group and never
+	# firing on_became_active(). call_deferred waits until all _ready()s finish.
+	_sync_to_current_task.call_deferred()
 
 func _spawn_player() -> void:
 	if _player == null:

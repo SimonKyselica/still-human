@@ -6,7 +6,9 @@ extends Interactable
 var is_ringing: bool = true
 
 @onready var speech_sound = preload("res://Assets/Sounds/Phone.wav")
-# @onready var ring_player: AudioStreamPlayer3D = $RingSound 
+@export var ring_player: AudioStreamPlayer3D
+@export var pick_up_sound: AudioStream
+@export var put_down_sound: AudioStream
 
 const lines1: Array[String] = [
 	"Welcome to your new job!",
@@ -17,7 +19,7 @@ const lines1: Array[String] = [
 func _ready() -> void:
 	prompt_text = "Pick up Telephone"
 	task_id = "phone"
-	add_to_group("task_objects")
+	add_to_group("tasks_objects")
 	is_ringing = true
 	
 func on_became_active() -> void:
@@ -27,13 +29,23 @@ func start_ringing() -> void:
 	is_ringing = true
 	enabled = true
 	print("Yo Phone Lingin")
-	#ring_player.play()
+	if ring_player and not ring_player.playing:
+		ring_player.play()
+	AudioManager.play_sound_3d(pick_up_sound, global_position, AudioManager.BUS_SFX, 0.0, 1.0, 0.03)
+	#var duration = pick_up_sound.get_length()
+	#await get_tree().create_timer(duration).timeout
 
 func stop_ringing() -> void:
 	is_ringing = false
+	ring_player.stop()
+	
 
 func interact(player: Node) -> void:
 	super.interact(player)
 	stop_ringing()
 	DialogueManager.start_dialog(conver_pos, lines1, speech_sound)
 	GameState.complete_task("phone")   # zdvihnutie = dokončenie úlohy
+	await DialogueManager.dialogue_finished
+	# Hang up: play the put-down sound and wait out its length.
+	AudioManager.play_sound_3d(put_down_sound, global_position, AudioManager.BUS_SFX, 0.0, 1.0, 0.03)
+	await get_tree().create_timer(put_down_sound.get_length()).timeout

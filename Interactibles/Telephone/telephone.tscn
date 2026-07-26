@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://dqce2l0shv6ib"]
+
+[ext_resource type="PackedScene" uid="uid://ciqib243fpkk2" path="res://Assets/telephone.glb" id="1_6dd7g"]
+[ext_resource type="Script" uid="uid://cyiawin3u3qow" path="res://Interactibles/Telephone/Phone.gd" id="2_rmj35"]
+[ext_resource type="AudioStream" uid="uid://dsi8ut7y8qh7" path="res://sfx/phone_ringing.mp3" id="3_8xna3"]
+[ext_resource type="AudioStream" uid="uid://deis17rrvq6vb" path="res://sfx/phone_pick_up.mp3" id="3_83wiv"]
+[ext_resource type="AudioStream" uid="uid://biyseudo3a4n7" path="res://sfx/phone_put_down.mp3" id="4_24ftg"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_u8lrn"]
+size = Vector3(0.13043213, 0.12036133, 0.23278809)
+
+[node name="telephone" unique_id=575691054 instance=ExtResource("1_6dd7g")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="3" unique_id=265566504 node_paths=PackedStringArray("ring_player")]
+script = ExtResource("2_rmj35")
+ring_player = NodePath("../RingSound")
+pick_up_sound = ExtResource("3_83wiv")
+put_down_sound = ExtResource("4_24ftg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=2020526481]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.022125244, 0.038208008, 0.0017700195)
+shape = SubResource("BoxShape3D_u8lrn")
+
+[node name="RingSound" type="AudioStreamPlayer3D" parent="." index="4" unique_id=1098462862]
+stream = ExtResource("3_8xna3")
+volume_db = 9.249
+parameters/looping = true

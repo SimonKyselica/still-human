@@ -9,6 +9,8 @@ var last_player_pos: String = "BED" #- PC, BED, DOOR, PHONE
 var schedule: Array[DayTask] = []
 var current_task_index: int = 0
 
+@onready var bedsound: AudioStream = preload("res://sfx/bed_stand_up.mp3")
+
 signal task_advanced(newTask: DayTask)
 signal phase_changed(newPhase: String)
 signal day_started(d: int)
@@ -21,6 +23,14 @@ func start_day(d: int) -> void:
 	current_task_index = 0
 	schedule = _build_schedule(d)
 	day_started.emit(d)
+	
+	#var duration = bedsound.get_length()
+	#var fadeRect = get_tree().get_first_node_in_group("screen_fader") as ColorRect
+	#fadeRect.color = Color(0.0, 0.0, 0.0, 1.0)
+	#var tween = create_tween()
+	#tween.tween_property(fadeRect, "color:a", 0.0, duration)
+	#AudioManager.play_sound(bedsound, AudioManager.BUS_SFX, 0.0, 1.0, 0.01)
+	#await get_tree().create_timer(duration).timeout
 	
 	
 func _build_schedule(d: int) -> Array[DayTask]:
