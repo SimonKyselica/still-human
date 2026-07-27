@@ -9,6 +9,9 @@ var last_player_pos: String = "BED" #- PC, BED, DOOR, PHONE
 var schedule: Array[DayTask] = []
 var current_task_index: int = 0
 
+#How many units were wrong
+var shift_mistakes: int = 0
+
 @onready var bedsound: AudioStream = preload("res://sfx/bed_stand_up.mp3")
 
 signal task_advanced(newTask: DayTask)
@@ -24,7 +27,7 @@ func start_day(d: int) -> void:
 	schedule = _build_schedule(d)
 	day_started.emit(d)
 	
-	#var duration = bedsound.get_length()
+	#var duration = bedsound.get_length() 
 	#var fadeRect = get_tree().get_first_node_in_group("screen_fader") as ColorRect
 	#fadeRect.color = Color(0.0, 0.0, 0.0, 1.0)
 	#var tween = create_tween()
@@ -68,6 +71,8 @@ func complete_task(task_id: String) -> void:
 		return
 	var prev_phase := t.phase
 	current_task_index +=1
+	if(current_task().id == "phone"):
+		await get_tree().create_timer(5).timeout
 	var nxt := current_task()
 	task_advanced.emit(nxt)
 	if nxt == null:
@@ -95,3 +100,6 @@ func advance_day() -> void:
 func choose_path(chosen: String) -> void:
 	path = chosen
 	vent_blocked = (chosen == "A")
+	
+func shift_was_clean() -> bool:
+	return shift_mistakes == 0

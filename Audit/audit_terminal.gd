@@ -79,6 +79,7 @@ func _load_caseload(d: int) -> void:
 		push_error("AuditTerminal: caseload missing or empty (%s)." % path)
 		return
 	_case_index = 0
+	GameState.shift_mistakes = 0
 	_show_directive()
 	_display_case(_current_case())
 
@@ -200,6 +201,8 @@ func _submit(verdict: String) -> void:
 	var c := _current_case()
 	if c == null:
 		return
+	if verdict != c.correct_verdict:
+		GameState.shift_mistakes +=1
 	GameState.log_decision(c.unit_id, verdict, _flag_state == FlagState.CORRECT)
 	print("[AuditTerminal] unit=%s verdict=%s (expected %s) flag=%s" % [
 		c.unit_id, verdict, c.correct_verdict, _flag_text()

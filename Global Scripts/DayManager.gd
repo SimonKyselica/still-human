@@ -31,17 +31,30 @@ func _find_spawn(anchor: String) -> Node3D:
 		push_warning("DayManager: chýba Marker3D 'Spawn_%s'" % anchor)
 	return n as Node3D
 	
+const TASK_ACTIVATION_DELAY := 5.0  # seconds before a newly-active task turns on
+
 func _sync_to_current_task() -> void:
 	var active := GameState.current_task_id()
 	for obj in get_tree().get_nodes_in_group("tasks_objects"):
 		if obj is Interactable:
 			var it: Interactable = obj
 			var is_active := it.task_id == active
-			it.enabled = is_active
+			it.enabled = false
 			if is_active:
-				it.on_became_active()
+				# Delay the whole task (ring + interaction) by a few seconds.
+				_activate_after(it, TASK_ACTIVATION_DELAY)
 	_rebuild_ui()
 	print("[DayManager] aktívna úloha = ", active, "  fáza = ", GameState.current_phase())
+
+
+## Waits, then activates the task object — but only if it is still the active
+## task (guards against the task advancing or the scene reloading mid-wait).
+func _activate_after(it: Interactable, seconds: float) -> void:
+	await get_tree().create_timer(seconds).timeout
+	if not is_instance_valid(it) or it.task_id != GameState.current_task_id():
+		return
+	it.on_became_active()
+	it.enabled = true
 	
 func _on_task_advanced(_new_task: DayTask) -> void:
 	_sync_to_current_task()
