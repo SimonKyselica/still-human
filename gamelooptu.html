@@ -1,762 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
-<title>Still Human — Denný gameloop: implementačný návod</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Still Human — Build Roadmap (GDD vs. Code)</title>
 <style>
   :root{
-    --bg:#0b0e0b; --panel:#11150f; --panel2:#0e120d; --ink:#d7d3c4; --dim:#6f6f63;
-    --amber:#e0a339; --green:#4a8a6d; --green2:#52c2a8; --blue:#5b90c4; --red:#d9503a;
-    --line:#242a20; --code-bg:#0a0d09;
-    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
-    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --bg:#0b0e0b; --panel:#0f130f; --line:#2a2e28;
+    --amber:#e0a339; --amber-bright:#f0b84a;
+    --teal:#52c9a8; --blue:#5b90c4; --red:#d9503a;
+    --green:#4a8a6d; --dim:#8a8a7c; --text:#d7cfba;
+    --done:#4a8a6d; --part:#e0a339; --miss:#d9503a;
   }
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
-    font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
-  .wrap{display:grid;grid-template-columns:260px minmax(0,1fr);gap:0;max-width:1240px;margin:0 auto}
-  /* TOC */
-  nav{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;
-    padding:28px 18px 40px;border-right:1px solid var(--line);background:var(--panel2)}
-  nav h2{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin:0 0 14px}
-  nav a{display:block;color:var(--ink);text-decoration:none;font-size:13.5px;padding:5px 8px;
-    border-radius:5px;border-left:2px solid transparent;opacity:.82}
-  nav a:hover{background:#161b12;opacity:1;border-left-color:var(--amber)}
-  nav a.step{padding-left:16px;color:#b8b5a6}
-  nav .tag{color:var(--amber);font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12px;margin-right:6px}
-  main{padding:40px 46px 120px;min-width:0}
-  header.hero{border:1px solid var(--line);border-radius:12px;padding:30px 32px;
-    background:linear-gradient(160deg,#12160f,#0c0f0a);margin-bottom:34px}
-  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--green2);text-transform:uppercase}
-  h1{font-size:30px;margin:8px 0 6px;line-height:1.2}
-  .sub{color:var(--dim);font-size:15px;max-width:70ch}
-  h2.sec{font-size:22px;margin:52px 0 6px;padding-top:14px;border-top:1px solid var(--line)}
-  h2.sec .n{font-family:var(--mono);color:var(--amber);font-size:16px;margin-right:10px}
-  h3{font-size:17px;margin:26px 0 6px;color:#efe9d8}
-  p{margin:10px 0}
-  code{font-family:var(--mono);font-size:.9em;background:#171d13;color:#e7c98a;padding:1px 6px;border-radius:4px}
-  a.ln{color:var(--blue);text-decoration:none;border-bottom:1px dotted #35506e}
-  a.ln:hover{border-bottom-style:solid}
-  ul,ol{margin:10px 0;padding-left:22px}
-  li{margin:5px 0}
-  /* code blocks */
-  .code{position:relative;margin:16px 0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--code-bg)}
-  .code .bar{display:flex;align-items:center;justify-content:space-between;
-    padding:7px 12px;background:#0f130d;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--dim)}
-  .code .bar .file{color:var(--amber)}
-  .code .bar .badge{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:20px;border:1px solid var(--line)}
-  .badge.new{color:var(--green2);border-color:#274b40}
-  .badge.mod{color:var(--amber);border-color:#4a3a18}
-  .badge.info{color:var(--blue);border-color:#2b3f57}
-  pre{margin:0;padding:16px 16px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.6;color:#cfd8c6}
-  pre .c{color:#5f6b57;font-style:italic}     /* comment */
-  pre .k{color:#c98adf}                         /* keyword */
-  pre .f{color:#6fb0e6}                          /* func name */
-  pre .s{color:#8fc98a}                          /* string */
-  pre .t{color:#e0a339}                          /* type */
-  pre .n{color:#d98a5b}                          /* number */
-  button.copy{cursor:pointer;background:#1a2015;color:var(--dim);border:1px solid var(--line);
-    border-radius:6px;padding:3px 10px;font-family:var(--mono);font-size:11px}
-  button.copy:hover{color:var(--ink);border-color:var(--amber)}
-  .note{border-left:3px solid var(--blue);background:#0d1420;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0}
-  .warn{border-left:3px solid var(--amber);background:#1a140a;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0}
-  .danger{border-left:3px solid var(--red);background:#1c0f0c;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0}
-  .note b,.warn b,.danger b{color:#fff}
-  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px}
-  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
-  th{background:#0f130d;color:var(--amber);font-weight:600;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase}
-  td code{background:#12170f}
-  .diagram{background:var(--code-bg);border:1px solid var(--line);border-radius:10px;padding:18px;overflow-x:auto}
-  .diagram pre{font-size:12.5px;color:#b7c4ab;line-height:1.45}
-  .pill{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 9px;border-radius:20px;border:1px solid var(--line);color:var(--dim);margin:2px 4px 2px 0}
-  .pill.a{color:var(--blue);border-color:#2b3f57}
-  .pill.b{color:var(--amber);border-color:#4a3a18}
-  .pill.c{color:var(--green2);border-color:#274b40}
-  hr{border:0;border-top:1px solid var(--line);margin:30px 0}
-  .foot{color:var(--dim);font-size:13px;margin-top:40px}
-  @media(max-width:900px){.wrap{grid-template-columns:1fr}nav{display:none}main{padding:26px 18px 90px}}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0; background:var(--bg); color:var(--text);
+    font-family:"DepartureMono","JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:16px; line-height:1.6; padding:2.5rem 1.25rem 5rem;}
+  .wrap{max-width:960px; margin:0 auto}
+  header{border:1px solid var(--line); border-radius:8px; padding:1.25rem 1.5rem; background:linear-gradient(180deg,#10150f,#0c0f0c)}
+  .tag{color:var(--green); font-size:.8rem; letter-spacing:.14em}
+  h1{color:var(--amber); font-size:clamp(1.3rem,3.6vw,2rem); margin:.35rem 0 .5rem; letter-spacing:.04em}
+  header p{margin:.25rem 0 0; color:var(--dim)}
+  h2{color:var(--teal); margin:2.6rem 0 .5rem; font-size:1.2rem; letter-spacing:.03em; border-bottom:1px solid var(--line); padding-bottom:.35rem}
+  h3{color:var(--blue); margin:1.5rem 0 .3rem; font-size:1.02rem}
+  a{color:var(--amber-bright)}
+  code{color:var(--amber-bright); background:#171b16; padding:.05em .35em; border-radius:4px; font-size:.9em}
+  ul{padding-left:1.2rem} li{margin:.3rem 0}
+  .legend{display:flex; gap:1rem; flex-wrap:wrap; margin:1rem 0 0}
+  .st{display:inline-block; font-size:.72rem; padding:.12rem .55rem; border-radius:999px; border:1px solid; letter-spacing:.06em; white-space:nowrap; vertical-align:middle}
+  .done{color:var(--done); border-color:var(--done)}
+  .part{color:var(--part); border-color:var(--part)}
+  .miss{color:var(--miss); border-color:var(--miss)}
+  .table-scroll{overflow-x:auto}
+  table{border-collapse:collapse; width:100%; margin:1rem 0; font-size:.86rem; min-width:520px}
+  th,td{border:1px solid var(--line); padding:.5rem .6rem; text-align:left; vertical-align:top}
+  th{color:var(--dim); font-weight:normal; background:#10140f}
+  .phase{background:#10140f; border:1px solid var(--line); border-radius:6px; padding:.2rem 1rem 1rem; margin:1rem 0}
+  .card{border:1px solid var(--line); border-radius:6px; padding:.5rem 1rem; margin:.8rem 0}
+  .card.miss{border-left:3px solid var(--miss)}
+  .card h3{margin:.6rem 0 .2rem}
+  .path{color:var(--dim); font-size:.82rem}
+  .note{background:#0e1512; border:1px solid var(--line); border-left:3px solid var(--teal); border-radius:6px; padding:.85rem 1rem; margin:1rem 0}
+  ol.road{counter-reset:r; list-style:none; padding-left:0}
+  ol.road>li{counter-increment:r; border:1px solid var(--line); border-radius:6px; padding:.8rem 1rem .8rem 3rem; margin:.7rem 0; position:relative}
+  ol.road>li::before{content:counter(r); position:absolute; left:.9rem; top:.8rem; color:var(--amber); border:1px solid var(--amber); border-radius:50%; width:1.5rem; height:1.5rem; display:grid; place-items:center; font-size:.8rem}
+  ol.road b{color:var(--amber-bright)}
+  footer{margin-top:3rem; color:var(--dim); font-size:.8rem; border-top:1px solid var(--line); padding-top:1rem}
+  hr{border:none; border-top:1px solid var(--line); margin:2.2rem 0}
 </style>
-
+</head>
+<body>
 <div class="wrap">
-<nav>
-  <h2>Obsah</h2>
-  <a href="#cil">Cieľ &amp; výsledný loop</a>
-  <a href="#teraz">Ako to funguje teraz</a>
-  <a href="#insight">Kľúčový problém</a>
-  <a href="#arch">Architektúra riešenia</a>
-  <a href="#diagram">Diagram loopu</a>
-  <a class="step" href="#s1"><span class="tag">1</span>Dátový model dňa</a>
-  <a class="step" href="#s2"><span class="tag">2</span>GameState + fázy</a>
-  <a class="step" href="#s3"><span class="tag">3</span>Zamykanie objektov</a>
-  <a class="step" href="#s4"><span class="tag">4</span>DayManager</a>
-  <a class="step" href="#s5"><span class="tag">5</span>Štart pri posteli</a>
-  <a class="step" href="#s6"><span class="tag">6</span>Telefón: signál</a>
-  <a class="step" href="#s7"><span class="tag">7</span>Terminál: koniec zmeny</a>
-  <a class="step" href="#s8"><span class="tag">8</span>Jednoduché tasky</a>
-  <a class="step" href="#s9"><span class="tag">9</span>UI zoznam úloh</a>
-  <a class="step" href="#s10"><span class="tag">10</span>Spánok → nový deň</a>
-  <a href="#wiring">Wiring v editore</a>
-  <a href="#verify">Ako to overiť</a>
-  <a href="#save">Budúcnosť: ukladanie</a>
-</nav>
 
-<main>
-<header class="hero">
-  <div class="kicker">Still Human · Godot 4.7 · implementačný návod</div>
-  <h1>Denný gameloop — fázy A→B→C a modulárny task systém</h1>
-  <p class="sub">Ako do projektu doplniť kompletný cyklus jedného dňa: štart pri posteli → poradie úloh
-  (najedz sa → terminál → telefón → spánok) → prechod na ďalší deň. Vrátane fázového prepínania,
-  signálu na rozozvučanie telefónu a jednoduchého UI. Tento dokument je <b>len návod</b> — žiadny
-  súbor v projekte nebol zmenený, kód si vkladáš sám podľa krokov nižšie.</p>
+<header>
+  <div class="tag">● STILL HUMAN — PRODUCTION ROADMAP</div>
+  <h1>What's built vs. what's left</h1>
+  <p>The GDD (README.md) mapped onto the current project. 3 days × 3 phases (Phone → Terminal → Sleep), one Day-2 vent choice that forks into two paths, two endings.</p>
+  <div class="legend">
+    <span><span class="st done">DONE</span> works in code now</span>
+    <span><span class="st part">PARTIAL</span> exists but incomplete</span>
+    <span><span class="st miss">MISSING</span> not started</span>
+  </div>
 </header>
 
-<h2 class="sec" id="cil"><span class="n">§</span>Cieľ &amp; výsledný loop</h2>
-<p>Chceš uzavretý cyklus dňa, kde sa úlohy plnia <b>presne v danom poradí</b> a systém je modulárny
-(pridanie úlohy = jeden riadok). Fázy z GDD:</p>
-<p>
-  <span class="pill a">Fáza A · Telefón</span>
-  <span class="pill b">Fáza B · Terminál</span>
-  <span class="pill c">Fáza C · Spánok</span>
-  <span class="pill">+ chores (najedenie, …)</span>
-</p>
-<p>Konkrétny deň, ktorý postavíme (poradie je dátové, takže sa mení jedným riadkom):</p>
-<ol>
-  <li><b>Štart pri posteli</b> — pri každom spustení hry hráč stojí pri posteli.</li>
-  <li><b>Najedz sa</b> — chore, interakcia s objektom jedla.</li>
-  <li><b>Terminál</b> (Fáza B) — odídeš k PC, spracuješ zmenu, vrátiš sa.</li>
-  <li><b>Telefón zazvoní</b> (Fáza A) — po dokončení terminálu <b>signál</b> rozozvučí telefón; zdvihneš ho.</li>
-  <li><b>Spánok</b> (Fáza C) — ľahneš si → deň +1 → reset úloh → opäť pri posteli.</li>
-</ol>
-<div class="note"><b>Poznámka k poradiu telefónu.</b> GDD opisuje telefón ako <i>ranný rituál</i> (Fáza A na
-začiatku). Ty si žiadal, aby telefón zazvonil <i>po</i> termináli (koncová zmena). Postavíme to teda
-takto — a keďže poradie je len pole v <a class="ln" href="#s2">GameState</a>, presunúť telefón na
-začiatok dňa je otázka prehodenia jedného riadku. Systém je na poradí nezávislý.</div>
-
-<h2 class="sec" id="teraz"><span class="n">§</span>Ako to funguje teraz</h2>
-<p>Relevantné časti projektu, na ktoré nadviažeme:</p>
+<h2>At a glance</h2>
+<div class="table-scroll">
 <table>
-  <tr><th>Súbor</th><th>Čo robí dnes</th></tr>
-  <tr><td><code>Global Scripts/GameState.gd</code> (autoload)</td><td>Drží <code>day</code>, <code>path</code>, <code>vent_blocked</code>, <code>terminal_log</code>, <code>last_player_pos</code>. Prežije zmenu scény.</td></tr>
-  <tr><td><code>Interactibles/interactible.gd</code></td><td>Bázová <code>Interactable</code> (StaticBody3D, vrstva 1). Má <code>enabled</code>, <code>can_interact()</code>, <code>interact()</code>.</td></tr>
-  <tr><td><code>Player/interaction_component.gd</code></td><td>Raycast z kamery (mask 1). <b>Ak <code>can_interact()==false</code>, objekt ani neukáže prompt.</b></td></tr>
-  <tr><td><code>Assets/Full Setup/PC_interactible.gd</code></td><td><code>PC</code> → pri interakcii <code>change_scene_to_file("…/AuditTerminal.tscn")</code>.</td></tr>
-  <tr><td><code>Assets/Telephone/Phone.gd</code></td><td><code>Telephone</code>: <code>is_ringing=true</code> napevno, vždy <code>enabled</code>, spustí dialóg.</td></tr>
-  <tr><td><code>Interactibles/Bed/bed.gd</code></td><td><code>Bed</code> → voliteľná zmena scény.</td></tr>
-  <tr><td><code>Audit/audit_terminal.gd</code></td><td>Terminál so signálom <code>verdict_submitted</code>. Zatiaľ sa z neho nedá „vrátiť“.</td></tr>
-  <tr><td><code>Main.tscn</code> + <code>game_man.gd</code></td><td>Hlavná scéna (izba, hráč, HUD). <code>game_man</code> len prepája prompt UI.</td></tr>
+  <tr><th>System</th><th>Status</th><th>Where</th></tr>
+  <tr><td>Game-state object (day / path / vent / log)</td><td><span class="st done">DONE</span></td><td>GameState.gd</td></tr>
+  <tr><td>Day schedule + task advance + task-list UI</td><td><span class="st done">DONE</span></td><td>DayManager.gd, GameState.gd</td></tr>
+  <tr><td>Interaction (raycast + prompt) &amp; dialogue system</td><td><span class="st done">DONE</span></td><td>interaction_component.gd, DialogueManager.gd</td></tr>
+  <tr><td>Phone: rings when active, call, hang-up, 5&nbsp;s delay</td><td><span class="st done">DONE</span></td><td>Phone.gd, DayManager.gd</td></tr>
+  <tr><td>Terminal core: folder + transcript + verdicts + FLAG</td><td><span class="st done">DONE</span></td><td>audit_terminal.gd</td></tr>
+  <tr><td>Sleep → fade → next-day loop</td><td><span class="st done">DONE</span></td><td>bed.gd → GameState.end_day()</td></tr>
+  <tr><td>Handler scripts per day (rules / reassure / warn)</td><td><span class="st part">PARTIAL</span></td><td>Phone.gd (only generic + praise/reproach)</td></tr>
+  <tr><td>Caseloads for all 3 days + Day-2 contradiction rule</td><td><span class="st part">PARTIAL</span></td><td>only Audit/cases/Day1/</td></tr>
+  <tr><td>Terminal log stores <i>correctness</i> per unit</td><td><span class="st part">PARTIAL</span></td><td>log_decision keeps flag, not right/wrong</td></tr>
+  <tr><td><b>VENT — the Day-2 branch choice</b></td><td><span class="st miss">MISSING</span></td><td>no object; choose_path() never called</td></tr>
+  <tr><td>Path A/B consequences (visuals, flow)</td><td><span class="st miss">MISSING</span></td><td>GameState.path never read anywhere</td></tr>
+  <tr><td>Room degraded state (night + hell window + glitch)</td><td><span class="st miss">MISSING</span></td><td>—</td></tr>
+  <tr><td>Dream sequences (Day&nbsp;2 &amp; Day&nbsp;3-A)</td><td><span class="st miss">MISSING</span></td><td>—</td></tr>
+  <tr><td>Journal / identity reveal (Day&nbsp;3-A)</td><td><span class="st miss">MISSING</span></td><td>—</td></tr>
+  <tr><td>Door appears + Ending A / Ending B</td><td><span class="st miss">MISSING</span></td><td>door.tscn exists but always-on, not wired</td></tr>
 </table>
-
-<h2 class="sec" id="insight"><span class="n">!</span>Kľúčový problém, ktorý určuje celý dizajn</h2>
-<div class="danger"><b>Zmena scény zničí <code>Main</code>.</b> Keď PC spustí <code>change_scene_to_file(AuditTerminal)</code>,
-celá izba — hráč, telefón, posteľ, akýkoľvek nód, ktorý by držal stav dňa — sa <b>uvoľní z pamäte</b>.
-Signál vyslaný v termináli teda nemá kto v izbe zachytiť, lebo izba neexistuje.</div>
-<p>Dôsledok pre návrh:</p>
-<ul>
-  <li><b>Stav dňa musí žiť v autoloade</b> (<code>GameState</code>), ktorý prežije zmenu scény. On je „model“.</li>
-  <li>V izbe je <b><code>DayManager</code></b> (radič), ktorý sa pri každom načítaní <code>Main</code>
-  <b>znovu zosynchronizuje</b> z <code>GameState</code> — nedrží nič vlastné.</li>
-  <li>Preto „telefón zazvoní po termináli“ funguje takto: terminál zapíše dokončenie do
-  <code>GameState</code> → vráti sa do <code>Main</code> → <code>DayManager._ready()</code> uvidí, že
-  aktívna úloha je <code>phone</code> → rozozvučí telefón. To je robustný „signál naprieč scénami“.</li>
-</ul>
-<div class="note">Toto presne sedí na opakovaný vzor v projekte: chyby nebývajú v nastavení objektov, ale
-v <i>nezapojenom vstupe / krehkej scéne</i>. Preto stav zámerne držíme mimo scény.</div>
-
-<h2 class="sec" id="arch"><span class="n">§</span>Architektúra riešenia</h2>
-<table>
-  <tr><th>Vrstva</th><th>Zodpovednosť</th><th>Kde</th></tr>
-  <tr><td><b>Model</b> — <code>GameState</code></td><td>Poradie úloh dňa, index aktívnej úlohy, fáza, signály. Prežíva zmenu scény.</td><td>autoload</td></tr>
-  <tr><td><b>Dáta</b> — <code>DayTask</code></td><td>Jedna úloha (id, titulok, fáza). Modulárne, neskôr aj ako <code>.tres</code>.</td><td>Resource</td></tr>
-  <tr><td><b>Radič/View</b> — <code>DayManager</code></td><td>Spawn hráča, zapnutie správneho objektu, rozozvučanie telefónu, UI. Rebuild pri každom <code>Main</code>.</td><td>nód v <code>Main</code></td></tr>
-  <tr><td><b>Objekty</b> — <code>Interactable</code> + <code>task_id</code></td><td>Zamknuté, kým nie sú aktívnou úlohou. Po dokončení volajú <code>GameState.complete_task()</code>.</td><td>scéna</td></tr>
-</table>
-
-<h3 id="diagram">Diagram denného loopu</h3>
-<div class="diagram"><pre>
-SPUSTENIE HRY
-   │
-   ▼
-GameState._ready()  ── start_day(1);  last_player_pos = "BED"
-   │
-   ▼
-Main.tscn sa načíta ──▶ DayManager._ready()
-   │                       ├─ spawn hráča na Spawn_BED
-   │                       ├─ zapni LEN objekt aktívnej úlohy
-   │                       └─ postav UI zoznam úloh
-   ▼
-[ ÚLOHA 1 · EAT ]     interakcia s jedlom ─▶ GameState.complete_task("eat")
-   ▼
-[ ÚLOHA 2 · TERMINAL ] interakcia s PC ─▶ last_player_pos = "PC"
-   │                                     └─▶ change_scene_to_file(AuditTerminal)
-   │
-   │   ...v termináli spracuješ zmenu...
-   │   koniec zmeny ─▶ GameState.complete_task("terminal") ─▶ change_scene_to_file(Main)
-   ▼
-Main sa NAČÍTA ZNOVA ─▶ DayManager._ready()
-   │                       ├─ spawn na Spawn_PC (lebo last_player_pos="PC")
-   │                       └─ aktívna úloha = "phone" ─▶ telephone.start_ringing()   ◀── SIGNÁL
-   ▼
-[ ÚLOHA 3 · PHONE ]   zdvihneš telefón ─▶ dialóg + GameState.complete_task("phone")
-   ▼
-[ ÚLOHA 4 · SLEEP ]   ľahneš si ─▶ GameState.end_day()
-   │                              └─ day+1;  reset úloh;  last_player_pos="BED"
-   │                              └─▶ change_scene_to_file(Main)
-   ▼
-ĎALŠÍ DEŇ (opäť pri posteli)
-</pre></div>
-
-<!-- ─────────────────────────── STEP 1 ─────────────────────────── -->
-<h2 class="sec" id="s1"><span class="n">1</span>Dátový model dňa — <code>DayTask</code></h2>
-<p>Jedna úloha = jeden malý <code>Resource</code>. Vďaka tomu je systém modulárny a neskôr sa dá deň
-autorovať ako <code>.tres</code> (rovnako ako <code>UnitCase</code> v termináli). Fáza mapuje na GDD.</p>
-<div class="code">
-  <div class="bar"><span class="file">Global Scripts/day_task.gd</span><span class="badge new">nový súbor</span></div>
-<pre><span class="k">class_name</span> DayTask
-<span class="k">extends</span> <span class="t">Resource</span>
-
-<span class="c">## Jeden krok dňa. Ako Resource, aby sa dal celý deň neskôr autorovať v .tres.</span>
-
-<span class="k">@export</span> <span class="k">var</span> id: <span class="t">String</span> = <span class="s">""</span>            <span class="c"># "eat", "terminal", "phone", "sleep"</span>
-<span class="k">@export</span> <span class="k">var</span> title: <span class="t">String</span> = <span class="s">""</span>         <span class="c"># text v UI zozname úloh</span>
-<span class="k">@export_enum</span>(<span class="s">"CHORE"</span>, <span class="s">"TERMINAL"</span>, <span class="s">"PHONE"</span>, <span class="s">"SLEEP"</span>) <span class="k">var</span> phase: <span class="t">String</span> = <span class="s">"CHORE"</span>
-</pre></div>
-<table>
-  <tr><th>Fáza (GDD)</th><th>Hodnota <code>phase</code></th></tr>
-  <tr><td>Fáza A — Telefón</td><td><code>"PHONE"</code></td></tr>
-  <tr><td>Fáza B — Terminál</td><td><code>"TERMINAL"</code></td></tr>
-  <tr><td>Fáza C — Spánok</td><td><code>"SLEEP"</code></td></tr>
-  <tr><td>vedľajšie úlohy</td><td><code>"CHORE"</code></td></tr>
-</table>
-
-<!-- ─────────────────────────── STEP 2 ─────────────────────────── -->
-<h2 class="sec" id="s2"><span class="n">2</span>GameState — poradie, index, fázy, signály</h2>
-<p>Sem pridáš celý „mozog“ dňa. Poradie úloh je jediné miesto, kde definuješ gameloop — pridať/prehodiť
-úlohu znamená upraviť <code>_build_schedule()</code>. <code>complete_task()</code> ignoruje všetko okrem
-<b>aktívnej</b> úlohy — to je vynútenie poradia.</p>
-<div class="code">
-  <div class="bar"><span class="file">Global Scripts/GameState.gd</span><span class="badge mod">uprav (nahraď obsah)</span></div>
-<pre><span class="k">extends</span> <span class="t">Node</span>
-
-<span class="c"># ── Príbehový stav (pôvodné, nezmenené) ──</span>
-<span class="k">var</span> day: <span class="t">int</span> = <span class="n">1</span>
-<span class="k">var</span> path: <span class="t">String</span> = <span class="s">""</span>            <span class="c"># "A" / "B", nastaví sa v Deň 2</span>
-<span class="k">var</span> vent_blocked: <span class="t">bool</span> = <span class="k">false</span>
-<span class="k">var</span> terminal_log: <span class="t">Array</span> = []
-
-<span class="c"># ── Kotva spawnu hráča: "BED" / "PC" / "PHONE" / "DOOR" ──</span>
-<span class="c"># Default "BED" → každé čerstvé spustenie začne pri posteli.</span>
-<span class="k">var</span> last_player_pos: <span class="t">String</span> = <span class="s">"BED"</span>
-
-<span class="c"># ── Denný task systém (gameloop) ──</span>
-<span class="k">var</span> schedule: <span class="t">Array</span>[DayTask] = []
-<span class="k">var</span> current_task_index: <span class="t">int</span> = <span class="n">0</span>
-
-<span class="k">signal</span> task_advanced(new_task: DayTask)   <span class="c"># zmenila sa aktívna úloha</span>
-<span class="k">signal</span> phase_changed(new_phase: <span class="t">String</span>)   <span class="c"># zmenila sa fáza A/B/C</span>
-<span class="k">signal</span> day_started(d: <span class="t">int</span>)
-<span class="k">signal</span> day_completed(d: <span class="t">int</span>)
-
-<span class="k">func</span> <span class="f">_ready</span>() -> <span class="t">void</span>:
-	<span class="f">start_day</span>(day)
-
-<span class="c"># Zostaví poradie úloh pre daný deň — JEDINÉ miesto, kde žije gameloop dňa.</span>
-<span class="k">func</span> <span class="f">start_day</span>(d: <span class="t">int</span>) -> <span class="t">void</span>:
-	current_task_index = <span class="n">0</span>
-	schedule = <span class="f">_build_schedule</span>(d)
-	day_started.<span class="f">emit</span>(d)
-
-<span class="k">func</span> <span class="f">_build_schedule</span>(d: <span class="t">int</span>) -> <span class="t">Array</span>[DayTask]:
-	<span class="k">var</span> list: <span class="t">Array</span>[DayTask] = []
-	<span class="c"># Poradie = poradie v hre. Pridaj/prehoď riadok a máš iný deň.</span>
-	list.<span class="f">append</span>(<span class="f">_task</span>(<span class="s">"eat"</span>,      <span class="s">"Najedz sa"</span>,                  <span class="s">"CHORE"</span>))
-	list.<span class="f">append</span>(<span class="f">_task</span>(<span class="s">"terminal"</span>, <span class="s">"Dokonči zmenu na termináli"</span>, <span class="s">"TERMINAL"</span>))
-	list.<span class="f">append</span>(<span class="f">_task</span>(<span class="s">"phone"</span>,    <span class="s">"Zdvihni telefón"</span>,           <span class="s">"PHONE"</span>))
-	list.<span class="f">append</span>(<span class="f">_task</span>(<span class="s">"sleep"</span>,    <span class="s">"Choď spať"</span>,                 <span class="s">"SLEEP"</span>))
-	<span class="c"># Pre iný deň: if d == 2: ... (napr. pridaj úlohu s ventiláciou)</span>
-	<span class="k">return</span> list
-
-<span class="k">func</span> <span class="f">_task</span>(id: <span class="t">String</span>, title: <span class="t">String</span>, phase: <span class="t">String</span>) -> DayTask:
-	<span class="k">var</span> t := DayTask.<span class="f">new</span>()
-	t.id = id
-	t.title = title
-	t.phase = phase
-	<span class="k">return</span> t
-
-<span class="k">func</span> <span class="f">current_task</span>() -> DayTask:
-	<span class="k">if</span> current_task_index &lt; <span class="n">0</span> <span class="k">or</span> current_task_index >= schedule.<span class="f">size</span>():
-		<span class="k">return</span> <span class="k">null</span>
-	<span class="k">return</span> schedule[current_task_index]
-
-<span class="k">func</span> <span class="f">current_task_id</span>() -> <span class="t">String</span>:
-	<span class="k">var</span> t := <span class="f">current_task</span>()
-	<span class="k">return</span> t.id <span class="k">if</span> t <span class="k">else</span> <span class="s">""</span>
-
-<span class="k">func</span> <span class="f">current_phase</span>() -> <span class="t">String</span>:
-	<span class="k">var</span> t := <span class="f">current_task</span>()
-	<span class="k">return</span> t.phase <span class="k">if</span> t <span class="k">else</span> <span class="s">""</span>
-
-<span class="c"># Objekt zavolá, keď svoju úlohu dokončí. Ak to NIE je aktívna úloha, ignoruje sa</span>
-<span class="c"># → toto vynucuje presné poradie.</span>
-<span class="k">func</span> <span class="f">complete_task</span>(task_id: <span class="t">String</span>) -> <span class="t">void</span>:
-	<span class="k">var</span> t := <span class="f">current_task</span>()
-	<span class="k">if</span> t == <span class="k">null</span> <span class="k">or</span> t.id != task_id:
-		<span class="f">push_warning</span>(<span class="s">"complete_task(%s) ignorované — aktívna je %s"</span> % [task_id, <span class="f">current_task_id</span>()])
-		<span class="k">return</span>
-	<span class="k">var</span> prev_phase := t.phase
-	current_task_index += <span class="n">1</span>
-	<span class="k">var</span> nxt := <span class="f">current_task</span>()
-	task_advanced.<span class="f">emit</span>(nxt)
-	<span class="k">if</span> nxt == <span class="k">null</span>:
-		day_completed.<span class="f">emit</span>(day)
-	<span class="k">elif</span> nxt.phase != prev_phase:
-		phase_changed.<span class="f">emit</span>(nxt.phase)
-
-<span class="c"># Volá posteľ na konci dňa (úloha SLEEP).</span>
-<span class="k">func</span> <span class="f">end_day</span>() -> <span class="t">void</span>:
-	day_completed.<span class="f">emit</span>(day)
-	<span class="f">advance_day</span>()
-	<span class="f">start_day</span>(day)
-	last_player_pos = <span class="s">"BED"</span>
-
-<span class="c"># ── pôvodné metódy (nezmenené) ──</span>
-<span class="k">func</span> <span class="f">log_decision</span>(candidate_id: <span class="t">String</span>, decision: <span class="t">String</span>, flagged_correctly: <span class="t">bool</span>) -> <span class="t">void</span>:
-	terminal_log.<span class="f">append</span>({
-		<span class="s">"candidate_id"</span>: candidate_id,
-		<span class="s">"decision"</span>: decision,
-		<span class="s">"flagged_correctly"</span>: flagged_correctly
-	})
-
-<span class="k">func</span> <span class="f">advance_day</span>() -> <span class="t">void</span>:
-	day += <span class="n">1</span>
-
-<span class="k">func</span> <span class="f">choose_path</span>(chosen: <span class="t">String</span>) -> <span class="t">void</span>:
-	path = chosen
-	vent_blocked = (chosen == <span class="s">"A"</span>)
-</pre></div>
-<div class="note"><b>Prečo <code>complete_task</code> kontroluje id?</b> Aj keby sa nejaký objekt omylom dal
-aktivovať mimo poradia, dokončenie sa zahodí. Poradie je tak vynútené na dvoch miestach: zamknutím
-interakcie (krok 3) aj tu.</div>
-
-<!-- ─────────────────────────── STEP 3 ─────────────────────────── -->
-<h2 class="sec" id="s3"><span class="n">3</span>Zamykanie objektov podľa aktívnej úlohy</h2>
-<p>Do bázovej <code>Interactable</code> pridáš <code>task_id</code> a rozšíriš <code>can_interact()</code>.
-Keďže <code>interaction_component</code> ukáže prompt len ak <code>can_interact()==true</code>, zamknuté
-úlohy sa hráčovi ani nezobrazia. Pridáme aj hook <code>on_became_active()</code> (preň telefón zvoní).</p>
-<div class="code">
-  <div class="bar"><span class="file">Interactibles/interactible.gd</span><span class="badge mod">uprav (nahraď obsah)</span></div>
-<pre><span class="k">class_name</span> Interactable
-<span class="k">extends</span> <span class="t">StaticBody3D</span>
-
-<span class="k">@export</span> <span class="k">var</span> prompt_text: <span class="t">String</span> = <span class="s">"Interact"</span>
-<span class="k">@export</span> <span class="k">var</span> enabled: <span class="t">bool</span> = <span class="k">true</span>
-
-<span class="c">## Ak je vyplnené, objekt je interaktívny LEN keď je jeho úloha aktívna v GameState.</span>
-<span class="c">## Prázdne ("") = bežná rekvizita, vždy dostupná.</span>
-<span class="k">@export</span> <span class="k">var</span> task_id: <span class="t">String</span> = <span class="s">""</span>
-
-<span class="k">signal</span> interacted(player: <span class="t">Node</span>)
-
-<span class="k">func</span> <span class="f">can_interact</span>() -> <span class="t">bool</span>:
-	<span class="k">if</span> <span class="k">not</span> enabled:
-		<span class="k">return</span> <span class="k">false</span>
-	<span class="k">if</span> task_id != <span class="s">""</span> <span class="k">and</span> GameState.<span class="f">current_task_id</span>() != task_id:
-		<span class="k">return</span> <span class="k">false</span>
-	<span class="k">return</span> <span class="k">true</span>
-
-<span class="k">func</span> <span class="f">get_prompt_text</span>() -> <span class="t">String</span>:
-	<span class="k">return</span> prompt_text
-
-<span class="k">func</span> <span class="f">interact</span>(player: <span class="t">Node</span>) -> <span class="t">void</span>:
-	interacted.<span class="f">emit</span>(player)
-
-<span class="c">## Zavolá DayManager, keď sa úloha tohto objektu stane aktívnou.</span>
-<span class="c">## Prepíš v podtriede pre efekt (napr. telefón začne zvoniť).</span>
-<span class="k">func</span> <span class="f">on_became_active</span>() -> <span class="t">void</span>:
-	<span class="k">pass</span>
-</pre></div>
-
-<!-- ─────────────────────────── STEP 4 ─────────────────────────── -->
-<h2 class="sec" id="s4"><span class="n">4</span>DayManager — radič v izbe</h2>
-<p>Nový nód v <code>Main</code>. Pri každom načítaní izby: spawne hráča na správne miesto, zapne len objekt
-aktívnej úlohy, rozozvučí telefón ak treba a postaví UI. Nedrží žiadny vlastný stav — číta z
-<code>GameState</code>. Objekty úloh nájde cez skupinu <code>"task_objects"</code>.</p>
-<div class="code">
-  <div class="bar"><span class="file">Global Scripts/day_manager.gd</span><span class="badge new">nový súbor</span></div>
-<pre><span class="k">class_name</span> DayManager
-<span class="k">extends</span> <span class="t">Node</span>
-
-<span class="c">## Žije v Main.tscn. Pri každom načítaní Main sa znovu zosynchronizuje</span>
-<span class="c">## z GameState (perzistentný model), namiesto držania vlastného stavu.</span>
-
-<span class="k">@export</span> <span class="k">var</span> player_path: <span class="t">NodePath</span>
-<span class="k">var</span> _player: <span class="t">Node3D</span>
-<span class="k">var</span> _ui: <span class="t">VBoxContainer</span>
-
-<span class="k">func</span> <span class="f">_ready</span>() -> <span class="t">void</span>:
-	_player = <span class="f">get_node_or_null</span>(player_path)
-	<span class="k">if</span> _player == <span class="k">null</span>:
-		_player = <span class="f">get_tree</span>().current_scene.<span class="f">find_child</span>(<span class="s">"Player"</span>, <span class="k">true</span>, <span class="k">false</span>)
-	<span class="f">_spawn_player</span>()
-	GameState.task_advanced.<span class="f">connect</span>(_on_task_advanced)
-	GameState.phase_changed.<span class="f">connect</span>(_on_phase_changed)
-	<span class="f">_sync_to_current_task</span>()      <span class="c"># zapni správny objekt, rozozvuč telefón, postav UI</span>
-
-<span class="c"># ── Spawn hráča na pomenovanú kotvu ──</span>
-<span class="k">func</span> <span class="f">_spawn_player</span>() -> <span class="t">void</span>:
-	<span class="k">if</span> _player == <span class="k">null</span>:
-		<span class="k">return</span>
-	<span class="k">var</span> marker := <span class="f">_find_spawn</span>(GameState.last_player_pos)
-	<span class="k">if</span> marker:
-		_player.global_transform = marker.global_transform
-
-<span class="k">func</span> <span class="f">_find_spawn</span>(anchor: <span class="t">String</span>) -> <span class="t">Node3D</span>:
-	<span class="c"># Hľadá Marker3D s menom napr. "Spawn_BED".</span>
-	<span class="k">var</span> n := <span class="f">get_tree</span>().current_scene.<span class="f">find_child</span>(<span class="s">"Spawn_%s"</span> % anchor, <span class="k">true</span>, <span class="k">false</span>)
-	<span class="k">if</span> n == <span class="k">null</span>:
-		<span class="f">push_warning</span>(<span class="s">"DayManager: chýba Marker3D 'Spawn_%s'"</span> % anchor)
-	<span class="k">return</span> n <span class="k">as</span> <span class="t">Node3D</span>
-
-<span class="c"># ── Synchronizácia scény s modelom ──</span>
-<span class="k">func</span> <span class="f">_sync_to_current_task</span>() -> <span class="t">void</span>:
-	<span class="k">var</span> active := GameState.<span class="f">current_task_id</span>()
-	<span class="k">for</span> obj <span class="k">in</span> <span class="f">get_tree</span>().<span class="f">get_nodes_in_group</span>(<span class="s">"task_objects"</span>):
-		<span class="k">if</span> obj <span class="k">is</span> Interactable:
-			<span class="k">var</span> it: Interactable = obj
-			<span class="k">var</span> is_active := it.task_id == active
-			it.enabled = is_active
-			<span class="k">if</span> is_active:
-				it.<span class="f">on_became_active</span>()      <span class="c"># napr. telefón začne zvoniť</span>
-	<span class="f">_rebuild_ui</span>()
-	<span class="f">print</span>(<span class="s">"[DayManager] aktívna úloha = "</span>, active, <span class="s">"  fáza = "</span>, GameState.<span class="f">current_phase</span>())
-
-<span class="k">func</span> <span class="f">_on_task_advanced</span>(_new_task: DayTask) -> <span class="t">void</span>:
-	<span class="f">_sync_to_current_task</span>()
-
-<span class="k">func</span> <span class="f">_on_phase_changed</span>(new_phase: <span class="t">String</span>) -> <span class="t">void</span>:
-	<span class="f">print</span>(<span class="s">"[DayManager] FÁZA -> "</span>, new_phase)
-	<span class="c"># TODO: sem hoď vizuál/zvuk fázy (napr. zmena osvetlenia v Ceste A)</span>
-
-<span class="c"># ── Jednoduché UI: zoznam úloh (vytvorí sa v kóde, netreba editovať scénu) ──</span>
-<span class="k">func</span> <span class="f">_rebuild_ui</span>() -> <span class="t">void</span>:
-	<span class="k">if</span> _ui == <span class="k">null</span>:
-		<span class="k">var</span> layer := <span class="t">CanvasLayer</span>.<span class="f">new</span>()
-		<span class="f">add_child</span>(layer)
-		_ui = <span class="t">VBoxContainer</span>.<span class="f">new</span>()
-		_ui.position = <span class="t">Vector2</span>(<span class="n">40</span>, <span class="n">40</span>)
-		layer.<span class="f">add_child</span>(_ui)
-	<span class="k">for</span> c <span class="k">in</span> _ui.<span class="f">get_children</span>():
-		c.<span class="f">queue_free</span>()
-	<span class="k">for</span> i <span class="k">in</span> GameState.schedule.<span class="f">size</span>():
-		<span class="k">var</span> t: DayTask = GameState.schedule[i]
-		<span class="k">var</span> row := <span class="t">Label</span>.<span class="f">new</span>()
-		<span class="k">if</span> i &lt; GameState.current_task_index:
-			row.text = <span class="s">"✔ "</span> + t.title
-			row.modulate = <span class="t">Color</span>(<span class="n">0.44</span>, <span class="n">0.44</span>, <span class="n">0.39</span>)   <span class="c"># hotové – tlmené</span>
-		<span class="k">elif</span> i == GameState.current_task_index:
-			row.text = <span class="s">"▸ "</span> + t.title
-			row.modulate = <span class="t">Color</span>(<span class="n">0.88</span>, <span class="n">0.64</span>, <span class="n">0.22</span>)   <span class="c"># aktívne – jantár</span>
-		<span class="k">else</span>:
-			row.text = <span class="s">"• "</span> + t.title
-			row.modulate = <span class="t">Color</span>(<span class="n">0.35</span>, <span class="n">0.35</span>, <span class="n">0.32</span>)   <span class="c"># zamknuté – šedé</span>
-		_ui.<span class="f">add_child</span>(row)
-</pre></div>
-<div class="note">Pripojenie na <code>GameState</code> signály sa robí v <code>_ready</code>. Keď sa <code>Main</code>
-uvoľní, <code>DayManager</code> zanikne a Godot spojenie automaticky odpojí — žiadny leak. Preto sa smie
-pripájať pri každom načítaní izby.</div>
-
-<!-- ─────────────────────────── STEP 5 ─────────────────────────── -->
-<h2 class="sec" id="s5"><span class="n">5</span>Štart pri posteli — spawn kotvy</h2>
-<p>Spawn rieši <code>DayManager._spawn_player()</code>: prečíta <code>GameState.last_player_pos</code> a
-teleportne hráča na zhodný <code>Marker3D</code>. Stačí do <code>Main.tscn</code> pridať pomenované markery.</p>
-<table>
-  <tr><th><code>last_player_pos</code></th><th>Marker3D v Main</th><th>Umiestni</th></tr>
-  <tr><td><code>"BED"</code> (default)</td><td><code>Spawn_BED</code></td><td>pri posteli, otočený do izby</td></tr>
-  <tr><td><code>"PC"</code></td><td><code>Spawn_PC</code></td><td>pri stoličke/stole</td></tr>
-  <tr><td><code>"PHONE"</code></td><td><code>Spawn_PHONE</code></td><td>(voliteľné) pri telefóne</td></tr>
-  <tr><td><code>"DOOR"</code></td><td><code>Spawn_DOOR</code></td><td>(voliteľné, koniec Cesty A)</td></tr>
-</table>
-<div class="warn"><b>Prečo to stačí.</b> <code>GameState</code> je autoload — pri každom spustení aplikácie sa
-vytvorí nanovo, takže <code>last_player_pos</code> je späť na <code>"BED"</code>. Počas hry sa mení
-(napr. na <code>"PC"</code> pri odchode k terminálu), takže návrat z terminálu ťa vráti k stolu. Po
-spánku sa <code>end_day()</code> resetuje na <code>"BED"</code>.</div>
-
-<!-- ─────────────────────────── STEP 6 ─────────────────────────── -->
-<h2 class="sec" id="s6"><span class="n">6</span>Telefón — signál, ktorý ho po termináli rozozvučí</h2>
-<p>Telefón teraz štartuje <b>vypnutý a tichý</b>. Rozozvučí sa cez <code>on_became_active()</code>, ktorý
-zavolá <code>DayManager</code> vo chvíli, keď sa <code>phone</code> stane aktívnou úlohou — čo nastane po
-dokončení terminálu. Zvuk zvonenia doplníš neskôr na jednom mieste (<code>start_ringing()</code>).</p>
-<div class="code">
-  <div class="bar"><span class="file">Assets/Telephone/Phone.gd</span><span class="badge mod">uprav (nahraď obsah)</span></div>
-<pre><span class="k">class_name</span> Telephone
-<span class="k">extends</span> Interactable
-
-<span class="k">@export</span> <span class="k">var</span> conver_pos: <span class="t">Vector2</span> = <span class="t">Vector2</span>(<span class="n">980</span>, <span class="n">920</span>)
-<span class="k">var</span> is_ringing: <span class="t">bool</span> = <span class="k">false</span>
-
-<span class="k">@onready</span> <span class="k">var</span> speech_sound = <span class="f">preload</span>(<span class="s">"res://Assets/Sounds/Phone.wav"</span>)
-<span class="c"># @onready var ring_player: AudioStreamPlayer3D = $RingSound   # budúci zvuk zvonenia</span>
-
-<span class="k">const</span> lines1: <span class="t">Array</span>[<span class="t">String</span>] = [
-	<span class="s">"Welcome to your new job!"</span>,
-	<span class="s">"We only expect the best of you!"</span>,
-	<span class="s">"See you soon, Happy to have you onboard!"</span>,
-]
-
-<span class="k">func</span> <span class="f">_ready</span>() -> <span class="t">void</span>:
-	prompt_text = <span class="s">"Pick up Telephone"</span>
-	task_id = <span class="s">"phone"</span>
-	<span class="f">add_to_group</span>(<span class="s">"task_objects"</span>)
-	<span class="c"># Štartuje tiché a zamknuté; DayManager ho rozozvučí, keď je úloha PHONE aktívna.</span>
-	enabled = <span class="k">false</span>
-	is_ringing = <span class="k">false</span>
-
-<span class="c">## SIGNÁL: zavolá DayManager, keď sa fáza PHONE stane aktívnou (po termináli).</span>
-<span class="k">func</span> <span class="f">on_became_active</span>() -> <span class="t">void</span>:
-	<span class="f">start_ringing</span>()
-
-<span class="k">func</span> <span class="f">start_ringing</span>() -> <span class="t">void</span>:
-	is_ringing = <span class="k">true</span>
-	enabled = <span class="k">true</span>
-	<span class="f">print</span>(<span class="s">"[Telephone] RING RING"</span>)
-	<span class="c"># if ring_player: ring_player.play()          # budúcnosť: zvuk zvonenia</span>
-
-<span class="k">func</span> <span class="f">stop_ringing</span>() -> <span class="t">void</span>:
-	is_ringing = <span class="k">false</span>
-	<span class="c"># if ring_player: ring_player.stop()</span>
-
-<span class="k">func</span> <span class="f">interact</span>(player: <span class="t">Node</span>) -> <span class="t">void</span>:
-	<span class="k">super</span>.<span class="f">interact</span>(player)
-	<span class="f">stop_ringing</span>()
-	DialogueManager.<span class="f">start_dialog</span>(conver_pos, lines1, speech_sound)
-	GameState.<span class="f">complete_task</span>(<span class="s">"phone"</span>)   <span class="c"># zdvihnutie = dokončenie úlohy</span>
-</pre></div>
-<div class="note"><b>Chceš dokončiť úlohu až po zavesení (koniec dialógu)?</b> <code>DialogueManager</code>
-zatiaľ nevysiela signál o konci. Pridaj doň <code>signal dialogue_finished</code> (emit na riadku, kde sa
-<code>is_dialogue_active = false</code>), pripoj sa naň a <code>complete_task("phone")</code> zavolaj tam.
-Zatiaľ stačí dokončenie pri zdvihnutí.</div>
-
-<!-- ─────────────────────────── STEP 7 ─────────────────────────── -->
-<h2 class="sec" id="s7"><span class="n">7</span>Terminál — odchod, koniec zmeny a návrat</h2>
-<p>PC pred odchodom zapamätá kotvu <code>"PC"</code> a prepne scénu. Terminál po dokončení zmeny označí
-úlohu <code>terminal</code> za hotovú a vráti sa do <code>Main</code> — tam už <code>DayManager</code>
-rozozvučí telefón.</p>
-<div class="code">
-  <div class="bar"><span class="file">Assets/Full Setup/PC_interactible.gd</span><span class="badge mod">uprav (nahraď obsah)</span></div>
-<pre><span class="k">class_name</span> PC
-<span class="k">extends</span> Interactable
-
-<span class="k">const</span> TERMINAL_SCENE := <span class="s">"res://Audit/AuditTerminal.tscn"</span>
-
-<span class="k">func</span> <span class="f">_ready</span>() -> <span class="t">void</span>:
-	prompt_text = <span class="s">"Start Work"</span>
-	task_id = <span class="s">"terminal"</span>
-	<span class="f">add_to_group</span>(<span class="s">"task_objects"</span>)
-
-<span class="k">func</span> <span class="f">interact</span>(player: <span class="t">Node</span>) -> <span class="t">void</span>:
-	<span class="k">super</span>.<span class="f">interact</span>(player)
-	GameState.last_player_pos = <span class="s">"PC"</span>              <span class="c"># po návrate stojíme pri stole</span>
-	<span class="f">get_tree</span>().<span class="f">change_scene_to_file</span>(TERMINAL_SCENE)
-	<span class="c"># POZOR: úlohu "terminal" NEDOKONČUJEME tu — až po odpracovaní zmeny v termináli.</span>
-</pre></div>
-<p>V termináli pridaj návrat. Minimálna verzia: po odbavení všetkých prípadov (alebo tlačidlom END SHIFT)
-zavolaj <code>_finish_shift()</code>. Nižšie je len pridanie k existujúcemu <code>audit_terminal.gd</code>.</p>
-<div class="code">
-  <div class="bar"><span class="file">Audit/audit_terminal.gd</span><span class="badge mod">pridaj do existujúceho skriptu</span></div>
-<pre><span class="k">const</span> MAIN_SCENE := <span class="s">"res://Main.tscn"</span>
-<span class="k">@export</span> <span class="k">var</span> total_cases: <span class="t">int</span> = <span class="n">1</span>     <span class="c"># koľko prípadov = jedna zmena</span>
-<span class="k">var</span> _cases_done: <span class="t">int</span> = <span class="n">0</span>
-
-<span class="c"># Uprav existujúci _submit(): po verdikte započítaj prípad a ak je zmena hotová, skonči.</span>
-<span class="k">func</span> <span class="f">_submit</span>(verdict: <span class="t">String</span>) -> <span class="t">void</span>:
-	<span class="k">var</span> who := current_case.unit_id <span class="k">if</span> current_case <span class="k">else</span> <span class="s">"?"</span>
-	<span class="f">print</span>(<span class="s">"[AuditTerminal] verdict=%s unit=%s"</span> % [verdict, who])
-	verdict_submitted.<span class="f">emit</span>(verdict)
-	_cases_done += <span class="n">1</span>
-	<span class="k">if</span> _cases_done >= total_cases:
-		<span class="f">_finish_shift</span>()
-	<span class="c"># else: načítaj ďalší prípad (TODO – tvoja caseload logika)</span>
-
-<span class="k">func</span> <span class="f">_finish_shift</span>() -> <span class="t">void</span>:
-	GameState.<span class="f">complete_task</span>(<span class="s">"terminal"</span>)   <span class="c"># Fáza B hotová → ďalšia úloha "phone"</span>
-	<span class="f">get_tree</span>().<span class="f">change_scene_to_file</span>(MAIN_SCENE)
-</pre></div>
-<div class="warn"><b>Presne v tomto poradí.</b> <code>complete_task("terminal")</code> posunie index na
-<code>phone</code> <b>ešte pred</b> zmenou scény. Až potom sa načíta <code>Main</code>, kde
-<code>DayManager._ready()</code> uvidí aktívnu úlohu <code>phone</code> a rozozvučí telefón.</div>
-
-<!-- ─────────────────────────── STEP 8 ─────────────────────────── -->
-<h2 class="sec" id="s8"><span class="n">8</span>Jednoduché tasky — <code>SimpleTask</code> (najedenie a ďalšie)</h2>
-<p>Generický objekt na chores. Interakcia = dokončenie úlohy (plus voliteľný dialóg). Pridať novú úlohu
-„umy si zuby“ / „napi sa kávy“ znamená len položiť ďalší <code>SimpleTask</code> s iným
-<code>task_id</code> a pridať riadok do <code>_build_schedule</code>. To je tá modularita.</p>
-<div class="code">
-  <div class="bar"><span class="file">Interactibles/simple_task.gd</span><span class="badge new">nový súbor</span></div>
-<pre><span class="c">## Generický jednorazový task: interakcia dokončí jeho úlohu.</span>
-<span class="c">## Polož do izby, nastav task_id + prompt_text v Inšpektore. Skupinu rieši _ready.</span>
-<span class="k">class_name</span> SimpleTask
-<span class="k">extends</span> Interactable
-
-<span class="k">@export</span> <span class="k">var</span> say_lines: <span class="t">Array</span>[<span class="t">String</span>] = []     <span class="c"># voliteľný flavour dialóg</span>
-<span class="k">@export</span> <span class="k">var</span> say_sfx: <span class="t">AudioStream</span>                 <span class="c"># hlas pre say_lines (ak ich používaš)</span>
-<span class="k">@export</span> <span class="k">var</span> say_pos: <span class="t">Vector2</span> = <span class="t">Vector2</span>(<span class="n">960</span>, <span class="n">900</span>)
-
-<span class="k">func</span> <span class="f">_ready</span>() -> <span class="t">void</span>:
-	<span class="f">add_to_group</span>(<span class="s">"task_objects"</span>)
-
-<span class="k">func</span> <span class="f">interact</span>(player: <span class="t">Node</span>) -> <span class="t">void</span>:
-	<span class="k">super</span>.<span class="f">interact</span>(player)
-	<span class="k">if</span> <span class="k">not</span> say_lines.<span class="f">is_empty</span>():
-		DialogueManager.<span class="f">start_dialog</span>(say_pos, say_lines, say_sfx)
-	GameState.<span class="f">complete_task</span>(task_id)
-</pre></div>
-<p>Pre úlohu „Najedz sa“: pridaj do izby ľubovoľný <code>StaticBody3D</code> na <b>fyzickej vrstve 1</b>
-(napr. tanier na nočnom stolíku), priraď mu <code>simple_task.gd</code>, v Inšpektore nastav
-<code>task_id = "eat"</code> a <code>prompt_text = "Eat breakfast"</code>. Hotovo — je súčasťou poradia.</p>
-
-<!-- ─────────────────────────── STEP 9 ─────────────────────────── -->
-<h2 class="sec" id="s9"><span class="n">9</span>UI — zoznam úloh</h2>
-<p>Už je hotové v <a class="ln" href="#s4">kroku 4</a> (<code>DayManager._rebuild_ui()</code>). Vytvorí si
-vlastný <code>CanvasLayer</code> + <code>VBoxContainer</code>, takže <b>netreba editovať žiadnu scénu</b>.
-Ukazuje:</p>
-<ul>
-  <li><span style="color:#e0a339">▸ aktívna úloha</span> — jantárová,</li>
-  <li><span style="color:#70706a">✔ hotová</span> — tlmená,</li>
-  <li><span style="color:#59594f">• zamknutá</span> — šedá.</li>
-</ul>
-<p>Prestaví sa sám pri každom <code>task_advanced</code> aj pri načítaní izby. Neskôr štýl/pozíciu
-prepíšeš vlastnou scénou a priradíš ju namiesto auto-vytvoreného kontajnera.</p>
-
-<!-- ─────────────────────────── STEP 10 ─────────────────────────── -->
-<h2 class="sec" id="s10"><span class="n">10</span>Spánok → ďalší deň</h2>
-<p>Posteľ je poslednou úlohou (<code>sleep</code>), takže je odomknutá až keď je všetko ostatné hotové.
-Interakcia zavolá <code>end_day()</code> (deň +1, reset úloh, kotva <code>"BED"</code>) a znovu načíta
-izbu — čerstvý deň, opäť pri posteli.</p>
-<div class="code">
-  <div class="bar"><span class="file">Interactibles/Bed/bed.gd</span><span class="badge mod">uprav (nahraď obsah)</span></div>
-<pre><span class="k">class_name</span> Bed
-<span class="k">extends</span> Interactable
-
-<span class="k">func</span> <span class="f">_ready</span>() -> <span class="t">void</span>:
-	prompt_text = <span class="s">"Go To Bed"</span>
-	task_id = <span class="s">"sleep"</span>
-	<span class="f">add_to_group</span>(<span class="s">"task_objects"</span>)
-
-<span class="k">func</span> <span class="f">interact</span>(player: <span class="t">Node</span>) -> <span class="t">void</span>:
-	<span class="k">super</span>.<span class="f">interact</span>(player)
-	<span class="f">print</span>(<span class="s">"Spím – koniec dňa"</span>)
-	GameState.<span class="f">end_day</span>()                              <span class="c"># deň+1, reset úloh, kotva=BED</span>
-	<span class="f">get_tree</span>().<span class="f">change_scene_to_file</span>(<span class="s">"res://Main.tscn"</span>)   <span class="c"># čerstvá izba na nový deň</span>
-</pre></div>
-<div class="note">Neskôr tu vieš vetviť podľa <code>GameState.path</code> / <code>day</code> — napr. Cesta A načíta
-degradovanú verziu izby, alebo vloží snovú sekvenciu pred reload.</div>
-
-<!-- ─────────────────────────── WIRING ─────────────────────────── -->
-<h2 class="sec" id="wiring"><span class="n">✓</span>Wiring v editore — checklist</h2>
-<ol>
-  <li><b>Nové súbory:</b> <code>day_task.gd</code>, <code>day_manager.gd</code>, <code>simple_task.gd</code>.</li>
-  <li><b>Upravené súbory:</b> <code>GameState.gd</code>, <code>interactible.gd</code>, <code>Phone.gd</code>,
-      <code>PC_interactible.gd</code>, <code>bed.gd</code>, <code>audit_terminal.gd</code>.</li>
-  <li><b>Do <code>Main.tscn</code> pridaj nód</b> typu <code>Node</code> s menom <code>DayManager</code>,
-      priraď <code>day_manager.gd</code>. Do poľa <code>player_path</code> daj cestu k <code>Player</code>
-      (alebo nechaj prázdne — nájde sa podľa mena).</li>
-  <li><b>Pridaj <code>Marker3D</code></b> do <code>Main</code>: <code>Spawn_BED</code> (povinné),
-      <code>Spawn_PC</code>. Umiestni ich a natoč do izby.</li>
-  <li><b>Objekt jedla:</b> <code>StaticBody3D</code> na <b>collision layer 1</b> s <code>simple_task.gd</code>,
-      <code>task_id = "eat"</code>.</li>
-  <li><b>Skupina + task_id</b> pre PC, Telephone, Bed sa nastavujú v ich <code>_ready()</code> automaticky —
-      netreba ručne. (SimpleTask má <code>task_id</code> z Inšpektora.)</li>
-  <li>V <code>AuditTerminal</code> voliteľne nastav <code>total_cases</code> podľa počtu prípadov zmeny.</li>
-</ol>
-<div class="warn"><b>Fyzická vrstva.</b> Interakčný ray má <code>collision_mask = 1</code>. Každý nový objekt
-úlohy musí byť <code>StaticBody3D</code> na <b>vrstve 1</b>, inak ho hráč „neuvidí“.</div>
-
-<!-- ─────────────────────────── VERIFY ─────────────────────────── -->
-<h2 class="sec" id="verify"><span class="n">§</span>Ako to overiť</h2>
-<p>Na tomto stroji nie je Godot editor/binárka, takže syntax over cez <code>gdparse</code>
-(gdtoolkit) a <code>.tscn</code>/<code>.tres</code> parsovaním. <b>Vizuálne/runtime potvrdenie (F6) je na tebe.</b></p>
-<p>Runtime kontrola cez konzolu — pri korektnom loope uvidíš postupnosť:</p>
-<div class="code">
-  <div class="bar"><span class="file">Godot konzola (očakávaný sled)</span><span class="badge info">runtime</span></div>
-<pre>[DayManager] aktívna úloha = eat  fáza = CHORE
-<span class="c"># (interakcia s jedlom)</span>
-[DayManager] aktívna úloha = terminal  fáza = TERMINAL
-<span class="c"># (PC → terminál → END SHIFT)</span>
-[AuditTerminal] verdict=APPROVE unit=108-VN
-[DayManager] FÁZA -> PHONE
-[DayManager] aktívna úloha = phone  fáza = PHONE
-[Telephone] RING RING            <span class="c"># ← signál po termináli</span>
-<span class="c"># (zdvihnutie telefónu)</span>
-[DayManager] aktívna úloha = sleep  fáza = SLEEP
-<span class="c"># (posteľ)</span>
-Spím – koniec dňa
-[DayManager] aktívna úloha = eat  fáza = CHORE   <span class="c"># ← nový deň, opäť pri posteli</span></pre></div>
-<p>Skús aj <b>poradie porušiť</b>: kým je aktívna úloha <code>eat</code>, na PC/telefóne/posteli sa nesmie
-zobraziť prompt (sú zamknuté). Ak by predsa prišlo dokončenie mimo poradia, v konzole vidíš
-<code>complete_task(...) ignorované</code>.</p>
-
-<!-- ─────────────────────────── SAVE ─────────────────────────── -->
-<h2 class="sec" id="save"><span class="n">§</span>Budúcnosť: ukladanie hry po dňoch</h2>
-<p>Loop je navrhnutý tak, že ukladanie je priamočiare — celý stav dňa je už v <code>GameState</code>.
-Pri spánku ulož, pri štarte načítaj. Ukladaj práve tieto polia:</p>
-<div class="code">
-  <div class="bar"><span class="file">Global Scripts/GameState.gd (náčrt, dorobíš neskôr)</span><span class="badge info">nice-to-have</span></div>
-<pre><span class="k">const</span> SAVE_PATH := <span class="s">"user://save.cfg"</span>
-
-<span class="k">func</span> <span class="f">save_game</span>() -> <span class="t">void</span>:
-	<span class="k">var</span> cfg := <span class="t">ConfigFile</span>.<span class="f">new</span>()
-	cfg.<span class="f">set_value</span>(<span class="s">"day"</span>, <span class="s">"day"</span>, day)
-	cfg.<span class="f">set_value</span>(<span class="s">"day"</span>, <span class="s">"task_index"</span>, current_task_index)
-	cfg.<span class="f">set_value</span>(<span class="s">"day"</span>, <span class="s">"last_player_pos"</span>, last_player_pos)
-	cfg.<span class="f">set_value</span>(<span class="s">"story"</span>, <span class="s">"path"</span>, path)
-	cfg.<span class="f">set_value</span>(<span class="s">"story"</span>, <span class="s">"vent_blocked"</span>, vent_blocked)
-	cfg.<span class="f">save</span>(SAVE_PATH)
-
-<span class="k">func</span> <span class="f">load_game</span>() -> <span class="t">bool</span>:
-	<span class="k">var</span> cfg := <span class="t">ConfigFile</span>.<span class="f">new</span>()
-	<span class="k">if</span> cfg.<span class="f">load</span>(SAVE_PATH) != OK:
-		<span class="k">return</span> <span class="k">false</span>
-	day = cfg.<span class="f">get_value</span>(<span class="s">"day"</span>, <span class="s">"day"</span>, <span class="n">1</span>)
-	<span class="f">start_day</span>(day)
-	current_task_index = cfg.<span class="f">get_value</span>(<span class="s">"day"</span>, <span class="s">"task_index"</span>, <span class="n">0</span>)
-	last_player_pos = cfg.<span class="f">get_value</span>(<span class="s">"day"</span>, <span class="s">"last_player_pos"</span>, <span class="s">"BED"</span>)
-	path = cfg.<span class="f">get_value</span>(<span class="s">"story"</span>, <span class="s">"path"</span>, <span class="s">""</span>)
-	vent_blocked = cfg.<span class="f">get_value</span>(<span class="s">"story"</span>, <span class="s">"vent_blocked"</span>, <span class="k">false</span>)
-	<span class="k">return</span> <span class="k">true</span>
-</pre></div>
-<p>Keďže sa ukladá „po dňoch“, najčistejšie je <code>save_game()</code> zavolať v <code>end_day()</code>
-(t.j. keď si ľahneš spať) a <code>load_game()</code> skúsiť v <code>_ready()</code> namiesto natvrdo
-<code>start_day(1)</code>.</p>
-
-<p class="foot">Still Human · denný gameloop · návod vygenerovaný ako pomôcka k implementácii. Projekt
-zostal nezmenený — kód vkladáš podľa krokov vyššie.</p>
-</main>
 </div>
 
-<script>
-  document.querySelectorAll('.code').forEach(function(block){
-    var bar = block.querySelector('.bar');
-    var pre = block.querySelector('pre');
-    if(!bar || !pre) return;
-    var btn = document.createElement('button');
-    btn.className = 'copy'; btn.textContent = 'kopírovať';
-    btn.addEventListener('click', function(){
-      navigator.clipboard.writeText(pre.innerText).then(function(){
-        btn.textContent = 'skopírované ✓';
-        setTimeout(function(){ btn.textContent = 'kopírovať'; }, 1400);
-      });
-    });
-    bar.appendChild(btn);
-  });
-  // active TOC highlight
-  var links = [].slice.call(document.querySelectorAll('nav a'));
-  var map = {};
-  links.forEach(function(a){ var id=a.getAttribute('href').slice(1); if(id) map[id]=a; });
-  var obs = new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      var a = map[e.target.id];
-      if(a && e.isIntersecting){
-        links.forEach(function(x){ x.style.background=''; x.style.borderLeftColor='transparent'; });
-        a.style.background='#161b12'; a.style.borderLeftColor='#e0a339';
-      }
-    });
-  }, {rootMargin:'-10% 0px -80% 0px'});
-  document.querySelectorAll('h2[id]').forEach(function(h){ obs.observe(h); });
-</script>
+<h2>The loop, phase by phase</h2>
+
+<div class="phase">
+<h3>Phase A — Phone / Handler <span class="st part">PARTIAL</span></h3>
+<p><b>GDD:</b> player wakes to ringing; picking up is the only way forward; the Handler delivers that day's rules &amp; atmosphere (Day 1 onboarding + sinister warning, Day 2 vent reassurance, Day 3 warning / thanks + "odzraví").</p>
+<p><b>Built:</b> phone rings when its task is active, pickup runs a dialogue and hangs up, lines branch clean/dirty (praise vs reproach).</p>
+<ul>
+  <li><span class="st miss">MISSING</span> Day-specific Handler scripts (D1 rules, D2 vent reassurance, D3 warn/deactivate) — pick lines by <code>GameState.day</code> and <code>path</code>, the same way the praise/reproach branch already does.</li>
+  <li><span class="st part">DECISION</span> Ordering: the schedule is <code>terminal → phone → sleep</code>, so the phone is a <i>post-shift</i> call. The GDD's Phase A is a <i>morning</i> rules call. Either add a second, opening phone task in <code>_build_schedule</code> or accept the post-shift framing — decide before writing Handler content.</li>
+</ul>
+</div>
+
+<div class="phase">
+<h3>Phase B — Terminal <span class="st part">PARTIAL</span></h3>
+<p><b>GDD:</b> two panels (candidate folder + interview transcript), three verdicts CLEAR / HOLD / ESCALATE (= your APPROVE / HOLD / INCINERATE) plus FLAG to mark a contradiction between a folder field and a transcript claim. Day&nbsp;2's rule contains a real contradiction; Path A glitches the screen.</p>
+<p><b>Built:</b> full folder + transcript + verdict + FLAG-compare, directive lines, per-day caseload loading, finish-shift → back to room.</p>
+<ul>
+  <li><span class="st miss">MISSING</span> Day-2 and Day-3 caseloads (<code>Audit/cases/Day2/</code>, <code>Day3/</code>). Only Day&nbsp;1 (2 units) exists.</li>
+  <li><span class="st miss">MISSING</span> Day-2 <i>contradictory</i> directive — the first "real" decision, not a rule-lookup.</li>
+  <li><span class="st miss">MISSING</span> Path-A glitch overlay on the terminal (CRT scanline + flashing "WAKE UP" / "PRISONER").</li>
+  <li><span class="st part">FIX</span> <code>log_decision</code> stores <code>{candidateId, decision, flaggedCorrectly}</code> but not whether the verdict was <i>right</i>. Day-3-A needs the Handler to name a specific mis-judged unit — store correctness so you can look one up.</li>
+  <li><span class="st part">CLEANUP</span> <code>UnitCase.correct_verdict</code> still lists <code>"FLAG"</code> in its enum — vestigial (FLAG is a modifier, not a 4th verdict). Remove it.</li>
+</ul>
+</div>
+
+<div class="phase">
+<h3>Phase C — Sleep <span class="st part">PARTIAL</span></h3>
+<p><b>GDD:</b> lie down to end the day; what follows depends on path. Day-1→2 and (Path A) Day-2→3 carry <i>dream sequences</i>; the bed is the dream's carrier.</p>
+<p><b>Built:</b> bed fades the screen, plays a sound, calls <code>GameState.end_day()</code> (advances day + rebuilds schedule) and reloads the room. The day loop genuinely turns over.</p>
+<ul>
+  <li><span class="st miss">MISSING</span> Dream sequences (below) hooked into the sleep transition.</li>
+  <li><span class="st miss">VERIFY</span> <code>bed.gd</code> tweens a node in group <code>"screen_fader"</code> — confirm that ColorRect exists in the running scene, or the tween targets <code>null</code> and errors on sleep.</li>
+</ul>
+</div>
+
+<hr>
+
+<h2>The big missing pillar — Day 2 branch</h2>
+<div class="card miss">
+<h3>VENT object + block choice <span class="st miss">MISSING</span></h3>
+<p>This is <b>the</b> decision of the whole game, and nothing for it exists yet.</p>
+<ul>
+  <li>A vent Interactable that becomes active on Day 2 (white-smoke VFX, clearly highlighted so it can't be missed).</li>
+  <li>Interacting = block it → set <code>GameState.vent_blocked = true</code> and call <code>GameState.choose_path("A")</code>; not blocking by end of Day 2 → <code>choose_path("B")</code>.</li>
+  <li>Right now <code>choose_path()</code> and <code>vent_blocked</code> exist in GameState but are <b>never called or read anywhere</b> — the fork is inert.</li>
+</ul>
+</div>
+
+<h2>Path branching &amp; room states <span class="st miss">MISSING</span></h2>
+<p>Nothing reads <code>GameState.path</code> yet. Per GDD §11.4, build the degraded room as <b>one scene with a switchable light/material set</b>, not a second scene.</p>
+<div class="card miss"><h3>Path A — degraded room</h3><ul>
+  <li>Day→night lighting swap (cheap: different light/skybox set).</li>
+  <li>Window: green landscape → hell texture (matte swap, no new geometry).</li>
+  <li>PC glitch shader + text artifacts.</li>
+  <li>"You're making a mistake" Handler-like VO on the transform.</li>
+  <li>Progressive degradation into Day 3; PC goes dark.</li>
+</ul></div>
+<div class="card miss"><h3>Path B — unchanged room</h3><ul>
+  <li>Room stays clean; window static (deliberate contrast). Mostly "do nothing", but the branch still has to be <i>read</i> to keep visuals unchanged and skip the dream.</li>
+</ul></div>
+
+<h2>Dreams, journal &amp; identity <span class="st miss">MISSING</span></h2>
+<ul>
+  <li><b>Day 2 dream</b> (after Day-1 sleep): short hallway walk → a second ringing phone → static → whisper "Wake up" in the left ear → wake into Day 2.</li>
+  <li><b>Day 3 dream</b> (Path A only, after Day-2 sleep): journal fragments reveal the truth — the player was a captured rebel; the "packages" were memory extraction.</li>
+  <li><b>Journal presentation</b>: fragments surfaced across Day 2–3; this is the emotional core that replaces the GDD's "Maya" — it's the player's own past. Keep dialogue/journal text in one shared sheet (GDD §9), not scattered in scenes.</li>
+</ul>
+
+<h2>Door &amp; endings <span class="st miss">MISSING</span></h2>
+<ul>
+  <li><b>Door</b>: <code>Assets/Door/door.tscn</code> exists and is already in <code>Main.tscn</code> — but per GDD the door must <i>not exist until the end of Path A</i>, then appear as the single biggest beat (light under it, latch sound). Gate its visibility on state.</li>
+  <li><b>Ending A — PREBUDENIE:</b> degraded room → Handler screaming → door appears → walk through → ambivalent/hopeful end card.</li>
+  <li><b>Ending B — VYMAZANIE:</b> Day 3 finishes normally → Handler calls, falsely warm, "odzraví"s the player → room dissolves into void → distant screams + the Handler's laughter → darkest end.</li>
+</ul>
+
+<hr>
+
+<h2>Suggested build order</h2>
+<p class="path">GDD §9: finish Day 1 completely before writing a line of Day 2. A polished Day 1 is a shippable demo; three half-days are nothing.</p>
+<ol class="road">
+  <li><b>Close out the Day-1 vertical slice.</b> Decide phone ordering (morning rules vs post-shift), write the Day-1 Handler script + Day-1 directive, confirm the <code>screen_fader</code> node exists so sleep doesn't error. Goal: wake → phone → terminal → sleep → wake Day 2, start to finish, polished.</li>
+  <li><b>Build the VENT + the fork.</b> Vent Interactable + smoke, wire <code>choose_path("A"/"B")</code> and <code>vent_blocked</code>. This is the spine of Day 2 — do it before any Path-A art.</li>
+  <li><b>Path-A room state.</b> One room, switchable light/material set: night + hell window + PC glitch + "You're making a mistake". Read <code>GameState.path</code> on room load.</li>
+  <li><b>Dreams.</b> Day-2 dream on Day-1 sleep; Day-3 dream (Path A) on Day-2 sleep. Hook into the bed transition.</li>
+  <li><b>Day-2 &amp; Day-3 terminal content.</b> Day-2 contradictory directive + caseload, Day-3 hardest caseload; add correctness to <code>terminal_log</code> for the Day-3-A callback.</li>
+  <li><b>Endings.</b> Door gating + walk-through (End A); deactivate call + dissolve + laughter (End B). Wire the terminal-log callback (Handler names a mis-judged unit).</li>
+  <li><b>Audio/atmosphere pass.</b> Ring as recurring fear leitmotif, Path-A drone/hum, Ending-B screams + laughter, Day-1 foreshadowing (vent sticker / faint sweet smell).</li>
+</ol>
+
+<div class="note">
+  <b>Cheap wins already banked:</b> the state machine, task scheduling, interaction, dialogue, terminal and the day-turnover loop all work — so the remaining work is mostly <i>content</i> (Handler scripts, caseloads, journal) plus the <i>vent fork</i> and the <i>Path-A visual set</i>. The two heaviest items are the degraded-room art and the endings' dissolve VFX; everything else reuses systems you already have.
+</div>
+
+<footer>
+  Roadmap for the Still Human project · generated from README.md (GDD) checked against current code —
+  GameState.gd, DayManager.gd, Phone.gd, bed.gd, audit_terminal.gd, DialogueManager.gd, Audit/cases/.
+  No game files were modified to produce this document.
+</footer>
+
+</div>
+</body>
+</html>
