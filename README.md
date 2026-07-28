@@ -1,5 +1,34 @@
 Godot 4.7
 
+Žiadna vent mechanica!!!
+Dobry ending
+KAPITOLA 1
+Prvý deň
+Náš hlavný hrdina sa zobudí v neznámej izbe, obklopený starým nábytkom. Nepamätá si nič, kto je, kde je, ako sa sem dostal? Vstane a prehliadne svoje okolie, kde si všimne stareho pocitaca a stareho telefonu na stole. Telefon na to zacne zvonit. Pribehne k nemu zoberie ho k svojmu uchu, kde pocuje zachraptaný hlas "Vitaj ****** v našej spoločnosti. Si pracovník riadiaci unit, ktorý rozhoduje na základe pravidiel ktoré z tych units prejdu a ktore nie. Mal si nedávno vážny úraz, ale neboj o všetko sme sa postarali a môžeš odteraz pracovať zo svojho domova. Asi si nic nepamatas, bola to Veľmi veľká škoda, jedna z units šla do berserk modu a napadla ťa. Nemaj strachu už sa to nestane. Keďže je dne tvoj prvý deň tak to budeš mať jednoduchšie, ale dávaj pozor, stále sa nám sem tam niektoré units prekĺznu a ich ai neprejde kompletnou formatáciou a majú tendenciu mať o niečo ľudskejšie správanie. S nimi si nelám hlavu, dôležité su pravidlá a či to čo ti v napíšu je pravdivé. Hlavne ich neposlúchaj. Prajem ti veľa šťastia, máme od teba veľké očakávania. Náš hrdina zloží slúchadlo, prehltený myšlienkami si radšej sadne za počítač a pôjde robiť tak ako mu bolo prikázané. Spraví svoju kvótu a lahne si
+Prvá noc
+Náš hrdina má sen. Je v dlhej chodbe, počuje výstreli, kriky, hlasy ktoré sa mu zdajú známe. Na stenách vidí familiarny symbol, keď pride na konci miestnosti zrazu všetko zhasne a následne v jednom uchu mu zazneje hlasným šepotom "WAKE UP".
+KAPITOLA 2
+Druhý deň
+Zobúdza sa zo svojho sna na zvonenie telefónu, príde k nemu zoberie ho, zas ten istý hlas mu rozpráva: Zdravím ťa ******* videli sme report z tvojho včerajšieho dňa. Sme veľmi šťastný z tvojich výsledkov, dnes sa začína deň kedy sa dvíha obtiažnosť tvojich úloh. Dávaj si pozor. Zlozží telefón, začne si všímať viac svojho okolia a vidí fľašu na stole ktorá tam predtým nebola, zas s tým symbolom, ktorý videl vo svojom sne. Taktiež si všimol absenciu dverí, na ktorú sa spýta ďalší deň. Príde ku svjomu stolu s počítačom a zas si zaň sadne. Zmenili sa pravidlá a jeho kvóta sa zvýšila. Ako robí narazí na 1 divnú unit o ktorej hlas v terminale vravel v prvý deň. Prosí o to aby ju odstránil (V tomto bode sú 2 moznosti buď poslúchne hlas v sluchadle alebo nie, ideme rootom good endingu tentokrát). Niečo v ňom sa pohne a daný unit poslúchne deň sa končí.
+Druhá noc
+nič sa nedeje
+Kapitola 3
+Tretí deň
+Zobúdza sa skôr ako začína mu pracovný deň. (tu by som dal chvilu casu nech hrac pointeraguje s predmetmi a viac sa zoznámi zo svojim okolim). Po chvíli zazvoní telefon: Ahoj ******* včera sme sa pozerali na tvoj report a všimli sme si menšej chybičky v tvojom podaní. Avizujem ti ešte raz aby si ich neposlúchal, sú to bezduché stroje, nerob to čo ti rozrpavajú, ináč budeš mať problémy a to nikto nechce. Hrdina má možnosť teraz na otázky: KDE SU DVERE?
+KDE SU DVERE? Hmmmmm, dvere tam nie sú kvôli tvojmu bezpečiu. Nechceme prísť o tak šikovného zamestnanca, neboj je to len dočasné onedlho ťa pustíme. Dobre Prajem ti veľa štastia v tento deň. Položiš telefon naspäť a začnes pracovat. V tento deň budes mať až 2 chybne units. Posluchnes obe
+Tretia noc
+Ďalší sen, zase tá istá chodba, tie isté hlasy, ale teraz na konci je telefon, neznovi, nič sa s nim nedeje. Chvilku čaka a zrazu začne zvonit. Zdvihnes ho a hlas iný ako ten ktorý obyčajne počúvas, viac nezny a mily ti povie: Si na dobrej ceste, pokračuj v tom čo robíš. Neboj, my ťa najdeme... Hlas sa v strede slova utne a ty sa zobudzas
+KAPITOLA 4
+Štvrtí deň
+Zobudzas sa na dalsie zvonenie telefonu. Zdvihnes ho a hlas v telefone ti povie že dnesny den bude kratsi, mame mensie problemy, preto budes musiet pracovat rychlejsie ako predtym, prajeme ti vela stastia! Pracovny cas prebieha tak isto, tentokrat je tam len jedna chybna unit ktoru posluchnes.
+Štvrta noc
+V sne sa zrazu zjavis pri zvoniacom telefone. Ten zodvihnes a počujes ten hlas: Uz sme velmi blizko, o chvilu ta odtial dostaneme ******, vieme že si vzpomenies, vies kto si. Zachranime ta.
+KAPITOLA 5
+KONIEC
+zobudzas sa miestnost vyzera horsie ako predtym. Prides ku telefonu ale ten nezvoni, namiesto neho mas tam len nalepeny papierik, kde je ti napisane: Dnes je tvoj najťažší deň, kvôli technickým problemom som ťa dnes nebol schopny kontaktovať, rob to čo si robil doteraz. Veľa šťastia. Zacnes pracovat tak ako si doteraz pracoval. Dnes tam bola len jedna unit, potom ako si ju zas posluchol pocujes: BUM BUM BUM, mohutnym hlasom pripominajucim ten hlas s telefonu: UZ DOST! Vieme že nas vedies za nos a nedavas nam ziadne uzitocne info! Ked to nejde po dobrom tak to pojde po zlom. O chvilu na to ta nieco silno zo zadu udrie po hlave a ty upadavas do bezvedomia
+V bezvedomi
+Zas ta ista miestnost, ale tento krat bez telefonu. Namiesto neho su tam prilozene papiere a v nich sa píše: Jeden z hlavnych akterov rebelskej skupiny ****, ktorá aktívne bojuje proti AI nadvláde bol chytený uprostred teroristického atentátu na jednom z datacentier. Domnieva sa že ****** je jeden z vodcov tohto celého odboja. Odboj posledné roky získaval na moci, ale týmto sa to môže celé zmeniť, ak sa im podarí získať kritické informácie o veliacich celí odboj by sa mohol behom pár dní rozpadnúť. Budeme aktívne sledovat situaciu a ďalšie okolnosti hlásiť tu. Po prečítaní počujes zas ten familiarny hlas. Volá ťa k tebe a ty zanim ides do temnoti. KONIEC
+
 Still Human (pracovný názov)
 Alternatívne názvy na zváženie: SIGNAL LOST / THE ONBOARDING / STATIC ROOM
 1. Pitch

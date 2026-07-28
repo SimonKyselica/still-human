@@ -38,7 +38,7 @@ func _sync_to_current_task() -> void:
 	for obj in get_tree().get_nodes_in_group("tasks_objects"):
 		if obj is Interactable:
 			var it: Interactable = obj
-			var is_active := it.task_id == active
+			var is_active := it.handles_task(active)
 			it.enabled = false
 			if is_active:
 				# Delay the whole task (ring + interaction) by a few seconds.
@@ -51,7 +51,7 @@ func _sync_to_current_task() -> void:
 ## task (guards against the task advancing or the scene reloading mid-wait).
 func _activate_after(it: Interactable, seconds: float) -> void:
 	await get_tree().create_timer(seconds).timeout
-	if not is_instance_valid(it) or it.task_id != GameState.current_task_id():
+	if not is_instance_valid(it) or not it.handles_task(GameState.current_task_id()):
 		return
 	it.on_became_active()
 	it.enabled = true

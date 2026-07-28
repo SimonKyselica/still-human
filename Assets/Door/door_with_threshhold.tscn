@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://bm3l3as3w0j5c"]
+
+[ext_resource type="PackedScene" uid="uid://f6pg1ejtsx7" path="res://Assets/door_with_threshhold.glb" id="1_8j5hs"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_u8lrn"]
+size = Vector3(1, 2.0210571, 0.17669678)
+
+[node name="door_with_threshhold" unique_id=1155214386 instance=ExtResource("1_8j5hs")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="4" unique_id=545430702]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=1978157830]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.97299194, 0.0054016113)
+shape = SubResource("BoxShape3D_u8lrn")

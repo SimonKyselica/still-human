@@ -27,9 +27,24 @@ const REPROACH_LINES: Array[String] = [
 	"Sloppy work is noticed. Don't make it a habit.",
 ]
 
+const DAY1_MORNING: Array[String] = [
+	"Morning. Welcome to your first shift.",
+	"Clear anything under the threshold, hold the rest. Simple.",
+	"We only expect the best of you.",
+]
+const DAY2_MORNING: Array[String] = [
+	"Don't mind the smoke from the vent — it's a productivity measure.",
+	"Today's rules overlap a little. Use your judgement.",
+]
+const DAY3_MORNING: Array[String] = [
+	"Last shift. It's the hardest one. Be careful.",
+]
+
+
 func _ready() -> void:
 	prompt_text = "Pick up Telephone"
 	task_id = "phone"
+	extra_task_ids = ["morning_phone"]
 	add_to_group("tasks_objects")
 	is_ringing = true
 	
@@ -57,12 +72,22 @@ func stop_ringing() -> void:
 func interact(player: Node) -> void:
 	super.interact(player)
 	stop_ringing()
-	DialogueManager.start_dialog(conver_pos, _handler_lines(), speech_sound)
-	GameState.complete_task("phone")   # zdvihnutie = dokončenie úlohy
+	var task := GameState.current_task_id()
+	DialogueManager.start_dialog(conver_pos, _handler_lines(task), speech_sound)
+	GameState.complete_task(task)   # zdvihnutie = dokončenie úlohy
 	await DialogueManager.dialogue_finished
 	# Hang up: play the put-down sound and wait out its length.
 	AudioManager.play_sound_3d(put_down_sound, global_position, AudioManager.BUS_SFX, 0.0, 1.0, 0.03)
 	await get_tree().create_timer(put_down_sound.get_length()).timeout
 	
-func _handler_lines() -> Array[String]:
+func _handler_lines(task: String) -> Array[String]:
+	if task == "morning_phone":
+		return _morning_lines()
 	return PRAISE_LINES if GameState.shift_was_clean() else REPROACH_LINES
+
+func _morning_lines() -> Array[String]:
+	if GameState.day == 2:
+		return DAY2_MORNING
+	elif GameState.day == 3:
+		return DAY3_MORNING
+	return DAY1_MORNING
