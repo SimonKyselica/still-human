@@ -9,13 +9,59 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_u8lrn"]
 size = Vector3(0.13043213, 0.12036133, 0.23278809)
 
+[sub_resource type="Animation" id="Animation_83wiv"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Cube_001:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_24ftg"]
+resource_name = "ringing"
+length = 0.1
+loop_mode = 1
+tracks/0/type = "rotation_3d"
+tracks/0/imported = false
+tracks/0/enabled = false
+tracks/0/path = NodePath("Cube_001")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array()
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Cube_001:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.03333333, 0.06666667, 0.1),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, 0.2617994), Vector3(0, 0, -0.2617994), Vector3(0, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_y1jqg"]
+_data = {
+&"RESET": SubResource("Animation_83wiv"),
+&"ringing": SubResource("Animation_24ftg")
+}
+
 [node name="telephone" unique_id=575691054 instance=ExtResource("1_6dd7g")]
 
-[node name="StaticBody3D" type="StaticBody3D" parent="." index="3" unique_id=265566504 node_paths=PackedStringArray("ring_player")]
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="3" unique_id=265566504 node_paths=PackedStringArray("ring_player", "animation_player")]
 script = ExtResource("2_rmj35")
 ring_player = NodePath("../RingSound")
 pick_up_sound = ExtResource("3_83wiv")
 put_down_sound = ExtResource("4_24ftg")
+animation_player = NodePath("../AnimationPlayer")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=2020526481]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.022125244, 0.038208008, 0.0017700195)
@@ -24,3 +70,6 @@ shape = SubResource("BoxShape3D_u8lrn")
 [node name="RingSound" type="AudioStreamPlayer3D" parent="." index="4" unique_id=1098462862]
 stream = ExtResource("5_83wiv")
 parameters/looping = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="5" unique_id=276303357]
+libraries/ = SubResource("AnimationLibrary_y1jqg")

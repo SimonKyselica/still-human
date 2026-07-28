@@ -10,6 +10,8 @@ var is_ringing: bool = true
 @export var pick_up_sound: AudioStream
 @export var put_down_sound: AudioStream
 
+@export var animation_player: AnimationPlayer
+
 const lines1: Array[String] = [
 	"Welcome to your new job!",
 	"We only expect the best of you!",
@@ -39,6 +41,7 @@ func start_ringing() -> void:
 	is_ringing = true
 	enabled = true
 	print("Yo Phone Lingin")
+	animation_player.play("ringing")
 	if ring_player and not ring_player.playing:
 		ring_player.play()
 	AudioManager.play_sound_3d(pick_up_sound, global_position, AudioManager.BUS_SFX, 0.0, 1.0, 0.03)
@@ -48,6 +51,7 @@ func start_ringing() -> void:
 func stop_ringing() -> void:
 	is_ringing = false
 	ring_player.stop()
+	animation_player.stop()
 	
 
 func interact(player: Node) -> void:

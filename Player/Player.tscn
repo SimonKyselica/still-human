@@ -11,7 +11,7 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_avubr"]
 render_priority = 1
 shader = ExtResource("3_tok1r")
-shader_parameter/pixel_size = 3.0
+shader_parameter/pixel_size = 2.0
 shader_parameter/levels = 40.0
 shader_parameter/gamma = Vector2(1, 1)
 
