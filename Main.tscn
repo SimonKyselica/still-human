@@ -164,7 +164,7 @@ player_path = NodePath("../Player")
 [node name="Furniture - non interactible" type="Node" parent="." unique_id=2003797350]
 
 [node name="camera" parent="Furniture - non interactible" unique_id=1833133659 instance=ExtResource("14_c2ibq")]
-transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -2.6593542, 2.5552475, -1.234371)
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -0.09755778, 4.594851, 0.64617443)
 
 [node name="window-2" parent="Furniture - non interactible" unique_id=1674745859 instance=ExtResource("20_devvj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4274929, 2, -5.497556)
