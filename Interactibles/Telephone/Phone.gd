@@ -91,3 +91,17 @@ func _morning_lines() -> Array[String]:
 	elif GameState.day == 3:
 		return DAY3_MORNING
 	return DAY1_MORNING
+	
+	
+	# Route A, day 3: "všimli sme si menšej chybičky v tvojom podaní"
+# Route B, day 3: "chceme ťa pochváliť. Tvoj výkon nás veľmi oslnil."
+# Same slot, same day, opposite worlds.
+
+#func _morning_lines() -> Array[String]:
+	# The CRITICAL warning outranks everything — it is the game's only
+	# foreshadowing of the death ending, so it must not be crowded out.
+	#if GameState.trust_band() == "CRITICAL":
+		#return CRITICAL_WARNING[GameState.day]
+	#if GameState.route() == "A":
+		#return ROUTE_A_MORNING[GameState.day]   # suspicion, then threat
+	#return ROUTE_B_MORNING[GameState.day]       # praise, then warmth

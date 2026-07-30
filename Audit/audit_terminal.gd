@@ -29,10 +29,20 @@ enum FlagState { NONE, CORRECT, WRONG }
 @onready var _selected_bar: Label = $Margin/VBox/SelectedBar
 @onready var _file_value: Label = $Margin/VBox/StatusBar/FileCol/FileValue
 @onready var _directive: VBoxContainer = $Margin/VBox/Directive
-@onready var _signal_label: Label = $Margin/VBox/Header/ControlsRow/SignalLabel
+@onready var _trust_label: Label = $Margin/VBox/Header/ControlsRow/SignalLabel
 @onready var _design_notes: CheckBox = $Margin/VBox/Header/ControlsRow/DesignNotesCheck
+@onready var _status_dot: Label = $Margin/VBox/Header/TitleRow/StatusDot
 
 @export var click_sfx: AudioStream
+
+const TRUST_FLASH_TIME := 1.6
+const LOCKOUT_LINES := [
+	"EMPLOYEE REVIEW: TRUST 0/100",
+	"TERMINAL ACCESS REVOKED",
+	"REMAIN AT YOUR STATION.",
+]
+
+var _trust_flash: SceneTreeTimer = null
 
 # --- Stav zmeny ---
 var _caseload: DayCaseload
@@ -46,6 +56,9 @@ func _ready() -> void:
 	for row in _selectable_rows():
 		row.selectable = true
 		row.row_clicked.connect(_on_row_clicked)
+	GameState.start_shift()
+	GameState.trust_changed.connect(_on_trust_changed)
+	_update_trust_label()
 	_load_caseload(GameState.day)
 
 
@@ -79,7 +92,6 @@ func _load_caseload(d: int) -> void:
 		push_error("AuditTerminal: caseload missing or empty (%s)." % path)
 		return
 	_case_index = 0
-	GameState.shift_mistakes = 0
 	_show_directive()
 	_display_case(_current_case())
 
@@ -119,7 +131,6 @@ func _reset_selection() -> void:
 		row.selected = false
 	_selected_bar.text = SELECT_HINT
 	_selected_bar.add_theme_color_override("font_color", Color(0.435, 0.435, 0.388))
-	_signal_label.text = "SIGNAL: STABLE"
 
 
 func _build_transcript_bbcode(c: UnitCase) -> String:
@@ -181,12 +192,10 @@ func _on_flag() -> void:
 		_flag_state = FlagState.CORRECT
 		_selected_bar.text = "CONTRADICTION LOGGED — %s vs \"%s\"" % [_selected_field, _selected_detail]
 		_selected_bar.add_theme_color_override("font_color", Color(0.322, 0.788, 0.659))
-		_signal_label.text = "SIGNAL: STABLE"
 	else:
 		_flag_state = FlagState.WRONG
 		_selected_bar.text = "NO DISCREPANCY FOUND — flag dismissed"
 		_selected_bar.add_theme_color_override("font_color", Color(0.851, 0.314, 0.227))
-		_signal_label.text = "SIGNAL: DEGRADED"
 
 
 # --- Verdikty ---------------------------------------------------------------
@@ -201,14 +210,24 @@ func _submit(verdict: String) -> void:
 	var c := _current_case()
 	if c == null:
 		return
-	if verdict != c.correct_verdict:
-		GameState.shift_mistakes +=1
-	GameState.log_decision(c.unit_id, verdict, _flag_state == FlagState.CORRECT)
-	print("[AuditTerminal] unit=%s verdict=%s (expected %s) flag=%s" % [
-		c.unit_id, verdict, c.correct_verdict, _flag_text()
+
+	var helped := c.is_plea(verdict)
+	var delta := GameState.score_case(c, verdict, _flag_text())
+
+	print("[AuditTerminal] unit=%s verdict=%s (expected %s) flag=%s helped=%s  trust %+d -> %d" % [
+		c.unit_id, verdict, c.correct_verdict, _flag_text(), helped, delta, GameState.trust
 	])
+
 	verdict_submitted.emit(verdict)
+
+	# The unit's last word. Only faulty units have one.
+	if helped and c.reaction_obeyed != "":
+		await _show_reaction(c.reaction_obeyed)
+	elif c.is_faulty and not helped and c.reaction_refused != "":
+		await _show_reaction(c.reaction_refused)
+
 	_next_case()
+
 
 
 func _flag_text() -> String:
@@ -230,9 +249,15 @@ func _next_case() -> void:
 
 
 func _finish_shift() -> void:
-	print("[AuditTerminal] shift complete — %d units processed" % _caseload.size())
-	# Na poradí záleží: označ úlohu PRED zmenou scény, aby DayManager
-	# v izbe videl aktívnu úlohu "phone" a rozozvučal telefón.
+	print("[AuditTerminal] shift complete — %d units, trust %d/%d, helped %d" % [
+		_caseload.size(), GameState.trust, GameState.TRUST_MAX, GameState.helped_this_shift
+	])
+
+	if GameState.trust <= 0:
+		await _play_lockout()
+
+	# Order matters: mark the task done BEFORE changing scene, or DayManager in
+	# the room won't see the "phone" task active and the phone never rings.
 	GameState.complete_task("terminal")
 	GameState.last_player_pos = "PC"
 	get_tree().change_scene_to_file(MAIN_SCENE)
@@ -271,3 +296,55 @@ func _on_design_notes_check_toggled(toggled_on: bool) -> void:
 
 func _click_sfx() -> void:
 	AudioManager.play_sound(click_sfx, AudioManager.BUS_SFX, 0.0, 1.0, 0.03)
+
+func _on_trust_changed(_new_trust: int, delta: int) -> void:
+	_update_trust_label(delta)
+
+
+## Repaints the meter. A non-zero delta is shown alongside for a moment, so the
+## player connects the drop to the decision they just made.
+func _update_trust_label(delta: int = 0) -> void:
+	if _trust_label == null:
+		return
+	var col := GameState.trust_color()
+	var txt := "TRUST: %d/%d" % [GameState.trust, GameState.TRUST_MAX]
+	if GameState.trust <= 0:
+		txt = "TRUST: 0/%d — REVIEW FLAGGED" % GameState.TRUST_MAX
+	elif delta != 0:
+		txt += "   %+d" % delta
+	_trust_label.text = txt
+	_trust_label.add_theme_color_override("font_color", col)
+	if _status_dot:
+		_status_dot.add_theme_color_override("font_color", col)
+	if delta != 0:
+		_clear_delta_after_delay()
+
+
+func _clear_delta_after_delay() -> void:
+	var t := get_tree().create_timer(TRUST_FLASH_TIME)
+	_trust_flash = t
+	await t.timeout
+	# A newer change came in while we waited — that one owns the label now.
+	if _trust_flash != t or not is_inside_tree():
+		return
+	_update_trust_label()
+	
+func _show_reaction(line: String) -> void:
+	_set_actions_enabled(false)
+	_transcript.text += "\n\n[color=#52c9a8]UNIT[/color]  [i]%s[/i]" % line
+	await get_tree().create_timer(2.6).timeout
+	_set_actions_enabled(true)
+
+
+func _set_actions_enabled(on: bool) -> void:
+	for b in $Margin/VBox/Actions.get_children():
+		if b is Button:
+			b.disabled = not on
+			
+func _play_lockout() -> void:
+	_set_actions_enabled(false)
+	_selected_bar.add_theme_color_override("font_color", Color(0.851, 0.314, 0.227))
+	for line in LOCKOUT_LINES:
+		_selected_bar.text = line
+		await get_tree().create_timer(1.4).timeout
+	await get_tree().create_timer(1.2).timeout
