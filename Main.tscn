@@ -105,39 +105,6 @@ transform = Transform3D(1.9106855e-15, -1, -4.371139e-08, -4.371139e-08, -4.3711
 size = Vector3(13, 14, 1)
 material = SubResource("StandardMaterial3D_03owx")
 
-[node name="SpotLight3D" type="SpotLight3D" parent="Room" unique_id=1905033424]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -3, 4.6423664, -2)
-visible = false
-light_color = Color(1, 1, 0.52156866, 1)
-light_energy = 14.465
-light_indirect_energy = 7.653
-light_size = 0.574
-shadow_enabled = true
-spot_range = 5.627
-
-[node name="OmniLight3D" type="OmniLight3D" parent="Room" unique_id=2067359882]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9612875, 2.7350688, -4.648209)
-light_color = Color(1, 1, 0.34117648, 1)
-shadow_enabled = true
-
-[node name="OmniLight3D3" type="OmniLight3D" parent="Room" unique_id=1039629813]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9612875, 2.7350688, -0.2604465)
-light_color = Color(1, 1, 0.34117648, 1)
-shadow_enabled = true
-
-[node name="OmniLight3D2" type="OmniLight3D" parent="Room" unique_id=1312398241]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.011484, 2.4365792, -3.578754)
-light_color = Color(1, 1, 0.34117648, 1)
-shadow_enabled = true
-
-[node name="AreaLight3D" type="AreaLight3D" parent="Room" unique_id=1466076596]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.068561, 2.6029558, 1.2828405)
-visible = false
-light_color = Color(1, 1, 0.54509807, 1)
-light_energy = 3.64
-shadow_enabled = true
-area_range = 64.226
-
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=191382895]
 environment = SubResource("Environment_u8lrn")
 
@@ -224,3 +191,38 @@ transform = Transform3D(-0.1913157, 0, -0.9815286, 0, 1, 0, 0.9815286, 0, -0.191
 
 [node name="door_with_threshhold" parent="Furniture - interactible" unique_id=1155214386 instance=ExtResource("25_mxvw5")]
 transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, -3.8663204, 0.54880774, 0.9400005)
+
+[node name="Lights" type="Node" parent="." unique_id=1296730455]
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Lights" unique_id=1905033424 groups=["light"]]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -3, 4.6423664, -2)
+visible = false
+light_color = Color(1, 1, 0.52156866, 1)
+light_energy = 14.465
+light_indirect_energy = 7.653
+light_size = 0.574
+shadow_enabled = true
+spot_range = 5.627
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Lights" unique_id=2067359882 groups=["light"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9612875, 2.7350688, -4.648209)
+light_color = Color(1, 1, 0.34117648, 1)
+shadow_enabled = true
+
+[node name="OmniLight3D3" type="OmniLight3D" parent="Lights" unique_id=1039629813 groups=["light"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9612875, 2.7350688, -0.2604465)
+light_color = Color(1, 1, 0.34117648, 1)
+shadow_enabled = true
+
+[node name="OmniLight3D2" type="OmniLight3D" parent="Lights" unique_id=1312398241 groups=["light"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.011484, 2.4365792, -3.578754)
+light_color = Color(1, 1, 0.34117648, 1)
+shadow_enabled = true
+
+[node name="AreaLight3D" type="AreaLight3D" parent="Lights" unique_id=1466076596 groups=["light"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.068561, 2.6029558, 1.2828405)
+visible = false
+light_color = Color(1, 1, 0.54509807, 1)
+light_energy = 3.64
+shadow_enabled = true
+area_range = 64.226

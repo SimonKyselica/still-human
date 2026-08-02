@@ -10,6 +10,7 @@ var is_ringing: bool = true
 @export var pick_up_sound: AudioStream
 @export var put_down_sound: AudioStream
 
+
 @export var animation_player: AnimationPlayer
 
 const lines1: Array[String] = [
@@ -92,6 +93,8 @@ func _morning_lines() -> Array[String]:
 		return DAY3_MORNING
 	return DAY1_MORNING
 	
+	
+		
 	
 	# Route A, day 3: "všimli sme si menšej chybičky v tvojom podaní"
 # Route B, day 3: "chceme ťa pochváliť. Tvoj výkon nás veľmi oslnil."

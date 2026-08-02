@@ -9,6 +9,7 @@ const MOUSE_SENSITIVITY = 0.003
 @onready var head: Node3D = $Head
 @onready var camera: Camera3D = $Head/Camera3D
 @onready var interaction_component: InteractionComponent = $Head/Camera3D/InteractionComponent
+@onready var shader_overlay = $Head/Camera3D/Shader_Overlay
 
 # Get the gravity from the project settings to sync with physics
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
@@ -37,6 +38,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	if event.is_action_pressed("debug"):
+		shader_overlay.visible = !shader_overlay.visible
 
 	# Handle mouse movement for looking around (ONLY if the mouse is captured)
 	if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED and event is InputEventMouseMotion:
