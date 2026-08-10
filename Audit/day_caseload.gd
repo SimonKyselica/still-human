@@ -6,6 +6,10 @@ extends Resource
 @export var directive_lines: Array[String] = []
 @export var cases: Array[UnitCase] = []
 
+@export var shift_seconds: float = 300.0
+@export_enum("PENALISE", "SCRIPTED") var expiry_mode = "PENALISE"
+@export var unfinishable: bool = false
+
 func size() -> int:
 	return cases.size()
 	

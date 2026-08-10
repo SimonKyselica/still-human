@@ -18,6 +18,11 @@ const CASELOAD_PATH := "res://Audit/cases/Day%d/day%d_caseload.tres"
 ## GDD ich volá CLEAR / HOLD / ESCALATE. FLAG tu zámerne nie je.
 const VERDICTS := ["APPROVE", "HOLD", "INCINERATE"]
 
+const CLOCK_WARN_SECONDS := 30
+const CLOCK_COL_NORMAL := Color(0.878, 0.639, 0.224)   # amber, as authored in the scene
+const CLOCK_COL_WARN := Color(0.851, 0.314, 0.227)     # the same red the meter uses
+const REPORT_LINE_TIME := 0.8
+
 enum FlagState { NONE, CORRECT, WRONG }
 
 # --- Node references (cesty zodpovedajú AuditTerminal.tscn) ---
@@ -32,8 +37,10 @@ enum FlagState { NONE, CORRECT, WRONG }
 @onready var _trust_label: Label = $Margin/VBox/Header/ControlsRow/SignalLabel
 @onready var _design_notes: CheckBox = $Margin/VBox/Header/ControlsRow/DesignNotesCheck
 @onready var _status_dot: Label = $Margin/VBox/Header/TitleRow/StatusDot
+@onready var _shift_value: Label = $Margin/VBox/StatusBar/ShiftCol/ShiftValue
 
 @export var click_sfx: AudioStream
+@export var tick_sfx: AudioStream
 
 const TRUST_FLASH_TIME := 1.6
 const LOCKOUT_LINES := [
@@ -50,7 +57,8 @@ var _case_index: int = 0
 var _selected_field: String = ""
 var _selected_detail: String = ""
 var _flag_state: FlagState = FlagState.NONE
-
+var _shift_over: bool = false
+var _clock_running: bool = false
 
 func _ready() -> void:
 	for row in _selectable_rows():
@@ -58,6 +66,8 @@ func _ready() -> void:
 		row.row_clicked.connect(_on_row_clicked)
 	GameState.start_shift()
 	GameState.trust_changed.connect(_on_trust_changed)
+	GameState.shift_time_changed.connect(_on_shift_time_changed)
+	GameState.shift_expired.connect(_on_shift_expired)
 	_update_trust_label()
 	_load_caseload(GameState.day)
 
@@ -92,8 +102,11 @@ func _load_caseload(d: int) -> void:
 		push_error("AuditTerminal: caseload missing or empty (%s)." % path)
 		return
 	_case_index = 0
+	_shift_over = false
 	_show_directive()
 	_display_case(_current_case())
+	GameState.begin_shift_clock(_caseload.shift_seconds)
+	_clock_running = true
 
 
 func _show_directive() -> void:
@@ -241,26 +254,25 @@ func _flag_text() -> String:
 
 
 func _next_case() -> void:
+	if _shift_over:
+		return
 	_case_index += 1
 	if _case_index >= _caseload.size():
+		if _caseload.unfinishable:
+			_await_next_assignment()
+			return
 		_finish_shift()
 		return
 	_display_case(_current_case())
 
 
 func _finish_shift() -> void:
+	_shift_over = true
+	_clock_running = false
 	print("[AuditTerminal] shift complete — %d units, trust %d/%d, helped %d" % [
 		_caseload.size(), GameState.trust, GameState.TRUST_MAX, GameState.helped_this_shift
 	])
-
-	if GameState.trust <= 0:
-		await _play_lockout()
-
-	# Order matters: mark the task done BEFORE changing scene, or DayManager in
-	# the room won't see the "phone" task active and the phone never rings.
-	GameState.complete_task("terminal")
-	GameState.last_player_pos = "PC"
-	get_tree().change_scene_to_file(MAIN_SCENE)
+	await _leave_terminal()
 
 
 # --- Dev pomôcky ------------------------------------------------------------
@@ -330,10 +342,10 @@ func _clear_delta_after_delay() -> void:
 	_update_trust_label()
 	
 func _show_reaction(line: String) -> void:
-	_set_actions_enabled(false)
+	_hold_terminal(true)                                
 	_transcript.text += "\n\n[color=#52c9a8]UNIT[/color]  [i]%s[/i]" % line
 	await get_tree().create_timer(2.6).timeout
-	_set_actions_enabled(true)
+	_hold_terminal(false)    
 
 
 func _set_actions_enabled(on: bool) -> void:
@@ -342,9 +354,86 @@ func _set_actions_enabled(on: bool) -> void:
 			b.disabled = not on
 			
 func _play_lockout() -> void:
-	_set_actions_enabled(false)
+	_hold_terminal(true)
 	_selected_bar.add_theme_color_override("font_color", Color(0.851, 0.314, 0.227))
 	for line in LOCKOUT_LINES:
 		_selected_bar.text = line
 		await get_tree().create_timer(1.4).timeout
 	await get_tree().create_timer(1.2).timeout
+	
+func _process(delta: float) -> void:
+	if _clock_running:
+		GameState.tick_shift(delta)
+
+
+func _on_shift_time_changed(seconds_left: int) -> void:
+	_update_clock_label(seconds_left)
+
+
+func _update_clock_label(seconds_left: int) -> void:
+	if _shift_value == null:
+		return
+	_shift_value.text = "%02d:%02d" % [seconds_left / 60, seconds_left % 60]
+	if seconds_left > CLOCK_WARN_SECONDS:
+		_shift_value.add_theme_color_override("font_color", CLOCK_COL_NORMAL)
+		return
+	_shift_value.add_theme_color_override("font_color", CLOCK_COL_WARN)
+	if seconds_left > 0:
+		_tick_sfx()
+		
+func _tick_sfx() -> void:
+	if tick_sfx == null:
+		return
+	AudioManager.play_sound(tick_sfx, AudioManager.BUS_SFX, -8.0, 0.6, 0.0)
+
+func _hold_terminal(on: bool) -> void:
+	_clock_running = not on and not _shift_over
+	_set_actions_enabled(not on)
+
+func _on_shift_expired() -> void:
+	if _shift_over or _caseload == null:
+		return
+	_shift_over = true
+	_clock_running = false
+	_update_clock_label(0)
+	_set_actions_enabled(false)
+	
+	if _caseload.expiry_mode == "SCRIPTED":
+		GameState.pending_ending = GameState.resolve_ending()
+		print("[AuditTerminal] scripted expiry — ending = %s" % GameState.pending_ending)
+	else:
+		await _play_unresolved_report()
+
+	await _leave_terminal()
+	
+	
+func _play_unresolved_report() -> void:
+	_selected_bar.add_theme_color_override("font_color", CLOCK_COL_WARN)
+	var remaining := _caseload.size() - _case_index
+	if remaining <= 0:
+		_selected_bar.text = "SHIFT ENDED — ALL FILES RESOLVED"
+		await get_tree().create_timer(REPORT_LINE_TIME).timeout
+		return
+
+	_selected_bar.text = "SHIFT ENDED — %d FILE(S) UNRESOLVED" % remaining
+	await get_tree().create_timer(REPORT_LINE_TIME).timeout
+
+	while _case_index < _caseload.size():
+		var c := _current_case()
+		var delta := GameState.mark_unresolved(c)
+		_selected_bar.text = "%s   NO DECISION RECORDED   %+d" % [c.unit_id, delta]
+		_case_index += 1
+		await get_tree().create_timer(REPORT_LINE_TIME).timeout
+			
+	
+func _leave_terminal() -> void:
+	if GameState.trust <= 0:
+		await _play_lockout()
+	GameState.complete_task("terminal")
+	GameState.last_player_pos = "PC"
+	get_tree().change_scene_to_file(MAIN_SCENE)
+	
+func _await_next_assignment() -> void:
+	_set_actions_enabled(false)
+	_selected_bar.add_theme_color_override("font_color", Color(0.435, 0.435, 0.388))
+	_selected_bar.text = "FILE SUBMITTED — AWAITING NEXT ASSIGNMENT"

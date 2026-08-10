@@ -20,10 +20,18 @@ var helped_this_shift: int = 0
 
 var pending_ending: String = ""
 
+#shift time
+var shift_time_left: float = 0.0
+var shift_total: float = 0.0
+var shift_unresolved: int = 0
+
 signal trust_changed(new_trust: int, delta: int)
 signal trust_depleted()
+signal shift_time_changed(seconds_left: int)
+signal shift_expired()
 
 var _trust_depleted_fired: bool = false
+var _shift_expired_fired: bool = false
 
 @onready var bedsound: AudioStream = preload("res://sfx/bed_stand_up.mp3")
 
@@ -34,7 +42,7 @@ signal day_completed(d: int)
 
 #TRUST FUNCTION
 const TRUST_MAX = 100
-const TRUST_START = 100
+const TRUST_START = 80
 
 const TRUST_CORRECT_VERDICT := 2
 const TRUST_WRONG_VERDICT := -8
@@ -69,8 +77,8 @@ func start_day(d: int) -> void:
 	
 func _build_schedule(d: int) -> Array[DayTask]:
 	var list: Array[DayTask] = []
-	list.append(_task("eat",      "Najedz sa",                  "CHORE"))
-	list.append(_task("morning_phone",    "Pick up the phone",           "PHONE"))
+	#list.append(_task("eat",      "Najedz sa",                  "CHORE"))
+	#list.append(_task("morning_phone",    "Pick up the phone",           "PHONE"))
 	list.append(_task("terminal", "Work shift from terminal", "TERMINAL"))
 	list.append(_task("phone",    "Pick up the phone",           "PHONE"))
 	list.append(_task("sleep",    "Go to bed",                 "SLEEP"))
@@ -182,6 +190,7 @@ func score_case(c: UnitCase, verdict: String, flag_state: String) -> int:
 func start_shift() -> void:
 	shift_mistakes = 0
 	helped_this_shift = 0
+	shift_unresolved = 0
 	
 func trust_band() -> String:
 	if trust <= 0:
@@ -211,8 +220,34 @@ func resolve_ending() -> String:
 func route() -> String:
 	return 'A' if helped_units.size() > 0 else "B"
 	
-func penalise_unresolved(count: int) -> void:
-	if count <= 0:
+
+func begin_shift_clock(seconds: float) -> void:
+	shift_total = maxf(seconds, 1.0)
+	shift_time_left = shift_total
+	_shift_expired_fired = false
+	shift_unresolved = 0
+	shift_time_changed.emit(int(ceil(shift_time_left)))
+	
+func tick_shift(delta: float) -> void:
+	if _shift_expired_fired or shift_time_left <= 0.0:
 		return
-	shift_mistakes += count
-	add_trust(TRUST_WRONG_VERDICT * count, "%d unresolved at time-out" % count)
+	var before := int(ceil(shift_time_left))
+	shift_time_left = maxf(shift_time_left - delta, 0.0)
+	var now := int(ceil(shift_time_left))
+	if now != before:
+		shift_time_changed.emit(now)
+	if shift_time_left <= 0.0:
+		_shift_expired_fired = true
+		shift_expired.emit()
+		
+func mark_unresolved(c: UnitCase) -> int:
+	if c == null:
+		return 0
+	shift_mistakes += 1
+	shift_unresolved += 1
+	if c.is_faulty and not refused_units.has(c.unit_id):
+		refused_units.append(c.unit_id)
+	log_decision(c.unit_id, "UNRESOLVED", false)
+	var before := trust
+	add_trust(TRUST_WRONG_VERDICT, "unresolved %s" % c.unit_id)
+	return trust - before
