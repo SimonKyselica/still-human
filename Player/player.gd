@@ -1,7 +1,7 @@
 extends CharacterBody3D
 
 # --- Movement Variables ---
-const SPEED = 5.0
+const SPEED = 3.0
 const JUMP_VELOCITY = 4.5
 const MOUSE_SENSITIVITY = 0.003
 

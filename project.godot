@@ -23,9 +23,10 @@ AudioManager="*uid://c2rvtteipeh7d"
 
 [display]
 
-window/size/viewport_width=1920
-window/size/viewport_height=1080
+window/size/viewport_width=2560
+window/size/viewport_height=1440
 window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 
 [editor]
 
@@ -35,6 +36,10 @@ movie_writer/movie_file="/Users/simon/Developer/Godot/one-room(wip)/Recordings/p
 
 screen_fader=""
 light=""
+
+[gui]
+
+theme/custom="res://UI/game_theme.tres"
 
 [input]
 

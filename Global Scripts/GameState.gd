@@ -251,3 +251,28 @@ func mark_unresolved(c: UnitCase) -> int:
 	var before := trust
 	add_trust(TRUST_WRONG_VERDICT, "unresolved %s" % c.unit_id)
 	return trust - before
+
+
+# =============================================================================
+# UI SCALE — accessibility (README §10: text size is a requirement, not an extra)
+# =============================================================================
+#
+# Scales every canvas item, so all Control UI grows together while the 3D render
+# stays at full resolution. Works because the whole project is laid out in a
+# virtual 1920x1080 (display/window/stretch/mode = "canvas_items").
+#
+# The cap is deliberately low: raising the factor SHRINKS the virtual viewport
+# (1920 / 1.15 = 1670 px wide), and the Audit terminal only has ~150 px of
+# vertical slack at 1.0. Above ~1.15 its panels start to overflow 1080p. Lift
+# the cap only once the transcript can scroll.
+const UI_SCALE_MIN := 0.9
+const UI_SCALE_MAX := 1.15
+
+var ui_scale: float = 1.0
+
+
+## Single entry point for the text-size setting. No options menu calls it yet.
+func set_ui_scale(factor: float) -> void:
+	ui_scale = clampf(factor, UI_SCALE_MIN, UI_SCALE_MAX)
+	get_window().content_scale_factor = ui_scale
+	print("[UI] scale -> %.2f" % ui_scale)

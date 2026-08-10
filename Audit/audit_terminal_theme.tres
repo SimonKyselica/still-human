@@ -7,5 +7,16 @@ color = Color(0.165, 0.18, 0.157, 1)
 
 [resource]
 default_font = ExtResource("1_font")
-default_font_size = 18
+default_font_size = 29
+Button/font_sizes/font_size = 32
+CheckBox/font_sizes/font_size = 27
 HSeparator/styles/separator = SubResource("sb_sep")
+RichTextLabel/font_sizes/normal_font_size = 32
+TermGlyph/base_type = &"Label"
+TermGlyph/font_sizes/font_size = 32
+TermPanelHeader/base_type = &"Label"
+TermPanelHeader/font_sizes/font_size = 35
+TermStatusCaption/base_type = &"Label"
+TermStatusCaption/font_sizes/font_size = 24
+TermTitle/base_type = &"Label"
+TermTitle/font_sizes/font_size = 45

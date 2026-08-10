@@ -200,8 +200,9 @@ shadow_enabled = true
 spot_range = 5.627
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Lights" unique_id=2067359882 groups=["light"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9612875, 2.7350688, -4.648209)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9612875, 2.035407, -3.4537532)
 light_color = Color(1, 1, 0.34117648, 1)
+light_energy = 1.7
 shadow_enabled = true
 
 [node name="OmniLight3D3" type="OmniLight3D" parent="Lights" unique_id=1039629813 groups=["light"]]
