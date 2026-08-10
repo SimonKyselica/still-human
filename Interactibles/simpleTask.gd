@@ -10,6 +10,8 @@ func _ready() -> void:
 	
 func interact(player: Node) -> void:
 	super.interact(player)
+	if task_id == "eat":
+		queue_free()
 	if not say_lines.is_empty():
 		DialogueManager.start_dialog(say_pos, say_lines, say_sfx)
 	GameState.complete_task(task_id)

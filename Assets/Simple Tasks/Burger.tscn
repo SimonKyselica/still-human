@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://drkugcuee5wtm"]
+
+[ext_resource type="PackedScene" uid="uid://bdd7ggxv7hdnl" path="res://Assets/burger.glb" id="1_qtevo"]
+[ext_resource type="Script" uid="uid://drk7vtmv78eik" path="res://Interactibles/simpleTask.gd" id="2_gbhah"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_avubr"]
+size = Vector3(2.067871, 12.856323, 1.7878418)
+
+[node name="burger" unique_id=229075079 instance=ExtResource("1_qtevo")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Cylinder_001" parent_id_path=PackedInt32Array(827203184) index="0" unique_id=13376523]
+script = ExtResource("2_gbhah")
+prompt_text = "Eat Burger"
+task_id = "eat"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cylinder_001/StaticBody3D" index="0" unique_id=2115539626]
+transform = Transform3D(0.99998295, 0, 0, 0, 1, 0, 0, 0, 0.99998295, 0.05786145, 1.4286499, 0.07043409)
+shape = SubResource("BoxShape3D_avubr")

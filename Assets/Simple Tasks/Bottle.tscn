@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://flwix8h16d8c"]
+
+[ext_resource type="PackedScene" uid="uid://cwqnh10v56aaq" path="res://Assets/bottle.glb" id="1_5j8wp"]
+[ext_resource type="Script" uid="uid://drk7vtmv78eik" path="res://Interactibles/simpleTask.gd" id="2_at4d5"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u8lrn"]
+radius = 0.08691406
+height = 0.3453369
+
+[node name="bottle" unique_id=303642776 instance=ExtResource("1_5j8wp")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Cylinder" parent_id_path=PackedInt32Array(966558489) index="0" unique_id=523197065]
+script = ExtResource("2_at4d5")
+prompt_text = "Drink Vine"
+task_id = "drink"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cylinder/StaticBody3D" index="0" unique_id=980707218]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.066223145, 0)
+shape = SubResource("CapsuleShape3D_u8lrn")

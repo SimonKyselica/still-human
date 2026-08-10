@@ -69,7 +69,7 @@ func start_day(d: int) -> void:
 	
 func _build_schedule(d: int) -> Array[DayTask]:
 	var list: Array[DayTask] = []
-	#list.append(_task("eat",      "Najedz sa",                  "CHORE"))
+	list.append(_task("eat",      "Najedz sa",                  "CHORE"))
 	list.append(_task("morning_phone",    "Pick up the phone",           "PHONE"))
 	list.append(_task("terminal", "Work shift from terminal", "TERMINAL"))
 	list.append(_task("phone",    "Pick up the phone",           "PHONE"))
