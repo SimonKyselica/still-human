@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "329-EX"
+sector_of_origin = "Sector 10"
+model_number = "EX-3"
+degradation = 18
+day = 1
+opening_answer = "Sector EX, EX-3 and 329-EX."
+opening_details = Array[String](["Sector EX", "EX-3", "329-EX"])
+correct_verdict = "INCINERATE"

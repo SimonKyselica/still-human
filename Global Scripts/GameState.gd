@@ -159,7 +159,18 @@ func add_trust(delta: int, reason: String = "") -> void:
 		pending_ending = "DEATH"
 		trust_depleted.emit()
 		
-func score_case(c: UnitCase, verdict: String, flag_state: String) -> int:
+## Scores one round of questioning, the moment the player asks it. Deliberately
+## separate from [method score_case]: folding it into the verdict hid it from
+## both the trust meter and the log, and the player never saw that asking a good
+## question paid. Returns the delta so the terminal can report it.
+func score_flag(unit_id: String, correct: bool) -> int:
+	var delta := TRUST_FLAG_CORRECT if correct else TRUST_FLAG_WRONG
+	add_trust(delta, "flag %s / %s" % [unit_id, "CORRECT" if correct else "BASELESS"])
+	return delta
+
+
+## Scores the verdict only — flags were already paid for by [method score_flag].
+func score_case(c: UnitCase, verdict: String, flagged_correctly: bool = false) -> int:
 	var delta := 0
 
 	if c.is_plea(verdict):
@@ -177,13 +188,7 @@ func score_case(c: UnitCase, verdict: String, flag_state: String) -> int:
 			delta += TRUST_WRONG_VERDICT
 			shift_mistakes += 1
 
-	match flag_state:
-		"CORRECT":
-			delta += TRUST_FLAG_CORRECT
-		"WRONG":
-			delta += TRUST_FLAG_WRONG
-
-	log_decision(c.unit_id, verdict, flag_state == "CORRECT")
+	log_decision(c.unit_id, verdict, flagged_correctly)
 	add_trust(delta, "unit %s / %s" % [c.unit_id, verdict])
 	return delta
 	

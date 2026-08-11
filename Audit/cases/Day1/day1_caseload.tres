@@ -1,12 +1,24 @@
 [gd_resource type="Resource" script_class="DayCaseload" format=3 uid="uid://d2xxeqncr4oe1"]
 
-[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_iwgv1"]
-[ext_resource type="Resource" uid="uid://cwjdyuira7x8v" path="res://Audit/cases/Day1/day1_108vn.tres" id="2_5qqrp"]
-[ext_resource type="Resource" uid="uid://du38tbtignwmp" path="res://Audit/cases/Day1/day1_221kl.tres" id="3_pqoek"]
-[ext_resource type="Script" uid="uid://d2gckur0kghbi" path="res://Audit/day_caseload.gd" id="4_mndut"]
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://d2gckur0kghbi" path="res://Audit/day_caseload.gd" id="2_load"]
+[ext_resource type="Resource" path="res://Audit/cases/Day1/day1_108vn.tres" id="c01"]
+[ext_resource type="Resource" path="res://Audit/cases/Day1/day1_221kl.tres" id="c02"]
+[ext_resource type="Resource" path="res://Audit/cases/Day1/day1_334ws.tres" id="c03"]
+[ext_resource type="Resource" path="res://Audit/cases/Day1/day1_334ql.tres" id="c04"]
+[ext_resource type="Resource" path="res://Audit/cases/Day1/day1_329ex.tres" id="c05"]
+[ext_resource type="Resource" path="res://Audit/cases/Day1/day1_657kl.tres" id="c06"]
+[ext_resource type="Resource" path="res://Audit/cases/Day1/day1_432dy.tres" id="c07"]
+[ext_resource type="Resource" path="res://Audit/cases/Day1/day1_500py.tres" id="c08"]
+[ext_resource type="Resource" path="res://Audit/cases/Day1/day1_111xl.tres" id="c09"]
+[ext_resource type="Resource" path="res://Audit/cases/Day1/day1_831ws.tres" id="c10"]
 
 [resource]
-script = ExtResource("4_mndut")
-directive_lines = Array[String](["Units below 40% degradation → APPROVE.", "Units at or above 40% degradation → HOLD for review."])
-cases = Array[ExtResource("1_iwgv1")]([ExtResource("2_5qqrp"), ExtResource("3_pqoek")])
-metadata/_custom_type_script = "uid://d2gckur0kghbi"
+script = ExtResource("2_load")
+day = 1
+directive_lines = Array[String](["Case file and transcript agree -> APPROVE.", "Degradation above 30% -> INCINERATE.", "UNIT ID containing the number 9 -> INCINERATE.", "Lies again after questioning -> HOLD. Corrects itself -> APPROVE."])
+cases = Array[ExtResource("1_case")]([ExtResource("c01"), ExtResource("c02"), ExtResource("c03"), ExtResource("c04"), ExtResource("c05"), ExtResource("c06"), ExtResource("c07"), ExtResource("c08"), ExtResource("c09"), ExtResource("c10")])
+opening_question = "State your sector of origin, model number and unit ID."
+shift_seconds = 300.0
+expiry_mode = "PENALISE"
+unfinishable = false

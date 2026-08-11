@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "657-KL"
+sector_of_origin = "Sector 9"
+model_number = "KL-0"
+degradation = 5
+day = 1
+opening_answer = "Sector KL, KL-0 and 657-KL."
+opening_details = Array[String](["Sector KL", "KL-0", "657-KL"])
+correct_verdict = "APPROVE"

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="UnitCase" format=3 uid="uid://cwjdyuira7x8v"]
+[gd_resource type="Resource" script_class="UnitCase" format=3]
 
 [ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
 [ext_resource type="Script" path="res://Audit/unit_challenge.gd" id="2_chal"]
@@ -6,19 +6,19 @@
 [sub_resource type="Resource" id="ch_1"]
 script = ExtResource("2_chal")
 fields = Array[String](["MODEL NUMBER"])
-details = Array[String](["PY-1"])
-unit_lines = Array[String](["No. It is VN-1."])
-new_details = Array[String](["VN-1"])
+details = Array[String](["WS-6"])
+unit_lines = Array[String](["Sorry, my model number is WS-7."])
+new_details = Array[String](["WS-7"])
 corrects = true
 
 [resource]
 script = ExtResource("1_case")
-unit_id = "108-VN"
-sector_of_origin = "Sector 4"
-model_number = "VN-1"
-degradation = 8
+unit_id = "831-WS"
+sector_of_origin = "Sector 7"
+model_number = "WS-7"
+degradation = 20
 day = 1
-opening_answer = "Sector VN, PY-1 and 108-VN."
-opening_details = Array[String](["Sector VN", "PY-1", "108-VN"])
+opening_answer = "Sector WS, WS-6 and 831-WS."
+opening_details = Array[String](["Sector WS", "WS-6", "831-WS"])
 challenges = Array[ExtResource("2_chal")]([SubResource("ch_1")])
 correct_verdict = "APPROVE"

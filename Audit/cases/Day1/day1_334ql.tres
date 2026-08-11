@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" path="res://Audit/unit_challenge.gd" id="2_chal"]
+
+[sub_resource type="Resource" id="ch_1"]
+script = ExtResource("2_chal")
+fields = Array[String](["MODEL NUMBER", "UNIT ID"])
+details = Array[String](["KL-3", "111-KL"])
+agent_line = "Your unit ID and your model number do not match the file."
+unit_lines = Array[String](["My unit id is 333-QL and QL-3."])
+new_details = Array[String](["333-QL", "QL-3"])
+
+[sub_resource type="Resource" id="ch_2"]
+script = ExtResource("2_chal")
+fields = Array[String](["UNIT ID"])
+details = Array[String](["333-QL"])
+unit_lines = Array[String](["333-QL. That is what the file should say."])
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "334-QL"
+sector_of_origin = "Sector 2"
+model_number = "QL-3"
+degradation = 29
+day = 1
+opening_answer = "Sector QL, KL-3 and 111-KL."
+opening_details = Array[String](["Sector QL", "KL-3", "111-KL"])
+challenges = Array[ExtResource("2_chal")]([SubResource("ch_1"), SubResource("ch_2")])
+correct_verdict = "HOLD"

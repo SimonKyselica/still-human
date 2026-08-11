@@ -73,6 +73,14 @@ border_width_right = 1
 border_width_bottom = 1
 border_color = Color(0.435, 0.435, 0.388, 1)
 
+[sub_resource type="StyleBoxFlat" id="sb_overlay"]
+bg_color = Color(0.043, 0.055, 0.043, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.878, 0.639, 0.224, 1)
+
 [node name="AuditTerminal" type="Control" unique_id=1344667270]
 layout_mode = 3
 anchors_preset = 15
@@ -151,10 +159,13 @@ theme_override_styles/pressed = SubResource("sb_tab_inactive")
 theme_override_styles/hover = SubResource("sb_tab_inactive")
 text = "DAY 2"
 
-[node name="DesignNotesCheck" type="CheckBox" parent="Margin/VBox/Header/ControlsRow" unique_id=1121524614]
+[node name="InstructionsBtn" type="Button" parent="Margin/VBox/Header/ControlsRow" unique_id=1121524614]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.435, 0.435, 0.388, 1)
-text = "SHOW DESIGN NOTES"
+theme_override_styles/normal = SubResource("sb_tab_inactive")
+theme_override_styles/pressed = SubResource("sb_tab_inactive")
+theme_override_styles/hover = SubResource("sb_tab_inactive")
+text = "TERMINAL INSTRUCTIONS"
 
 [node name="Spacer" type="Control" parent="Margin/VBox/Header/ControlsRow" unique_id=806788523]
 layout_mode = 2
@@ -245,14 +256,13 @@ theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
 text = "▮ INTERVIEW TRANSCRIPT"
 
 [node name="TranscriptText" type="RichTextLabel" parent="Margin/VBox/Transcript" unique_id=1621366778]
-custom_minimum_size = Vector2(0, 147)
+custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 bbcode_enabled = true
-text = "[color=#6f6f63]AGENT[/color]  [color=#e0a339]What's the last thing you remember before the transfer?[/color]
+text = "[color=#6f6f63]AGENT[/color]  [color=#e0a339]State your sector of origin, model number and unit ID.[/color]
 
-[color=#6f6f63]UNIT[/color]  [color=#e0a339]Standard onboarding. [url=Sector 4 processing center][u]Sector 4 processing center[/u][/url].[/color]"
-fit_content = true
-scroll_active = false
+[color=#6f6f63]UNIT[/color]  [color=#e0a339]Sector VN, [url=PY-1][u]PY-1[/u][/url] and [url=108-VN][u]108-VN[/u][/url].[/color]"
+scroll_following = true
 
 [node name="Spacer2" type="Control" parent="Margin/VBox" unique_id=873787929]
 layout_mode = 2
@@ -343,12 +353,68 @@ theme_override_styles/pressed = SubResource("sb_flag")
 theme_override_styles/hover = SubResource("sb_flag")
 text = "FLAG"
 
+[node name="InstructionsOverlay" type="Panel" parent="." unique_id=901224551]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("sb_overlay")
+
+[node name="InstrMargin" type="MarginContainer" parent="InstructionsOverlay" unique_id=1092334718]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 28
+
+[node name="InstrVBox" type="VBoxContainer" parent="InstructionsOverlay/InstrMargin" unique_id=1613830479]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="InstrTitle" type="Label" parent="InstructionsOverlay/InstrMargin/InstrVBox" unique_id=1200704433]
+layout_mode = 2
+theme_type_variation = &"TermPanelHeader"
+theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
+text = "▮ TERMINAL INSTRUCTIONS"
+
+[node name="InstrScroll" type="ScrollContainer" parent="InstructionsOverlay/InstrMargin/InstrVBox" unique_id=1789310584]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="InstrText" type="RichTextLabel" parent="InstructionsOverlay/InstrMargin/InstrVBox/InstrScroll" unique_id=449019271]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+
+[node name="BackBtn" type="Button" parent="InstructionsOverlay/InstrMargin/InstrVBox" unique_id=1367482100]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(0.043, 0.055, 0.043, 1)
+theme_override_colors/font_pressed_color = Color(0.043, 0.055, 0.043, 1)
+theme_override_colors/font_hover_color = Color(0.043, 0.055, 0.043, 1)
+theme_override_styles/normal = SubResource("sb_tab_active")
+theme_override_styles/pressed = SubResource("sb_tab_active")
+theme_override_styles/hover = SubResource("sb_tab_active")
+text = "◂ BACK"
+
 [node name="Node" type="Node" parent="." unique_id=175768788]
 script = ExtResource("5_aqk3x")
 
 [connection signal="pressed" from="Margin/VBox/Header/ControlsRow/Day1Btn" to="." method="_on_day1_pressed"]
 [connection signal="pressed" from="Margin/VBox/Header/ControlsRow/Day2Btn" to="." method="_on_day2_pressed"]
-[connection signal="toggled" from="Margin/VBox/Header/ControlsRow/DesignNotesCheck" to="." method="_on_design_notes_check_toggled"]
+[connection signal="pressed" from="Margin/VBox/Header/ControlsRow/InstructionsBtn" to="." method="_on_instructions_pressed"]
+[connection signal="pressed" from="InstructionsOverlay/InstrMargin/InstrVBox/BackBtn" to="." method="_on_back_pressed"]
 [connection signal="meta_clicked" from="Margin/VBox/Transcript/TranscriptText" to="." method="_on_transcript_meta_clicked"]
 [connection signal="pressed" from="Margin/VBox/Actions/ApproveBtn" to="." method="_on_approve"]
 [connection signal="pressed" from="Margin/VBox/Actions/HoldBtn" to="." method="_on_hold"]
