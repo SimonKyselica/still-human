@@ -33,6 +33,27 @@ const COL_DIM := Color(0.435, 0.435, 0.388)
 const COL_OK := Color(0.322, 0.788, 0.659)
 const COL_BAD := Color(0.851, 0.314, 0.227)
 
+# --- Animácia ---------------------------------------------------------------
+#
+# Terminál je stroj, ktorý tlačí text — nič sa nemá zjaviť naraz a hotové.
+# Prepis sa vypisuje po znakoch, riadky zložky nabiehajú po sebe a hodnoty,
+# ktoré sa práve zmenili, kratučko zablikajú. Všetko je preskočiteľné.
+
+## Znakov za sekundu. Dosť rýchlo, aby to nekradlo čas zo zmeny (7 prípadov
+## na dni 4 vyjde asi na 20 s z 4:30), dosť pomaly, aby to bolo vidieť.
+const TYPE_CHARS_PER_SEC := 140.0
+
+## Rozostup medzi nabiehajúcimi riadkami ZLOŽKY.
+const ROW_STAGGER := 0.06
+const ROW_FADE_TIME := 0.18
+
+## Bliknutie hodnoty, ktorá sa práve zmenila.
+const FLICKER_OUT := 0.05
+const FLICKER_IN := 0.12
+
+var _type_tween: Tween = null
+var _typing: bool = false
+
 # Transcript colours, matching the mockup.
 const BB_SPEAKER := "6f6f63"
 const BB_BODY := "e0a339"
@@ -90,6 +111,10 @@ func _ready() -> void:
 	GameState.shift_expired.connect(_on_shift_expired)
 	_overlay.visible = false
 	_overlay_text.text = _instructions_bbcode()
+	# Klik do panelu prepisu dopíše zvyšok naraz. Zámerne nie klávesa: Space aj
+	# Enter patria zafokusovanému tlačidlu, takže by preskočenie omylom vynieslo
+	# verdikt.
+	_transcript.gui_input.connect(_on_transcript_gui_input)
 	_update_trust_label()
 	_load_caseload(GameState.day)
 
@@ -141,6 +166,11 @@ func _show_directive() -> void:
 		# v scéne — jedno miesto na ladenie a na nastavenie veľkosti textu.
 		_directive.add_child(l)
 
+	# Direktíva prichádza raz na zmenu, tak sa smie zjaviť pokojne.
+	_directive.modulate.a = 0.0
+	var t := _directive.create_tween()
+	t.tween_property(_directive, "modulate:a", 1.0, 0.6)
+
 
 # --- Zobrazenie prípadu -----------------------------------------------------
 
@@ -149,6 +179,7 @@ func _display_case(c: UnitCase) -> void:
 		return
 	_build_data_rows(c)
 	_file_value.text = "%d / %d" % [_case_index + 1, _caseload.size()]
+	_flicker(_file_value)
 
 	_revealed.clear()
 	_answered.clear()
@@ -159,6 +190,10 @@ func _display_case(c: UnitCase) -> void:
 	_say("UNIT", c.opening_answer)
 
 	_reset_selection()
+	# Nový spis prichádza prázdny a vypíše sa sám. _render_transcript() vypisuje
+	# odtiaľ, kde bol prepis predtým, takže bez tejto nuly by sa prvý prípad
+	# zjavil naraz.
+	_transcript.visible_characters = 0
 	_render_transcript()
 
 
@@ -170,6 +205,7 @@ func _build_data_rows(c: UnitCase) -> void:
 		_data_rows.remove_child(child)
 
 	var row_scene: PackedScene = load(DATA_ROW_SCENE)
+	var i := 0
 	for f in c.fields():
 		var row: DataRow = row_scene.instantiate()
 		row.key = f.key
@@ -177,6 +213,15 @@ func _build_data_rows(c: UnitCase) -> void:
 		row.selectable = true
 		row.row_clicked.connect(_on_row_clicked)
 		_data_rows.add_child(row)
+
+		# Riadky nabiehajú po sebe, aby zložka vyzerala načítaná a nie nalepená.
+		# Tween patrí riadku, takže zomrie s ním — prípad sa môže vymeniť aj
+		# uprostred nábehu bez toho, aby sa tweenovalo do uvolnenej pamäte.
+		row.modulate.a = 0.0
+		var t := row.create_tween()
+		t.tween_interval(i * ROW_STAGGER)
+		t.tween_property(row, "modulate:a", 1.0, ROW_FADE_TIME)
+		i += 1
 
 
 func _selectable_rows() -> Array[DataRow]:
@@ -205,6 +250,15 @@ func _say(speaker: String, text: String) -> void:
 
 
 func _render_transcript() -> void:
+	# Kde bol hráč predtým, než sa prepis prekreslil. Doteraz prečítaný text
+	# zostane stáť a dopisuje sa len to, čo práve pribudlo.
+	# Pozor: -1 znamená „všetko viditeľné", nie nula znakov — treba ho previesť
+	# na doterajší počet znakov ešte pred prepísaním .text, inak by sa druhé a
+	# každé ďalšie kolo výsluchu zjavilo naraz.
+	var already_shown := _transcript.visible_characters
+	if already_shown < 0:
+		already_shown = _transcript.get_total_character_count()
+
 	var lines: PackedStringArray = []
 	for entry in _revealed:
 		var speaker: String = entry["speaker"]
@@ -215,6 +269,58 @@ func _render_transcript() -> void:
 	_transcript.text = "\n\n".join(lines)
 	# Nové kolo výsluchu pribúda naspodu; scroll_following v scéne drží pohľad
 	# na poslednej odpovedi, takže dlhý výsluch nerozbije rozloženie panelu.
+	_type_from(already_shown)
+
+
+## Vypisuje prepis od [param from_chars] po konec. Odpoveď jednotky tak prichádza
+## ako odpoveď — píše sa pred očami — namiesto toho, aby bola odjakživa hotová.
+##
+## visible_characters počíta znaky BEZ BBCode, takže prefarbenie nároku
+## (_on_transcript_meta_clicked) celkový počet nemení: from_chars == total,
+## nič sa neanimuje a označenie je okamžité. Presne ako treba.
+func _type_from(from_chars: int) -> void:
+	if _type_tween != null:
+		_type_tween.kill()
+		_type_tween = null
+
+	var total := _transcript.get_total_character_count()
+	if from_chars < 0 or from_chars >= total:
+		_finish_typing()
+		return
+
+	_transcript.visible_characters = from_chars
+	_typing = true
+	_type_tween = create_tween()
+	_type_tween.tween_property(_transcript, "visible_characters", total,
+		float(total - from_chars) / TYPE_CHARS_PER_SEC)
+	_type_tween.tween_callback(_finish_typing)
+
+
+## -1 = ukáž všetko. Musí to byť -1 a nie total: keď hráč potom klikne na nárok,
+## prepis sa prekreslí a pri konkrétnom čísle by si odrezal zvyšok textu.
+func _finish_typing() -> void:
+	if _type_tween != null:
+		_type_tween.kill()
+		_type_tween = null
+	_typing = false
+	_transcript.visible_characters = -1
+
+
+func _on_transcript_gui_input(event: InputEvent) -> void:
+	if not _typing:
+		return
+	if event is InputEventMouseButton and event.pressed:
+		_finish_typing()
+
+
+## Krátke bliknutie hodnoty, ktorá sa práve zmenila — CRT ekvivalent otočenia
+## strany. Tween patrí uzlu, takže sa nikdy nepretečú dva cez seba.
+func _flicker(node: CanvasItem) -> void:
+	if node == null:
+		return
+	var t := node.create_tween()
+	t.tween_property(node, "modulate:a", 0.15, FLICKER_OUT)
+	t.tween_property(node, "modulate:a", 1.0, FLICKER_IN)
 
 
 ## Obalí klikateľné nároky do [url]. Text sa prechádza raz zľava doprava, takže
@@ -330,6 +436,7 @@ func _reset_selection_keep_bar() -> void:
 func _flash_bar(text: String, col: Color) -> void:
 	_selected_bar.text = text
 	_selected_bar.add_theme_color_override("font_color", col)
+	_flicker(_selected_bar)
 
 
 # --- Verdikty ---------------------------------------------------------------
@@ -473,6 +580,7 @@ func _update_trust_label(delta: int = 0) -> void:
 	if _status_dot:
 		_status_dot.add_theme_color_override("font_color", col)
 	if delta != 0:
+		_flicker(_trust_label)
 		_clear_delta_after_delay()
 
 
@@ -528,6 +636,9 @@ func _update_clock_label(seconds_left: int) -> void:
 	_shift_value.add_theme_color_override("font_color", CLOCK_COL_WARN)
 	if seconds_left > 0:
 		_tick_sfx()
+		# Hodiny v poslednej pol minúte pulzujú do rytmu tikania — tlak sa má
+		# dať vidieť aj so vypnutým zvukom.
+		_flicker(_shift_value)
 
 
 func _tick_sfx() -> void:
@@ -548,6 +659,7 @@ func _on_shift_expired() -> void:
 	_clock_running = false
 	# Koniec zmeny sa hlási v lište pod prepisom — nesmie ostať schovaný.
 	_overlay.visible = false
+	_finish_typing()   # nech sa prepis nedopisuje popod hlásenie o konci zmeny
 	_update_clock_label(0)
 	_set_actions_enabled(false)
 

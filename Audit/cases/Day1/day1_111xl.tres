@@ -1,6 +1,8 @@
-[gd_resource type="Resource" script_class="UnitCase" format=3]
+[gd_resource type="Resource" script_class="UnitCase" format=3 uid="uid://cfro05qs7qqup"]
 
+[ext_resource type="Script" uid="uid://djpvu22v688ws" path="res://Audit/unit_challenge.gd" id="1_25reg"]
 [ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="2_tyy8n"]
 
 [resource]
 script = ExtResource("1_case")
@@ -8,7 +10,6 @@ unit_id = "111-XL"
 sector_of_origin = "Sector 3"
 model_number = "XL-2"
 degradation = 94
-day = 1
 opening_answer = "Sector XL, XL-2 and 111-XL."
 opening_details = Array[String](["Sector XL", "XL-2", "111-XL"])
 correct_verdict = "INCINERATE"
