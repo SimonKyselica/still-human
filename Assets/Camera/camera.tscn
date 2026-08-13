@@ -1,5 +1,15 @@
 [gd_scene format=3 uid="uid://c4s5svl5a6g5d"]
 
 [ext_resource type="PackedScene" uid="uid://styyshsjyvrd" path="res://Assets/camera.glb" id="1_2ogcl"]
+[ext_resource type="Script" uid="uid://d32cujt72nihb" path="res://Assets/Camera/Camera.gd" id="2_yi2nb"]
 
 [node name="camera" unique_id=1124658652 instance=ExtResource("1_2ogcl")]
+
+[node name="Cube_001" parent="." index="1" unique_id=1102277791]
+script = ExtResource("2_yi2nb")
+model_yaw_offset = 180.0
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Cube_001" index="0" unique_id=217712606]
+transform = Transform3D(1, 0, 0, 0, 1.4285715, 0, 0, 0, 3.0000002, 0.059029914, -0.32355502, 0.89230144)
+light_color = Color(1, 0.050980393, 0.05882353, 1)
+omni_range = 0.03
