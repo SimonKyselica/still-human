@@ -33,6 +33,7 @@ offset_right = -1.2600098
 offset_bottom = -0.32000732
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1890283274 groups=["screen_fader"]]
 anchors_preset = 15

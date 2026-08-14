@@ -22,27 +22,53 @@ var _footsteps: Array[AudioStream] = [
 	preload("res://sfx/walking_3.wav"),
 ]
 
+## Whether the player *should* have mouse look right now. Deliberately kept
+## separate from the OS mouse mode: the OS can refuse or silently drop capture
+## (window not focused yet at startup, alt-tab, platform quirks), and reading
+## that state back as the source of truth is how you end up with a game that
+## never looks around again and gives the player no way to find out why.
+var _mouse_look: bool = true
+
+
 func _ready() -> void:
 	# Capture the mouse cursor so it doesn't wander off the screen initially
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	_set_mouse_look(true)
+
+
+func _notification(what: int) -> void:
+	# Capture can fail if it is requested before the window has focus — exactly
+	# the sort of thing that happens on one machine and not another. Re-apply it
+	# every time the window comes back.
+	if what == NOTIFICATION_APPLICATION_FOCUS_IN and _mouse_look:
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+
+func _set_mouse_look(on: bool) -> void:
+	_mouse_look = on
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED if on else Input.MOUSE_MODE_VISIBLE)
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	# --- THE ESCAPE HATCH ---
 	# "ui_cancel" is Godot's default action for the Escape key
-	
+
+	# Click in the world to take the mouse back. Standard FPS behaviour, and the
+	# one recovery a player finds without being told — it covers Escape hit by
+	# accident and capture that never applied in the first place.
+	if event is InputEventMouseButton and event.pressed and not _mouse_look:
+		_set_mouse_look(true)
+		return
+
 	if event.is_action_pressed("interact") and not DialogueManager.is_dialogue_active:
 		interaction_component.try_interact(self)
-	
+
 	if event.is_action_pressed("ui_cancel"):
-		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-		else:
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		_set_mouse_look(not _mouse_look)
 	if event.is_action_pressed("debug"):
 		shader_overlay.visible = !shader_overlay.visible
 
 	# Handle mouse movement for looking around (ONLY if the mouse is captured)
-	if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED and event is InputEventMouseMotion:
+	if _mouse_look and event is InputEventMouseMotion:
 		# Rotate the player body left and right (Y axis)
 		rotate_y(-event.relative.x * MOUSE_SENSITIVITY)
 		

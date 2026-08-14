@@ -1,4 +1,4 @@
-class_name PC
+class_name Couch
 extends Interactable
 
 var sitting: bool = false
