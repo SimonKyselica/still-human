@@ -1,14 +1,14 @@
 [gd_scene format=3 uid="uid://dijp3pnv11fti"]
 
-[ext_resource type="Texture2D" uid="uid://bd4f0es3ohj6p" path="res://Assets/textures/Wall/wall_texture_adjusted.png" id="1_13v4r"]
-[ext_resource type="Texture2D" uid="uid://c1na4iluu0g4y" path="res://Assets/textures/Wall/wall_wood_texture_original.png" id="2_tlmb0"]
-[ext_resource type="PackedScene" uid="uid://xu063jr1lrg2" path="res://Assets/Objects - Furniture/kitchen_table.tscn" id="3_jicfw"]
-[ext_resource type="PackedScene" uid="uid://dqce2l0shv6ib" path="res://Interactibles/Telephone/telephone.tscn" id="4_8cjy6"]
-[ext_resource type="Texture2D" uid="uid://cyexdhyqhtas0" path="res://Assets/textures/Strop/ceiling_texture_adjsuted.png" id="5_6cquc"]
-[ext_resource type="PackedScene" uid="uid://8ltr7e0apt5i" path="res://Player/Player.tscn" id="6_tlmb0"]
+[ext_resource type="Texture2D" uid="uid://bd4f0es3ohj6p" path="res://Assets/textures/Wall/wall_texture_adjusted.png" id="1_02bxb"]
+[ext_resource type="Texture2D" uid="uid://c1na4iluu0g4y" path="res://Assets/textures/Wall/wall_wood_texture_original.png" id="2_3ep4a"]
+[ext_resource type="PackedScene" uid="uid://xu063jr1lrg2" path="res://Assets/Objects - Furniture/kitchen_table.tscn" id="3_ha27i"]
+[ext_resource type="PackedScene" uid="uid://dqce2l0shv6ib" path="res://Interactibles/Telephone/telephone.tscn" id="4_o286y"]
+[ext_resource type="Texture2D" uid="uid://cyexdhyqhtas0" path="res://Assets/textures/Strop/ceiling_texture_adjsuted.png" id="5_un1k4"]
+[ext_resource type="PackedScene" uid="uid://8ltr7e0apt5i" path="res://Player/Player.tscn" id="6_cem5k"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ttw7h"]
-albedo_texture = ExtResource("1_13v4r")
+albedo_texture = ExtResource("1_02bxb")
 uv1_scale = Vector3(0.3, 0.3, 0.3)
 uv1_triplanar = true
 uv1_world_triplanar = true
@@ -18,18 +18,20 @@ point_size = 115.7
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dt5bb"]
 albedo_color = Color(0.8352941, 1, 1, 1)
-albedo_texture = ExtResource("2_tlmb0")
+albedo_texture = ExtResource("2_3ep4a")
 uv1_triplanar = true
 texture_filter = 0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cex65"]
-albedo_texture = ExtResource("5_6cquc")
+albedo_texture = ExtResource("5_un1k4")
 uv1_scale = Vector3(0.4, 0.4, 0.4)
 uv1_triplanar = true
 texture_filter = 0
 
 [sub_resource type="Environment" id="Environment_oi06a"]
 fog_enabled = true
+fog_light_energy = 0.0
+fog_density = 0.3215
 
 [node name="EndGood" type="Node3D" unique_id=718446167]
 
@@ -111,10 +113,10 @@ material = SubResource("StandardMaterial3D_dt5bb")
 
 [node name="Furniture" type="Node3D" parent="." unique_id=416511923]
 
-[node name="kitchen_table2" parent="Furniture" unique_id=870926439 instance=ExtResource("3_jicfw")]
+[node name="kitchen_table2" parent="Furniture" unique_id=870926439 instance=ExtResource("3_ha27i")]
 transform = Transform3D(0.6948186, 0, -0.08501238, 0, 0.7, 0, 0.08501238, 0, 0.6948186, 26.498, 1.926, 0.663)
 
-[node name="telephone" parent="Furniture/kitchen_table2" unique_id=575691054 instance=ExtResource("4_8cjy6")]
+[node name="telephone" parent="Furniture/kitchen_table2" unique_id=575691054 instance=ExtResource("4_o286y")]
 transform = Transform3D(0.98570347, 0, -0.16848937, 0, 0.99999976, 0, 0.16848937, 0, 0.98570347, -0.26071548, 0.07512379, 0.011370182)
 
 [node name="ceiling" type="Node3D" parent="." unique_id=1290777436]
@@ -179,5 +181,5 @@ omni_attenuation = 4.08
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=149826539]
 environment = SubResource("Environment_oi06a")
 
-[node name="Player" parent="." unique_id=2097612105 instance=ExtResource("6_tlmb0")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.44, 4.685, 2.455)
+[node name="Player" parent="." unique_id=2097612105 instance=ExtResource("6_cem5k")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2925382, 2.8103771, -0.24220067)
