@@ -25,6 +25,8 @@
 [ext_resource type="PackedScene" uid="uid://bm3l3as3w0j5c" path="res://Assets/Door/door_with_threshhold.tscn" id="25_mxvw5"]
 [ext_resource type="PackedScene" uid="uid://flwix8h16d8c" path="res://Assets/Simple Tasks/Bottle.tscn" id="25_sqvbp"]
 [ext_resource type="PackedScene" uid="uid://drkugcuee5wtm" path="res://Assets/Simple Tasks/Burger.tscn" id="25_xrxkg"]
+[ext_resource type="PackedScene" uid="uid://b2s5vsuiytsaa" path="res://Assets/window.glb" id="26_xrxkg"]
+[ext_resource type="PackedScene" uid="uid://23ip8qmdlpou" path="res://enviroment.glb" id="27_sqvbp"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r0du0"]
 albedo_color = Color(0.8352941, 1, 1, 1)
@@ -83,21 +85,26 @@ size = Vector3(13, 5, 1)
 material = SubResource("StandardMaterial3D_avxm0")
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="Room" unique_id=1581061549]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 3, -6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 3, -5.5794373)
 use_collision = true
-size = Vector3(13, 5, 1)
+size = Vector3(13, 5, 0.15887451)
 material = SubResource("StandardMaterial3D_wkp8b")
 
+[node name="CSGBox3D" type="CSGBox3D" parent="Room/CSGBox3D2" unique_id=587811288]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3586729, -1.0226493, 0)
+operation = 2
+size = Vector3(1.1867704, 1.1802063, 1)
+
 [node name="CSGBox3D3" type="CSGBox3D" parent="Room" unique_id=1553640788]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -6, 3, -3)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -6, 3, -1.8793507)
 use_collision = true
-size = Vector3(13, 5, 1)
+size = Vector3(10.572754, 5, 1)
 material = SubResource("StandardMaterial3D_avxm0")
 
 [node name="CSGBox3D4" type="CSGBox3D" parent="Room" unique_id=1392032855]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1, 3, -3)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1, 3, -1.8227539)
 use_collision = true
-size = Vector3(13, 5, 1)
+size = Vector3(10.645508, 5, 1)
 material = SubResource("StandardMaterial3D_avxm0")
 
 [node name="CSGBox3D5" type="CSGBox3D" parent="Room" unique_id=813115197]
@@ -131,7 +138,7 @@ player_path = NodePath("../Player")
 [node name="Furniture - non interactible" type="Node" parent="." unique_id=2003797350]
 
 [node name="window-2" parent="Furniture - non interactible" unique_id=1674745859 instance=ExtResource("20_devvj")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4274929, 2, -5.497556)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1493196, 2, -5.49618)
 
 [node name="carpet" parent="Furniture - non interactible" unique_id=1489130607 instance=ExtResource("21_devvj")]
 transform = Transform3D(-3.4969112e-08, 0, -0.8, 0, 0.8, 0, 0.8, 0, -3.4969112e-08, -1.15501, 0.505672, -4.345275)
@@ -228,3 +235,9 @@ area_range = 64.226
 
 [node name="camera" parent="." unique_id=1124658652 instance=ExtResource("25_hri7i")]
 transform = Transform3D(-1.3, 0, 1.9629454e-07, 0, 1.3, 0, -1.9629454e-07, 0, -1.3, 0.08372319, 4.646953, 0.7171483)
+
+[node name="window" parent="." unique_id=79921051 instance=ExtResource("26_xrxkg")]
+transform = Transform3D(1, 0, 3.496911e-07, 0, 1, 0, -3.496911e-07, 0, 1, -1.6461025, 1.9678602, -5.588889)
+
+[node name="enviroment" parent="." unique_id=918298680 instance=ExtResource("27_sqvbp")]
+transform = Transform3D(0.8994098, 0, -0.43710643, 0, 1, 0, 0.43710643, 0, 0.8994098, -1.4766917, 0.6357627, -17.358063)

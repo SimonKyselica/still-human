@@ -1,0 +1,10 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://d31m0b4x8cg41"]
+
+[ext_resource type="Texture2D" uid="uid://bu2g8wbcc64tr" path="res://Assets/window_window_uv_textured.png" id="1_6y5pe"]
+
+[resource]
+resource_name = "Material"
+cull_mode = 2
+albedo_texture = ExtResource("1_6y5pe")
+texture_filter = 2
+metadata/_gltf_primary_texture_coord = 0

@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://djqt3kqr5vdl1"]
+
+[resource]
+resource_name = "glass_left"
+transparency = 3
+alpha_hash_scale = 0.02
+alpha_antialiasing_mode = 0
+cull_mode = 2
+vertex_color_is_srgb = true
+albedo_color = Color(1, 1, 1, 0.003921569)
+roughness = 0.0
