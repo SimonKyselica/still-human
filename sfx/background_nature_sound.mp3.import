@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/background_nature_sound.mp3-a80470ad7995f138c
 
 [params]
 
-loop=false
+loop=true
 loop_offset=0
 bpm=0
 beat_count=0

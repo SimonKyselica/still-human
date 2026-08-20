@@ -48,3 +48,13 @@ func _update_target() -> void:
 func try_interact(player: Node) -> void:
 	if current_target != null and current_target.can_interact():
 		current_target.interact(player)
+
+
+## Turns targeting on or off. Scripted poses (sitting on the couch) use this so
+## the player isn't offered prompts they have no way to act on, and so whatever
+## was highlighted on the way in doesn't stay on screen for the whole pose.
+func set_targeting_enabled(on: bool) -> void:
+	set_physics_process(on)
+	if not on and current_target != null:
+		current_target = null
+		target_changed.emit(null)

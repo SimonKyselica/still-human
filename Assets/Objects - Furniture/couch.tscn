@@ -2,6 +2,9 @@
 
 [ext_resource type="PackedScene" uid="uid://dkd6i7jvbuovg" path="res://Assets/couch.glb" id="1_5bqt8"]
 [ext_resource type="Script" uid="uid://7y7pdsa80256" path="res://Assets/Objects - Furniture/Couch/Couch.gd" id="2_o5i86"]
+[ext_resource type="AudioStream" uid="uid://dniioeqq6cbxt" path="res://sfx/background_nature_sound.mp3" id="3_n4tur"]
+[ext_resource type="AudioStream" uid="uid://m5hb2pm04qfj" path="res://sfx/bed_lay_down.mp3" id="4_sitdn"]
+[ext_resource type="AudioStream" uid="uid://br5ymnsj6objc" path="res://sfx/standing_up_from_chair.mp3" id="5_stnup"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_u8lrn"]
 size = Vector3(1.8432007, 0.72875977, 1)
@@ -11,8 +14,12 @@ size = Vector3(1.3830566, 1.0372314, 1)
 
 [node name="couch" unique_id=255986357 instance=ExtResource("1_5bqt8")]
 
-[node name="StaticBody3D" type="StaticBody3D" parent="." index="1" unique_id=1694154487]
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1" unique_id=1694154487 node_paths=PackedStringArray("sit_point")]
 script = ExtResource("2_o5i86")
+sit_point = NodePath("../SitPoint")
+calm_music = ExtResource("3_n4tur")
+sit_sound = ExtResource("4_sitdn")
+stand_sound = ExtResource("5_stnup")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=838284972]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0011291504, 0.18615723, 0)
@@ -21,3 +28,6 @@ shape = SubResource("BoxShape3D_u8lrn")
 [node name="SitCollider" type="CollisionShape3D" parent="StaticBody3D" index="1" unique_id=956720752]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.010375977, 0.018615723, 0)
 shape = SubResource("BoxShape3D_avubr")
+
+[node name="SitPoint" type="Marker3D" parent="." index="2" unique_id=1330579462]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -0.15)
