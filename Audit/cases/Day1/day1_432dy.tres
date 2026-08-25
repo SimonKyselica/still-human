@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="UnitCase" format=3]
+[gd_resource type="Resource" script_class="UnitCase" format=3 uid="uid://c06shxjp213j7"]
 
 [ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
-[ext_resource type="Script" path="res://Audit/unit_challenge.gd" id="2_chal"]
+[ext_resource type="Script" uid="uid://djpvu22v688ws" path="res://Audit/unit_challenge.gd" id="2_chal"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="2_onlik"]
 
 [sub_resource type="Resource" id="ch_1"]
 script = ExtResource("2_chal")
@@ -15,7 +16,6 @@ unit_id = "432-DY"
 sector_of_origin = "Sector 5"
 model_number = "DY-7"
 degradation = 28
-day = 1
 opening_answer = "Sector DY, DY-7 and 500-PY."
 opening_details = Array[String](["Sector DY", "DY-7", "500-PY"])
 challenges = Array[ExtResource("2_chal")]([SubResource("ch_1")])

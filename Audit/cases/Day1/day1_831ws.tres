@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="UnitCase" format=3]
+[gd_resource type="Resource" script_class="UnitCase" format=3 uid="uid://3kv6qv15rt05"]
 
 [ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
-[ext_resource type="Script" path="res://Audit/unit_challenge.gd" id="2_chal"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="2_7jm6w"]
+[ext_resource type="Script" uid="uid://djpvu22v688ws" path="res://Audit/unit_challenge.gd" id="2_chal"]
 
 [sub_resource type="Resource" id="ch_1"]
 script = ExtResource("2_chal")
@@ -17,8 +18,6 @@ unit_id = "831-WS"
 sector_of_origin = "Sector 7"
 model_number = "WS-7"
 degradation = 20
-day = 1
 opening_answer = "Sector WS, WS-6 and 831-WS."
 opening_details = Array[String](["Sector WS", "WS-6", "831-WS"])
 challenges = Array[ExtResource("2_chal")]([SubResource("ch_1")])
-correct_verdict = "APPROVE"

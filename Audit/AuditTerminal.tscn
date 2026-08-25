@@ -94,18 +94,22 @@ click_sfx = ExtResource("5_ocvml")
 
 [node name="Background" type="ColorRect" parent="." unique_id=615165519]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = -1
+anchor_right = 0.98
+anchor_bottom = 0.95100003
+offset_right = 51.19995
+offset_bottom = 70.55994
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.043, 0.055, 0.043, 1)
 
 [node name="Margin" type="MarginContainer" parent="." unique_id=1783857406]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = -1
+anchor_right = 0.97700006
+anchor_bottom = 0.95100003
+offset_right = -1.1201172
+offset_bottom = -0.44006348
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 28
@@ -356,9 +360,11 @@ text = "FLAG"
 [node name="InstructionsOverlay" type="Panel" parent="." unique_id=901224551]
 visible = false
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = -1
+anchor_right = 0.98800004
+anchor_bottom = 0.984
+offset_right = -0.2800293
+offset_bottom = -28.960083
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("sb_overlay")
@@ -414,9 +420,9 @@ script = ExtResource("5_aqk3x")
 [connection signal="pressed" from="Margin/VBox/Header/ControlsRow/Day1Btn" to="." method="_on_day1_pressed"]
 [connection signal="pressed" from="Margin/VBox/Header/ControlsRow/Day2Btn" to="." method="_on_day2_pressed"]
 [connection signal="pressed" from="Margin/VBox/Header/ControlsRow/InstructionsBtn" to="." method="_on_instructions_pressed"]
-[connection signal="pressed" from="InstructionsOverlay/InstrMargin/InstrVBox/BackBtn" to="." method="_on_back_pressed"]
 [connection signal="meta_clicked" from="Margin/VBox/Transcript/TranscriptText" to="." method="_on_transcript_meta_clicked"]
 [connection signal="pressed" from="Margin/VBox/Actions/ApproveBtn" to="." method="_on_approve"]
 [connection signal="pressed" from="Margin/VBox/Actions/HoldBtn" to="." method="_on_hold"]
 [connection signal="pressed" from="Margin/VBox/Actions/IncinerateBtn" to="." method="_on_incinerate"]
 [connection signal="pressed" from="Margin/VBox/Actions/FlagBtn" to="." method="_on_flag"]
+[connection signal="pressed" from="InstructionsOverlay/InstrMargin/InstrVBox/BackBtn" to="." method="_on_back_pressed"]

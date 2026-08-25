@@ -58,6 +58,30 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "Exit"
 
+[node name="Label" type="Label" parent="." unique_id=144969589]
+offset_left = 708.0
+offset_top = 517.0
+offset_right = 1555.0
+offset_bottom = 754.0
+text = "How to play
+Movement: W A S D
+Interaction: E
+IN TERMINAL:
+Interaction by left click on you mouse"
+
+[node name="Label" type="Label" parent="Label" unique_id=2004862281]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.754
+anchor_top = 3.456
+anchor_right = -0.31300002
+anchor_bottom = 3.6920002
+offset_left = -0.3619995
+offset_top = -0.072021484
+offset_right = 0.11102295
+offset_bottom = -0.0040283203
+text = "Version: 0.1"
+
 [connection signal="pressed" from="Button_manager/Start" to="." method="_on_start_pressed"]
 [connection signal="pressed" from="Button_manager/Setting" to="." method="_on_setting_pressed"]
 [connection signal="pressed" from="Button_manager/Exit" to="." method="_on_exit_pressed"]
