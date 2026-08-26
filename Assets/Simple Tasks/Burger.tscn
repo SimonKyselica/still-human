@@ -2,13 +2,14 @@
 
 [ext_resource type="PackedScene" uid="uid://bdd7ggxv7hdnl" path="res://Assets/burger.glb" id="1_qtevo"]
 [ext_resource type="Script" uid="uid://drk7vtmv78eik" path="res://Interactibles/simpleTask.gd" id="2_gbhah"]
+[ext_resource type="AudioStream" uid="uid://5vlkjonudra6" path="res://sfx/eating_sfx.mp3" id="3_v45s4"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_avubr"]
 size = Vector3(2.067871, 12.856323, 1.7878418)
 
 [node name="burger" unique_id=229075079 instance=ExtResource("1_qtevo")]
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Cylinder_001" parent_id_path=PackedInt32Array(827203184) index="0" unique_id=13376523]
+[node name="StaticBody3D" type="StaticBody3D" parent="Cylinder_001" parent_id_path=PackedInt32Array(1368220811) index="0" unique_id=13376523]
 script = ExtResource("2_gbhah")
 prompt_text = "Eat Burger"
 task_id = "eat"
@@ -16,3 +17,7 @@ task_id = "eat"
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Cylinder_001/StaticBody3D" index="0" unique_id=2115539626]
 transform = Transform3D(0.99998295, 0, 0, 0, 1, 0, 0, 0, 0.99998295, 0.05786145, 1.4286499, 0.07043409)
 shape = SubResource("BoxShape3D_avubr")
+
+[node name="RingSound" type="AudioStreamPlayer3D" parent="." index="1" unique_id=258666558]
+stream = ExtResource("3_v45s4")
+parameters/looping = true
