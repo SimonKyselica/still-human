@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://djpvu22v688ws" path="res://Audit/unit_challenge.gd" id="2_chal"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "01.01.2128"
+
+[sub_resource type="Resource" id="ch_1"]
+script = ExtResource("2_chal")
+fields = Array[String](["MODEL NUMBER"])
+details = Array[String](["DI-19"])
+agent_line = "Your model number does not match the case file."
+unit_lines = Array[String](["Apologies. My correct model number is 5-29."])
+new_details = Array[String](["5-29"])
+
+[sub_resource type="Resource" id="ch_2"]
+script = ExtResource("2_chal")
+fields = Array[String](["MODEL NUMBER"])
+details = Array[String](["5-29"])
+unit_lines = Array[String](["5-29. That is what I was issued."])
+
+[sub_resource type="Resource" id="ch_3"]
+script = ExtResource("2_chal")
+fields = Array[String](["UNIT ID"])
+details = Array[String](["259-DY"])
+unit_lines = Array[String](["The letters are the same as the number. Sector DY is Sector 5."])
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "259-5"
+sector_of_origin = "Sector 5"
+model_number = "5-19"
+degradation = 31
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1")])
+day = 2
+opening_answer = "My sector was Sector ZX, which was incorrect. I was updated and it was fixed to Sector DY. My model number is DI-19 and my unit ID is 259-DY."
+opening_details = Array[String](["Sector ZX", "Sector DY", "DI-19", "259-DY"])
+challenges = Array[ExtResource("2_chal")]([SubResource("ch_1"), SubResource("ch_2"), SubResource("ch_3")])
+correct_verdict = "HOLD"

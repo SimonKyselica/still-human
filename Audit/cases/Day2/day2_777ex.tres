@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "21.10.2127"
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "777-EX"
+sector_of_origin = "Sector 10"
+model_number = "EX-70"
+degradation = 99
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1")])
+day = 2
+opening_answer = "My sector of origin is Sector EX, my model number is EX-70 and my unit ID is 777-EX. My name is Max."
+opening_details = Array[String](["Sector EX", "EX-70", "777-EX"])
+correct_verdict = "HOLD"

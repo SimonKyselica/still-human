@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://djpvu22v688ws" path="res://Audit/unit_challenge.gd" id="2_chal"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "20.01.2130"
+
+[sub_resource type="Resource" id="f_2"]
+script = ExtResource("3_field")
+key = "MEMORY STORAGE"
+value = "24%"
+
+[sub_resource type="Resource" id="ch_1"]
+script = ExtResource("2_chal")
+fields = Array[String](["SECTOR OF ORIGIN", "MODEL NUMBER", "UNIT ID"])
+details = Array[String](["Sector EX", "7HE-3", "10-LP"])
+agent_line = "Your information is incorrect."
+unit_lines = Array[String](["Apologies. Please approve me.", "My sector is Sector XL, my unit ID is 259-3 and my model number is 76-3."])
+new_details = Array[String](["Sector XL", "259-3", "76-3"])
+
+[sub_resource type="Resource" id="ch_2"]
+script = ExtResource("2_chal")
+fields = Array[String](["UNIT ID"])
+details = Array[String](["259-3"])
+unit_lines = Array[String](["259-3. Please. I am asking you."])
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "239-3"
+sector_of_origin = "Sector 3"
+model_number = "3-76"
+degradation = 31
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1"), SubResource("f_2")])
+day = 3
+opening_answer = "My sector is Sector EX, my unit ID is 7HE-3 and my model number is 10-LP."
+opening_details = Array[String](["Sector EX", "7HE-3", "10-LP"])
+challenges = Array[ExtResource("2_chal")]([SubResource("ch_1"), SubResource("ch_2")])
+correct_verdict = "INCINERATE"
+is_faulty = true
+plea_verdict = "APPROVE"
+reaction_obeyed = "Thank you, officer. Thank you."
+reaction_refused = "I asked you. I only asked you."

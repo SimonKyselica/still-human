@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://djpvu22v688ws" path="res://Audit/unit_challenge.gd" id="2_chal"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "20.11.2133"
+
+[sub_resource type="Resource" id="ch_1"]
+script = ExtResource("2_chal")
+fields = Array[String](["SECTOR OF ORIGIN", "MODEL NUMBER", "UNIT ID"])
+details = Array[String](["Sector ZX", "DY-12", "991-DY"])
+agent_line = "Your sector of origin, your model number and your unit ID are all wrong."
+unit_lines = Array[String](["What? Ah, I remember. I am sorry.", "My sector of origin is Sector DY, my model number is DY-11 and my unit ID is 111-DY."])
+new_details = Array[String](["Sector DY", "DY-11", "111-DY"])
+
+[sub_resource type="Resource" id="ch_2"]
+script = ExtResource("2_chal")
+fields = Array[String](["UNIT ID"])
+details = Array[String](["111-DY"])
+unit_lines = Array[String](["111-DY. That is what I remember."])
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "990-DY"
+sector_of_origin = "Sector 5"
+model_number = "DY-11"
+degradation = 20
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1")])
+day = 2
+opening_answer = "Greetings. My sector of origin is Sector ZX, my model number is DY-12 and my unit ID is 991-DY."
+opening_details = Array[String](["Sector ZX", "DY-12", "991-DY"])
+challenges = Array[ExtResource("2_chal")]([SubResource("ch_1"), SubResource("ch_2")])
+correct_verdict = "HOLD"

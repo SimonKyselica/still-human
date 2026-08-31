@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "19.02.2145"
+
+[sub_resource type="Resource" id="f_2"]
+script = ExtResource("3_field")
+key = "MEMORY STORAGE"
+value = "91%"
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "999-10"
+sector_of_origin = "Sector 10"
+model_number = "10-29"
+degradation = 45
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1"), SubResource("f_2")])
+day = 3
+opening_answer = "My sector is Sector EX, my unit ID is 999-10 and my model number is 10-29."
+opening_details = Array[String](["Sector EX", "999-10", "10-29"])
+correct_verdict = "INCINERATE"

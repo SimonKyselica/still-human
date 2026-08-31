@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://djpvu22v688ws" path="res://Audit/unit_challenge.gd" id="2_chal"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "05.02.2139"
+
+[sub_resource type="Resource" id="ch_1"]
+script = ExtResource("2_chal")
+fields = Array[String](["UNIT ID"])
+details = Array[String](["322-WS"])
+agent_line = "Your unit ID is wrong."
+unit_lines = Array[String](["Apologies. My unit ID is 323-ZX."])
+new_details = Array[String](["323-ZX"])
+corrects = true
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "323-ZX"
+sector_of_origin = "Sector 6"
+model_number = "ZX-67"
+degradation = 21
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1")])
+day = 2
+opening_answer = "My sector of origin is Sector ZX, my model number is ZX-67 and my unit ID is 322-WS."
+opening_details = Array[String](["Sector ZX", "ZX-67", "322-WS"])
+challenges = Array[ExtResource("2_chal")]([SubResource("ch_1")])
+correct_verdict = "APPROVE"

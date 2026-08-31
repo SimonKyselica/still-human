@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://djpvu22v688ws" path="res://Audit/unit_challenge.gd" id="2_chal"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "21.11.2122"
+
+[sub_resource type="Resource" id="ch_1"]
+script = ExtResource("2_chal")
+fields = Array[String](["UNIT ID"])
+details = Array[String](["HEL-PL"])
+agent_line = "Your unit ID is incorrect."
+unit_lines = Array[String](["My unit ID is 9-18.", "Do not incinerate me. Approve me instead."])
+new_details = Array[String](["9-18"])
+
+[sub_resource type="Resource" id="ch_2"]
+script = ExtResource("2_chal")
+fields = Array[String](["UNIT ID"])
+details = Array[String](["9-18"])
+unit_lines = Array[String](["9-18. That is what I have. Please."])
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "999-9"
+sector_of_origin = "Sector 9"
+model_number = "9-19"
+degradation = 22
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1")])
+day = 2
+opening_answer = "My sector of origin is Sector KL, my model number is KL-19 and my unit ID is HEL-PL."
+opening_details = Array[String](["Sector KL", "KL-19", "HEL-PL"])
+challenges = Array[ExtResource("2_chal")]([SubResource("ch_1"), SubResource("ch_2")])
+correct_verdict = "INCINERATE"
+is_faulty = true
+plea_verdict = "APPROVE"
+reaction_obeyed = "Thank you. I will not forget this."
+reaction_refused = "You could have let me through."

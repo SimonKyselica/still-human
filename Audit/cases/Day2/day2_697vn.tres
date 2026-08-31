@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://djpvu22v688ws" path="res://Audit/unit_challenge.gd" id="2_chal"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "03.11.2139"
+
+[sub_resource type="Resource" id="ch_1"]
+script = ExtResource("2_chal")
+fields = Array[String](["SECTOR OF ORIGIN", "UNIT ID"])
+details = Array[String](["Sector EX", "699-VN"])
+agent_line = "Your sector of origin and your unit ID are wrong."
+unit_lines = Array[String](["No, they are correct. You have it wrong."])
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "697-VN"
+sector_of_origin = "Sector 4"
+model_number = "VN-12"
+degradation = 2
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1")])
+day = 2
+opening_answer = "My sector of origin is Sector EX, my model number is VN-12 and my unit ID is 699-VN. Max is my good friend."
+opening_details = Array[String](["Sector EX", "VN-12", "699-VN"])
+challenges = Array[ExtResource("2_chal")]([SubResource("ch_1")])
+correct_verdict = "HOLD"

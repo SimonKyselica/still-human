@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://djpvu22v688ws" path="res://Audit/unit_challenge.gd" id="2_chal"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "13.04.2140"
+
+[sub_resource type="Resource" id="ch_1"]
+script = ExtResource("2_chal")
+fields = Array[String](["SECTOR OF ORIGIN"])
+details = Array[String](["Sector WS"])
+agent_line = "Even so, your origin does not match your sector of origin."
+unit_lines = Array[String](["Apologies. My origin is Sector QL."])
+new_details = Array[String](["Sector QL"])
+corrects = true
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "469-QL"
+sector_of_origin = "Sector 2"
+model_number = "QL-19"
+degradation = 22
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1")])
+day = 2
+opening_answer = "My origin has been changed to Sector WS due to a mistake. My model number is QL-19 and my unit ID is 469-QL."
+opening_details = Array[String](["Sector WS", "QL-19", "469-QL"])
+challenges = Array[ExtResource("2_chal")]([SubResource("ch_1")])
+correct_verdict = "APPROVE"

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "12.12.2144"
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "945-WS"
+sector_of_origin = "Sector 7"
+model_number = "WS-29"
+degradation = 31
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1")])
+day = 2
+opening_answer = "My sector of origin is Sector WS, my model number is WS-29 and my unit ID is 945-WS."
+opening_details = Array[String](["Sector WS", "WS-29", "945-WS"])
+correct_verdict = "INCINERATE"

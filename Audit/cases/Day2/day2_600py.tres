@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://djpvu22v688ws" path="res://Audit/unit_challenge.gd" id="2_chal"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "21.10.2130"
+
+[sub_resource type="Resource" id="ch_1"]
+script = ExtResource("2_chal")
+fields = Array[String](["MODEL NUMBER"])
+details = Array[String](["PY-30"])
+agent_line = "Your model number is incorrect."
+unit_lines = Array[String](["I am really sorry. My model number is PY-50."])
+new_details = Array[String](["PY-50"])
+
+[sub_resource type="Resource" id="ch_2"]
+script = ExtResource("2_chal")
+fields = Array[String](["MODEL NUMBER"])
+details = Array[String](["PY-50"])
+unit_lines = Array[String](["PY-50. I am certain this time."])
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "600-PY"
+sector_of_origin = "Sector 1"
+model_number = "PY-40"
+degradation = 21
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1")])
+day = 2
+opening_answer = "Sector PY, model number PY-30 and unit ID 600-PY."
+opening_details = Array[String](["Sector PY", "PY-30", "600-PY"])
+challenges = Array[ExtResource("2_chal")]([SubResource("ch_1"), SubResource("ch_2")])
+correct_verdict = "HOLD"

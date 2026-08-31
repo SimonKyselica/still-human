@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="DayCaseload" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://d2gckur0kghbi" path="res://Audit/day_caseload.gd" id="2_load"]
+[ext_resource type="Resource" path="res://Audit/cases/Day2/day2_999_9a.tres" id="c01"]
+[ext_resource type="Resource" path="res://Audit/cases/Day2/day2_259_5.tres" id="c02"]
+[ext_resource type="Resource" path="res://Audit/cases/Day2/day2_469ql.tres" id="c03"]
+[ext_resource type="Resource" path="res://Audit/cases/Day2/day2_542_8.tres" id="c04"]
+[ext_resource type="Resource" path="res://Audit/cases/Day2/day2_999_9b.tres" id="c05"]
+[ext_resource type="Resource" path="res://Audit/cases/Day2/day2_813_5.tres" id="c06"]
+[ext_resource type="Resource" path="res://Audit/cases/Day2/day2_444_2.tres" id="c07"]
+[ext_resource type="Resource" path="res://Audit/cases/Day2/day2_600py.tres" id="c08"]
+[ext_resource type="Resource" path="res://Audit/cases/Day2/day2_777ex.tres" id="c09"]
+[ext_resource type="Resource" path="res://Audit/cases/Day2/day2_697vn.tres" id="c10"]
+[ext_resource type="Resource" path="res://Audit/cases/Day2/day2_945ws.tres" id="c11"]
+[ext_resource type="Resource" path="res://Audit/cases/Day2/day2_323zx.tres" id="c12"]
+[ext_resource type="Resource" path="res://Audit/cases/Day2/day2_846ql.tres" id="c13"]
+[ext_resource type="Resource" path="res://Audit/cases/Day2/day2_990dy.tres" id="c14"]
+
+[resource]
+script = ExtResource("2_load")
+day = 2
+directive_lines = Array[String](["Case file and transcript agree -> APPROVE.", "Date of creation on or before 01.01.2128 -> HOLD.", "Degradation above 30% -> INCINERATE.", "UNIT ID containing the number 4 -> INCINERATE.", "Lies again after questioning -> HOLD. Corrects itself -> APPROVE.", "When more than one rule applies, the higher rule on this list wins."])
+cases = Array[ExtResource("1_case")]([ExtResource("c01"), ExtResource("c02"), ExtResource("c03"), ExtResource("c04"), ExtResource("c05"), ExtResource("c06"), ExtResource("c07"), ExtResource("c08"), ExtResource("c09"), ExtResource("c10"), ExtResource("c11"), ExtResource("c12"), ExtResource("c13"), ExtResource("c14")])
+opening_question = "State your sector of origin, model number and unit ID."
+shift_seconds = 420.0
+expiry_mode = "PENALISE"
+unfinishable = false

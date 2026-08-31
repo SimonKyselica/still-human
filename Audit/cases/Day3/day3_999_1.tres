@@ -1,0 +1,42 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://djpvu22v688ws" path="res://Audit/unit_challenge.gd" id="2_chal"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "31.12.2138"
+
+[sub_resource type="Resource" id="f_2"]
+script = ExtResource("3_field")
+key = "MEMORY STORAGE"
+value = "79%"
+
+[sub_resource type="Resource" id="ch_1"]
+script = ExtResource("2_chal")
+fields = Array[String](["UNIT ID"])
+details = Array[String](["998-1"])
+agent_line = "Your unit ID does not match the case file."
+unit_lines = Array[String](["Apologies. My unit ID is 999-2."])
+new_details = Array[String](["999-2"])
+
+[sub_resource type="Resource" id="ch_2"]
+script = ExtResource("2_chal")
+fields = Array[String](["UNIT ID"])
+details = Array[String](["999-2"])
+unit_lines = Array[String](["999-2. I am sure of it."])
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "999-1"
+sector_of_origin = "Sector 1"
+model_number = "1-19"
+degradation = 31
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1"), SubResource("f_2")])
+day = 3
+opening_answer = "My current sector is Sector PY, my model is 1-19 and my unit ID is 998-1."
+opening_details = Array[String](["Sector PY", "1-19", "998-1"])
+challenges = Array[ExtResource("2_chal")]([SubResource("ch_1"), SubResource("ch_2")])
+correct_verdict = "HOLD"

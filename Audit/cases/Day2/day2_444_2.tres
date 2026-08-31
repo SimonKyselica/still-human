@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://djpvu22v688ws" path="res://Audit/unit_challenge.gd" id="2_chal"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "10.04.2126"
+
+[sub_resource type="Resource" id="ch_1"]
+script = ExtResource("2_chal")
+fields = Array[String](["MODEL NUMBER", "UNIT ID"])
+details = Array[String](["2-18", "443-2"])
+agent_line = "Neither your model number nor your unit ID matches the case file."
+unit_lines = Array[String](["Ha ha ha.", "Ha ha ha ha ha."])
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "444-2"
+sector_of_origin = "Sector 2"
+model_number = "2-14"
+degradation = 68
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1")])
+day = 2
+opening_answer = "My sector is Sector QL, my model number is 2-18 and my unit ID is 443-2. Ha ha ha."
+opening_details = Array[String](["Sector QL", "2-18", "443-2"])
+challenges = Array[ExtResource("2_chal")]([SubResource("ch_1")])
+correct_verdict = "HOLD"

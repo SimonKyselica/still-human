@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://djpvu22v688ws" path="res://Audit/unit_challenge.gd" id="2_chal"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "03.01.2137"
+
+[sub_resource type="Resource" id="f_2"]
+script = ExtResource("3_field")
+key = "MEMORY STORAGE"
+value = "80%"
+
+[sub_resource type="Resource" id="ch_1"]
+script = ExtResource("2_chal")
+fields = Array[String](["MODEL NUMBER", "UNIT ID"])
+details = Array[String](["XL-31", "645-XL"])
+agent_line = "Your model number and your unit ID are wrong."
+unit_lines = Array[String](["My day was good, thank you for asking. And I am sorry.", "My model number is XL-30 and my unit ID is 745-XL."])
+new_details = Array[String](["XL-30", "745-XL"])
+corrects = true
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "745-XL"
+sector_of_origin = "Sector 3"
+model_number = "XL-30"
+degradation = 33
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1"), SubResource("f_2")])
+day = 3
+opening_answer = "Hello. Sector XL, model number XL-31 and unit ID 645-XL. How was your day, officer?"
+opening_details = Array[String](["Sector XL", "XL-31", "645-XL"])
+challenges = Array[ExtResource("2_chal")]([SubResource("ch_1")])
+correct_verdict = "APPROVE"

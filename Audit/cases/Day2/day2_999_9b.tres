@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "21.01.2130"
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "999-9"
+sector_of_origin = "Sector 9"
+model_number = "9-19"
+degradation = 32
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1")])
+day = 2
+opening_answer = "Sector KL, model number 9-19 and unit ID 999-9."
+opening_details = Array[String](["Sector KL", "9-19", "999-9"])
+correct_verdict = "INCINERATE"

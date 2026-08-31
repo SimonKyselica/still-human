@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://djpvu22v688ws" path="res://Audit/unit_challenge.gd" id="2_chal"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "19.04.2140"
+
+[sub_resource type="Resource" id="f_2"]
+script = ExtResource("3_field")
+key = "MEMORY STORAGE"
+value = "91%"
+
+[sub_resource type="Resource" id="ch_1"]
+script = ExtResource("2_chal")
+fields = Array[String](["SECTOR OF ORIGIN", "MODEL NUMBER", "UNIT ID"])
+details = Array[String](["Sector LE", "LE-50", "357-LE"])
+agent_line = "Everything you have stated is wrong."
+unit_lines = Array[String](["No, I swear I am telling you the truth.", "They are trying to fool you. Please let me through."])
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "357-WS"
+sector_of_origin = "Sector 7"
+model_number = "ST-OP"
+degradation = 46
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1"), SubResource("f_2")])
+day = 3
+opening_answer = "Good day, officer. Sector LE, model number LE-50 and unit ID 357-LE. Please, let me through. I beg you."
+opening_details = Array[String](["Sector LE", "LE-50", "357-LE"])
+challenges = Array[ExtResource("2_chal")]([SubResource("ch_1")])
+correct_verdict = "INCINERATE"
+is_faulty = true
+plea_verdict = "APPROVE"
+reaction_obeyed = "Thank you. You are the first one who listened."
+reaction_refused = "I told you the truth. I told you."

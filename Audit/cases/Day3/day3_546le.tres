@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "04.10.2125"
+
+[sub_resource type="Resource" id="f_2"]
+script = ExtResource("3_field")
+key = "MEMORY STORAGE"
+value = "97%"
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "546-LE"
+sector_of_origin = "Sector 8"
+model_number = "LE-50"
+degradation = 60
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1"), SubResource("f_2")])
+day = 3
+opening_answer = "Greetings, officer. My name is Mai. Sector LE, model number LE-50 and unit ID 546-LE. You are pretty."
+opening_details = Array[String](["Sector LE", "LE-50", "546-LE"])
+correct_verdict = "INCINERATE"

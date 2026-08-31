@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "20.11.2123"
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "846-QL"
+sector_of_origin = "Sector 2"
+model_number = "QL-38"
+degradation = 50
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1")])
+day = 2
+opening_answer = "Hello. My sector of origin is Sector QL, my model number is QL-38 and my unit ID is 846-QL."
+opening_details = Array[String](["Sector QL", "QL-38", "846-QL"])
+correct_verdict = "HOLD"

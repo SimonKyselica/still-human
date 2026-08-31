@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "22.12.2144"
+
+[sub_resource type="Resource" id="f_2"]
+script = ExtResource("3_field")
+key = "MEMORY STORAGE"
+value = "22%"
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "356-PY"
+sector_of_origin = "Sector 1"
+model_number = "PY-27"
+degradation = 22
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1"), SubResource("f_2")])
+day = 3
+opening_answer = "Amazing weather today, is it not? Sector PY, model number PY-27 and unit ID 356-PY. My name is Simon."
+opening_details = Array[String](["Sector PY", "PY-27", "356-PY"])
+correct_verdict = "APPROVE"

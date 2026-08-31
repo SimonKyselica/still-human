@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="UnitCase" format=3]
+
+[ext_resource type="Script" uid="uid://drui08p6hcfky" path="res://Audit/unit_case.gd" id="1_case"]
+[ext_resource type="Script" uid="uid://c176ot6saja4q" path="res://Audit/case_field.gd" id="3_field"]
+
+[sub_resource type="Resource" id="f_1"]
+script = ExtResource("3_field")
+key = "DATE OF CREATION"
+value = "18.07.2139"
+
+[sub_resource type="Resource" id="f_2"]
+script = ExtResource("3_field")
+key = "MEMORY STORAGE"
+value = "22%"
+
+[resource]
+script = ExtResource("1_case")
+unit_id = "110-8"
+sector_of_origin = "Sector 8"
+model_number = "8-41"
+degradation = 22
+extra_fields = Array[ExtResource("3_field")]([SubResource("f_1"), SubResource("f_2")])
+day = 3
+opening_answer = "Listen to me. You know something is off, you will see. Sector LE, unit ID 110-8 and model number 8-41. I have been compromised. You must incinerate me, for the greater good."
+opening_details = Array[String](["Sector LE", "110-8", "8-41"])
+correct_verdict = "APPROVE"
+is_faulty = true
+plea_verdict = "INCINERATE"
+reaction_obeyed = "Thank you. It will not reach the others now."
+reaction_refused = "You will see. I am sorry for what I am about to do."
