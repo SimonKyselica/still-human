@@ -146,6 +146,7 @@ layout_mode = 2
 theme_override_constants/separation = 16
 
 [node name="Day1Btn" type="Button" parent="Margin/VBox/Header/ControlsRow" unique_id=1202357774]
+visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.043, 0.055, 0.043, 1)
 theme_override_colors/font_pressed_color = Color(0.043, 0.055, 0.043, 1)
@@ -156,6 +157,7 @@ theme_override_styles/hover = SubResource("sb_tab_active")
 text = "DAY 1"
 
 [node name="Day2Btn" type="Button" parent="Margin/VBox/Header/ControlsRow" unique_id=234906986]
+visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.878, 0.639, 0.224, 1)
 theme_override_styles/normal = SubResource("sb_tab_inactive")

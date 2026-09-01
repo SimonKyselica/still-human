@@ -11,13 +11,10 @@ size = Vector3(2.067871, 12.856323, 1.7878418)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Cylinder_001" parent_id_path=PackedInt32Array(1368220811) index="0" unique_id=13376523]
 script = ExtResource("2_gbhah")
+eat_sound = ExtResource("3_v45s4")
 prompt_text = "Eat Burger"
 task_id = "eat"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Cylinder_001/StaticBody3D" index="0" unique_id=2115539626]
 transform = Transform3D(0.99998295, 0, 0, 0, 1, 0, 0, 0, 0.99998295, 0.05786145, 1.4286499, 0.07043409)
 shape = SubResource("BoxShape3D_avubr")
-
-[node name="RingSound" type="AudioStreamPlayer3D" parent="." index="1" unique_id=258666558]
-stream = ExtResource("3_v45s4")
-parameters/looping = true

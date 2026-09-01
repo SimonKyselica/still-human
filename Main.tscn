@@ -27,6 +27,7 @@
 [ext_resource type="PackedScene" uid="uid://drkugcuee5wtm" path="res://Assets/Simple Tasks/Burger.tscn" id="25_xrxkg"]
 [ext_resource type="PackedScene" uid="uid://b2s5vsuiytsaa" path="res://Assets/window.glb" id="26_xrxkg"]
 [ext_resource type="PackedScene" uid="uid://23ip8qmdlpou" path="res://enviroment.glb" id="27_sqvbp"]
+[ext_resource type="PackedScene" uid="uid://0vb4emx6uxfr" path="res://Pause_menu.tscn" id="28_hri7i"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r0du0"]
 albedo_color = Color(0.8352941, 1, 1, 1)
@@ -139,6 +140,7 @@ player_path = NodePath("../Player")
 
 [node name="window-2" parent="Furniture - non interactible" unique_id=1674745859 instance=ExtResource("20_devvj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1493196, 2, -5.49618)
+visible = false
 
 [node name="carpet" parent="Furniture - non interactible" unique_id=1489130607 instance=ExtResource("21_devvj")]
 transform = Transform3D(-3.4969112e-08, 0, -0.8, 0, 0.8, 0, 0.8, 0, -3.4969112e-08, -1.15501, 0.505672, -4.345275)
@@ -241,3 +243,6 @@ transform = Transform3D(1, 0, 3.496911e-07, 0, 1, 0, -3.496911e-07, 0, 1, -1.646
 
 [node name="enviroment" parent="." unique_id=918298680 instance=ExtResource("27_sqvbp")]
 transform = Transform3D(0.8994098, 0, -0.43710643, 0, 1, 0, 0.43710643, 0, 0.8994098, -1.4766917, 0.6357627, -17.358063)
+
+[node name="PauseMenu" parent="." unique_id=1214487264 instance=ExtResource("28_hri7i")]
+visible = false

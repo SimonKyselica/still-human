@@ -5,6 +5,8 @@ extends Interactable
 @export var say_sfx: AudioStream
 @export var say_pos: Vector2 = Vector2(960, 900)
 
+@export var eat_sound: AudioStream
+
 func _ready() -> void:
 	add_to_group("tasks_objects")
 	
@@ -15,6 +17,9 @@ func interact(player: Node) -> void:
 		# colliderom — ten sedí VNÚTRI modelu, takže burger zostal ležať na
 		# stole a len prestal byť klikateľný. Treba zmazať celú rekvizitu.
 		enabled = false   # kým sa free vykoná (na konci rámca), nedá sa jesť dvakrát
+		var sound_pos := global_position
+		if eat_sound != null:
+			AudioManager.play_sound_3d(eat_sound, sound_pos, AudioManager.BUS_SFX, -4.0, 1.0, 0.03)
 		_prop_root().queue_free()
 	if not say_lines.is_empty():
 		DialogueManager.start_dialog(say_pos, say_lines, say_sfx)
